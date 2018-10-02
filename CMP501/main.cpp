@@ -1,19 +1,16 @@
-#include <SFML/Graphics.hpp>
+#include "Game.h"
+
+#include <iostream>
 
 int main() {
-	sf::RenderWindow window(sf::VideoMode(800, 600), "CMP501");
-	window.setVerticalSyncEnabled(true);
+	Game game;
 
-	while (window.isOpen()) {
-		sf::Event event{};
-		while (window.pollEvent(event)) {
-			if (event.type == sf::Event::Closed) {
-				window.close();
-			}
-		}
-
-		window.clear();
-		window.display();
+	try {
+		game.run();
+	} catch (const std::exception& e) {
+		std::cerr << "An error has occurred! Shutting down." << std::endl;
+		std::cerr << e.what() << std::endl;
+		return 1;
 	}
 
 	return 0;
