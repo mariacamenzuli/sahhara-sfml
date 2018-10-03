@@ -7,15 +7,24 @@
 #include <iostream>
 
 Game::Game() : window(sf::VideoMode(1920, 1080), "CMP501") {
+	resourceManager.loadTexture(ResourceManager::TextureId::BACKGROUND, "Resources/Images/desert.png");
 	Game::initiateScene(SceneId::MAIN_MENU);
 }
 
 Game::~Game() = default;
 
 void Game::run() {
+	sf::Clock clock;
+	auto timeSinceLastUpdate = sf::Time::Zero;
+
 	while (window.isOpen()) {
-		processWindowEvents();
-		update();
+		// processWindowEvents();
+		timeSinceLastUpdate += clock.restart();
+		while (timeSinceLastUpdate > timePerFrame) {
+			timeSinceLastUpdate -= timePerFrame;
+			processWindowEvents();
+			update(timePerFrame);
+		}
 		render();
 	}
 }
@@ -24,7 +33,7 @@ void Game::initiateScene(const SceneId sceneId) {
 	switch (sceneId) {
 	case SceneId::MAIN_MENU:
 		std::cout << "Initiating Main Menu" << std::endl;
-		activeScene.reset(new ActiveScene(sceneId, new MainMenuScene(this)));
+		activeScene.reset(new ActiveScene(sceneId, new MainMenuScene(this, &resourceManager)));
 		break;
 	case SceneId::BATTLE:
 		std::cout << "Initiating Battle" << std::endl;
@@ -45,10 +54,10 @@ void Game::processWindowEvents() {
 	while (window.pollEvent(event)) {
 		switch (event.type) {
 		case sf::Event::KeyPressed:
-			activeScene->scene->handlePlayerInput(event.key.code, true);
+			activeScene->sceneController->handlePlayerInput(event.key.code, true);
 			break;
 		case sf::Event::KeyReleased:
-			activeScene->scene->handlePlayerInput(event.key.code, false);
+			activeScene->sceneController->handlePlayerInput(event.key.code, false);
 			break;
 		case sf::Event::Closed:
 			window.close();
@@ -57,11 +66,12 @@ void Game::processWindowEvents() {
 	}
 }
 
-void Game::update() {
-	activeScene->scene->update();
+void Game::update(sf::Time deltaTime) {
+	activeScene->sceneController->update();
 }
 
 void Game::render() {
 	window.clear();
+	activeScene->sceneController->render(&window);
 	window.display();
 }

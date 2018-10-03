@@ -12,3 +12,6 @@ void BattleScene::handlePlayerInput(sf::Keyboard::Key key, bool isPressed) {
 
 void BattleScene::update() {
 }
+
+void BattleScene::render(sf::RenderWindow* window) {
+}
