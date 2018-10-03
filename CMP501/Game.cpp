@@ -5,9 +5,11 @@
 
 #include <SFML/Window/Event.hpp>
 #include <iostream>
+#include <cassert>
 
 Game::Game() : window(sf::VideoMode(1920, 1080), "CMP501") {
 	resourceManager.loadTexture(ResourceManager::TextureId::BACKGROUND, "Resources/Images/desert.png");
+	resourceManager.loadFont(ResourceManager::FontId::GAME_TITLE, "Resources/fonts/watermelon-script.ttf");
 	Game::initiateScene(SceneId::MAIN_MENU);
 }
 
@@ -72,6 +74,7 @@ void Game::update(sf::Time deltaTime) {
 
 void Game::render() {
 	window.clear();
-	activeScene->sceneController->render(&window);
+	assert(activeScene->sceneController->getRootGameObject());
+	window.draw(*activeScene->sceneController->getRootGameObject());
 	window.display();
 }

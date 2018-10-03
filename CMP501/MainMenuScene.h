@@ -4,8 +4,6 @@
 #include "GameSceneDirector.h"
 #include "ResourceManager.h"
 
-#include <SFML/Graphics/Sprite.hpp>
-
 class MainMenuScene : public GameScene {
 public:
 	explicit MainMenuScene(GameSceneDirector* sceneDirector, ResourceManager* resourceManager);
@@ -13,9 +11,9 @@ public:
 
 	void handlePlayerInput(sf::Keyboard::Key key, bool isPressed) override;
 	void update() override;
-	void render(sf::RenderWindow* window) override;
+	GameObject* getRootGameObject() override;
 private:
 	GameSceneDirector* sceneDirector;
 	ResourceManager* resourceManager;
-	sf::Sprite backgroundSprite;
+	std::unique_ptr<GameObject> rootGameObject;
 };
