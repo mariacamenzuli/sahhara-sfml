@@ -10,8 +10,8 @@ public:
 
 	void handlePlayerInput(sf::Keyboard::Key key, bool isPressed) override;
 	void update() override;
-	GameObject* getRootGameObject() override;
+	SceneNode* getRootGameObject() override;
 private:
 	GameSceneDirector* sceneDirector;
-	std::unique_ptr<GameObject> rootGameObject;
+	std::unique_ptr<SceneNode> rootGameObject;
 };

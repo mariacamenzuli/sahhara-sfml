@@ -1,6 +1,6 @@
 #include "BattleScene.h"
 
-BattleScene::BattleScene(GameSceneDirector* sceneDirector) : sceneDirector(sceneDirector), rootGameObject(new GameObject()) {}
+BattleScene::BattleScene(GameSceneDirector* sceneDirector) : sceneDirector(sceneDirector), rootGameObject(new SceneNode()) {}
 
 BattleScene::~BattleScene() = default;
 
@@ -13,6 +13,6 @@ void BattleScene::handlePlayerInput(sf::Keyboard::Key key, bool isPressed) {
 void BattleScene::update() {
 }
 
-GameObject* BattleScene::getRootGameObject() {
+SceneNode* BattleScene::getRootGameObject() {
 	return rootGameObject.get();
 }

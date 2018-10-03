@@ -1,15 +1,19 @@
 #include "MainMenuScene.h"
 #include "Label.h"
 #include "Image.h"
+#include "Camera.h"
 
 #include <SFML/Graphics/Sprite.hpp>
 #include <SFML/Graphics/Text.hpp>
 
-MainMenuScene::MainMenuScene(GameSceneDirector* sceneDirector, ResourceManager* resourceManager) : sceneDirector(sceneDirector), resourceManager(resourceManager), rootGameObject(new GameObject()) {
-	sf::Sprite backgroundSprite = sf::Sprite(resourceManager->getTexture(ResourceManager::TextureId::BACKGROUND));
-	backgroundSprite.setPosition(0.0f, 0.0f);
+MainMenuScene::MainMenuScene(GameSceneDirector* sceneDirector, ResourceManager* resourceManager, sf::Vector2f resolution) : sceneDirector(sceneDirector), resourceManager(resourceManager), rootGameObject(new SceneNode()) {
+	std::unique_ptr<Camera> camera(new Camera(resolution, resolution.x / 2.0f, resolution.y / 2.0f));
+	rootGameObject->attachChild(std::move((camera)));
 
-	std::unique_ptr<GameObject> background(new Image(backgroundSprite));
+	sf::Sprite backgroundSprite = sf::Sprite(resourceManager->getTexture(ResourceManager::TextureId::BACKGROUND));
+
+	std::unique_ptr<Image> background(new Image(backgroundSprite));
+	background->setPosition(0.0f, 0.0f);
 	rootGameObject->attachChild(std::move(background));
 
 	sf::Text gameTitleText;
@@ -17,9 +21,9 @@ MainMenuScene::MainMenuScene(GameSceneDirector* sceneDirector, ResourceManager* 
 	gameTitleText.setString("Sahhara");
 	gameTitleText.setCharacterSize(250);
 	gameTitleText.setFillColor(sf::Color::Black);
-	gameTitleText.setPosition(425.0f, 150.0f);
 
-	std::unique_ptr<GameObject> gameTitle(new Label(gameTitleText));
+	std::unique_ptr<Label> gameTitle(new Label(gameTitleText));
+	gameTitle->setPosition(425.0f, 150.0f);
 	rootGameObject->attachChild(std::move(gameTitle));
 }
 
@@ -36,6 +40,6 @@ void MainMenuScene::handlePlayerInput(sf::Keyboard::Key key, bool isPressed) {
 void MainMenuScene::update() {
 }
 
-GameObject* MainMenuScene::getRootGameObject() {
+SceneNode* MainMenuScene::getRootGameObject() {
 	return rootGameObject.get();
 }

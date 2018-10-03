@@ -1,4 +1,5 @@
 #pragma once
+
 #include "GameObject.h"
 
 #include <SFML/Graphics/Text.hpp>

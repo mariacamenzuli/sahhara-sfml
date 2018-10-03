@@ -6,14 +6,14 @@
 
 class MainMenuScene : public GameScene {
 public:
-	explicit MainMenuScene(GameSceneDirector* sceneDirector, ResourceManager* resourceManager);
+	explicit MainMenuScene(GameSceneDirector* sceneDirector, ResourceManager* resourceManager, sf::Vector2f resolution);
 	~MainMenuScene();
 
 	void handlePlayerInput(sf::Keyboard::Key key, bool isPressed) override;
 	void update() override;
-	GameObject* getRootGameObject() override;
+	SceneNode* getRootGameObject() override;
 private:
 	GameSceneDirector* sceneDirector;
 	ResourceManager* resourceManager;
-	std::unique_ptr<GameObject> rootGameObject;
+	std::unique_ptr<SceneNode> rootGameObject;
 };

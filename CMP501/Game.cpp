@@ -7,9 +7,17 @@
 #include <iostream>
 #include <cassert>
 
-Game::Game() : window(sf::VideoMode(1920, 1080), "CMP501") {
+Game::Game() {
+	resolution.x = sf::VideoMode::getDesktopMode().width;
+	resolution.y = sf::VideoMode::getDesktopMode().height;
+
+	window.create(sf::VideoMode(resolution.x, resolution.y),
+				  "Sahhara",
+				  sf::Style::Fullscreen);
+
 	resourceManager.loadTexture(ResourceManager::TextureId::BACKGROUND, "Resources/Images/desert.png");
 	resourceManager.loadFont(ResourceManager::FontId::GAME_TITLE, "Resources/fonts/watermelon-script.ttf");
+
 	Game::initiateScene(SceneId::MAIN_MENU);
 }
 
@@ -20,7 +28,7 @@ void Game::run() {
 	auto timeSinceLastUpdate = sf::Time::Zero;
 
 	while (window.isOpen()) {
-		// processWindowEvents();
+		processWindowEvents();
 		timeSinceLastUpdate += clock.restart();
 		while (timeSinceLastUpdate > timePerFrame) {
 			timeSinceLastUpdate -= timePerFrame;
@@ -35,7 +43,7 @@ void Game::initiateScene(const SceneId sceneId) {
 	switch (sceneId) {
 	case SceneId::MAIN_MENU:
 		std::cout << "Initiating Main Menu" << std::endl;
-		activeScene.reset(new ActiveScene(sceneId, new MainMenuScene(this, &resourceManager)));
+		activeScene.reset(new ActiveScene(sceneId, new MainMenuScene(this, &resourceManager, resolution)));
 		break;
 	case SceneId::BATTLE:
 		std::cout << "Initiating Battle" << std::endl;
