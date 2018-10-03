@@ -27,7 +27,6 @@ private:
 	};
 
 	const sf::Time timePerFrame = sf::seconds(1.f / 60.f);
-	sf::Vector2f resolution;
 	sf::RenderWindow window;
 	std::unique_ptr<ActiveScene> activeScene;
 	ResourceManager resourceManager;

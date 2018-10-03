@@ -6,8 +6,8 @@
 #include <SFML/Graphics/Sprite.hpp>
 #include <SFML/Graphics/Text.hpp>
 
-MainMenuScene::MainMenuScene(GameSceneDirector* sceneDirector, ResourceManager* resourceManager, sf::Vector2f resolution) : sceneDirector(sceneDirector), resourceManager(resourceManager), rootGameObject(new SceneNode()) {
-	std::unique_ptr<Camera> camera(new Camera(resolution, resolution.x / 2.0f, resolution.y / 2.0f));
+MainMenuScene::MainMenuScene(GameSceneDirector* sceneDirector, ResourceManager* resourceManager) : sceneDirector(sceneDirector), resourceManager(resourceManager), rootGameObject(new SceneNode()) {
+	std::unique_ptr<Camera> camera(new Camera(sf::Vector2f(1920.0f, 1080.0f), 960.0f, 540.0f));
 	rootGameObject->attachChild(std::move((camera)));
 
 	sf::Sprite backgroundSprite = sf::Sprite(resourceManager->getTexture(ResourceManager::TextureId::BACKGROUND));

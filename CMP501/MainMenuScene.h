@@ -6,7 +6,7 @@
 
 class MainMenuScene : public GameScene {
 public:
-	explicit MainMenuScene(GameSceneDirector* sceneDirector, ResourceManager* resourceManager, sf::Vector2f resolution);
+	explicit MainMenuScene(GameSceneDirector* sceneDirector, ResourceManager* resourceManager);
 	~MainMenuScene();
 
 	void handlePlayerInput(sf::Keyboard::Key key, bool isPressed) override;
