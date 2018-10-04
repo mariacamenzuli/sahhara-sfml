@@ -12,7 +12,7 @@ public:
 	~BattleScene();
 
 	void handlePlayerInput(sf::Keyboard::Key key, bool isPressed) override;
-	void update() override;
+	void update(sf::Time deltaTime) override;
 	SceneNode* getRootGameObject() override;
 private:
 	GameSceneDirector* sceneDirector;

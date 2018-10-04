@@ -7,7 +7,7 @@
 
 class AnimatedSpriteNode : public GameObjectNode  {
 public:
-	explicit AnimatedSpriteNode(Animation animation);
+	explicit AnimatedSpriteNode(const Animation& animation);
 	~AnimatedSpriteNode();
 
 	void setAnimation(Animation animation);
@@ -18,4 +18,5 @@ private:
 	std::size_t currentFrame;
 
 	void drawCurrent(sf::RenderTarget& target, sf::RenderStates states) const override;
+	void updateCurrent(sf::Time deltaTime) override;
 };

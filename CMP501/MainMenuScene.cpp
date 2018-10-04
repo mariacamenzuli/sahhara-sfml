@@ -21,7 +21,7 @@ void MainMenuScene::handlePlayerInput(sf::Keyboard::Key key, bool isPressed) {
 	}
 }
 
-void MainMenuScene::update() {
+void MainMenuScene::update(sf::Time deltaTime) {
 }
 
 SceneNode* MainMenuScene::getRootGameObject() {
