@@ -4,10 +4,10 @@
 
 #include <SFML/Graphics/View.hpp>
 
-class Camera : public SceneNode {
+class CameraNode : public SceneNode {
 public:
-	Camera(sf::Vector2f resolution, float centerX, float centerY);
-	~Camera();
+	CameraNode(sf::Vector2f resolution, float centerX, float centerY);
+	~CameraNode();
 
 private:
 	sf::View view;

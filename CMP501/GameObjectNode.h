@@ -4,10 +4,10 @@
 
 #include <SFML/Graphics/Transformable.hpp>
 
-class GameObject : public SceneNode, public sf::Transformable {
+class GameObjectNode : public SceneNode, public sf::Transformable {
 public:
-	GameObject();
-	~GameObject();
+	GameObjectNode();
+	~GameObjectNode();
 
 	void draw(sf::RenderTarget& target, sf::RenderStates states) const override final;
 };

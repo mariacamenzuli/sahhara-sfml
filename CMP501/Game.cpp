@@ -19,8 +19,8 @@ Game::Game() {
 	window.create(sf::VideoMode(resolution.x, resolution.y),
 				  "Sahhara");
 
-	resourceManager.loadTexture(ResourceManager::TextureId::BACKGROUND, "Resources/Images/desert.png");
-	resourceManager.loadFont(ResourceManager::FontId::GAME_TITLE, "Resources/fonts/watermelon-script.ttf");
+	resourceManager.loadTexture(ResourceLoader::TextureId::BACKGROUND, "Resources/Images/desert.png");
+	resourceManager.loadFont(ResourceLoader::FontId::GAME_TITLE, "Resources/fonts/watermelon-script.ttf");
 
 	Game::initiateScene(SceneId::MAIN_MENU);
 }
@@ -51,7 +51,7 @@ void Game::initiateScene(const SceneId sceneId) {
 		break;
 	case SceneId::BATTLE:
 		std::cout << "Initiating Battle" << std::endl;
-		activeScene.reset(new ActiveScene(sceneId, new BattleScene(this)));
+		activeScene.reset(new ActiveScene(sceneId, new BattleScene(this, &resourceManager)));
 		break;
 	}
 }

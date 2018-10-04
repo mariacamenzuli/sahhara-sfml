@@ -2,7 +2,7 @@
 
 #include "GameScene.h"
 #include "GameSceneDirector.h"
-#include "ResourceManager.h"
+#include "ResourceLoader.h"
 
 #include <SFML/Graphics/RenderWindow.hpp>
 
@@ -29,5 +29,5 @@ private:
 	const sf::Time timePerFrame = sf::seconds(1.f / 60.f);
 	sf::RenderWindow window;
 	std::unique_ptr<ActiveScene> activeScene;
-	ResourceManager resourceManager;
+	ResourceLoader resourceLoader;
 };

@@ -21,5 +21,5 @@ protected:
 	std::vector<SceneNodePointer> children;
 	SceneNode* parent;
 
-	virtual void drawCurrent(sf::RenderTarget& target, sf::RenderStates states) const;
+	virtual void drawCurrent(sf::RenderTarget& target, sf::RenderStates states) const = 0;
 };

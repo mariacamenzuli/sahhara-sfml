@@ -2,11 +2,11 @@
 
 #include "GameScene.h"
 #include "GameSceneDirector.h"
-#include "ResourceManager.h"
+#include "ResourceLoader.h"
 
 class MainMenuScene : public GameScene {
 public:
-	explicit MainMenuScene(GameSceneDirector* sceneDirector, ResourceManager* resourceManager);
+	explicit MainMenuScene(GameSceneDirector* sceneDirector, ResourceLoader* resourceLoader);
 	~MainMenuScene();
 
 	void handlePlayerInput(sf::Keyboard::Key key, bool isPressed) override;
@@ -14,6 +14,8 @@ public:
 	SceneNode* getRootGameObject() override;
 private:
 	GameSceneDirector* sceneDirector;
-	ResourceManager* resourceManager;
+	ResourceLoader* resourceLoader;
 	std::unique_ptr<SceneNode> rootGameObject;
+
+	void buildScene();
 };

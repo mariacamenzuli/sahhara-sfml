@@ -1,13 +1,13 @@
 #pragma once
 
-#include "GameObject.h"
+#include "GameObjectNode.h"
 
 #include <SFML/Graphics/Sprite.hpp>
 
-class Image : public GameObject {
+class SpriteNode : public GameObjectNode {
 public:
-	Image(sf::Sprite sprite);
-	~Image();
+	explicit SpriteNode(sf::Sprite sprite);
+	~SpriteNode();
 
 	sf::Sprite* getSprite();
 

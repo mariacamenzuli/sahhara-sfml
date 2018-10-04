@@ -2,10 +2,13 @@
 
 #include "GameScene.h"
 #include "GameSceneDirector.h"
+#include <SFML/Graphics/Texture.hpp>
+
+class ResourceLoader;
 
 class BattleScene : public GameScene {
 public:
-	explicit BattleScene(GameSceneDirector* sceneDirector);
+	explicit BattleScene(GameSceneDirector* sceneDirector, ResourceLoader* resourceLoader);
 	~BattleScene();
 
 	void handlePlayerInput(sf::Keyboard::Key key, bool isPressed) override;
@@ -13,5 +16,8 @@ public:
 	SceneNode* getRootGameObject() override;
 private:
 	GameSceneDirector* sceneDirector;
+	ResourceLoader* resourceLoader;
 	std::unique_ptr<SceneNode> rootGameObject;
+
+	void buildScene();
 };

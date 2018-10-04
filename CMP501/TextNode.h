@@ -1,13 +1,13 @@
 #pragma once
 
-#include "GameObject.h"
+#include "GameObjectNode.h"
 
 #include <SFML/Graphics/Text.hpp>
 
-class Label : public GameObject {
+class TextNode : public GameObjectNode {
 public:
-	explicit Label(sf::Text text);
-	~Label();
+	explicit TextNode(sf::Text text);
+	~TextNode();
 
 	sf::Text* getText();
 private:
