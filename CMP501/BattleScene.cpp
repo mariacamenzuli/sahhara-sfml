@@ -51,5 +51,6 @@ void BattleScene::buildScene() {
 	std::unique_ptr<AnimatedSpriteNode> wizard(new AnimatedSpriteNode(runAnimation));
 	wizard->setPosition(425.0f, 850.0f);
 	wizard->setScale(0.35f, 0.35f);
+	wizard->setFrameTime(sf::seconds(0.133f));
 	rootGameObject->attachChild(std::move(wizard));
 }

@@ -11,11 +11,15 @@ public:
 	~AnimatedSpriteNode();
 
 	void setAnimation(Animation animation);
+	void setFrame(std::size_t newFrame);
+	void setFrameTime(sf::Time frameTime);
 
 private:
 	Animation animation;
 	sf::Sprite sprite;
 	std::size_t currentFrame;
+	sf::Time frameTime;
+	sf::Time timeSinceLastUpdate;
 
 	void drawCurrent(sf::RenderTarget& target, sf::RenderStates states) const override;
 	void updateCurrent(sf::Time deltaTime) override;

@@ -13,10 +13,17 @@ AnimatedSpriteNode::~AnimatedSpriteNode() = default;
 void AnimatedSpriteNode::setAnimation(Animation animation) {
 	this->animation = animation;
 	currentFrame = 0;
-	// m_currentFrame = 0;
-	// setFrame(m_currentFrame);
 	sprite.setTexture(*animation.getSpriteSheet());
+	setFrame(currentFrame);
+	timeSinceLastUpdate = sf::Time::Zero;
+}
+
+void AnimatedSpriteNode::setFrame(std::size_t newFrame) {
 	sprite.setTextureRect(animation.getFrame(currentFrame));
+}
+
+void AnimatedSpriteNode::setFrameTime(sf::Time frameTime) {
+	this->frameTime = frameTime;
 }
 
 void AnimatedSpriteNode::drawCurrent(sf::RenderTarget& target, sf::RenderStates states) const {
@@ -24,5 +31,15 @@ void AnimatedSpriteNode::drawCurrent(sf::RenderTarget& target, sf::RenderStates 
 }
 
 void AnimatedSpriteNode::updateCurrent(sf::Time deltaTime) {
-	// todo
+	timeSinceLastUpdate += deltaTime;
+
+	if (timeSinceLastUpdate >= frameTime) {
+		timeSinceLastUpdate = sf::microseconds(timeSinceLastUpdate.asMicroseconds() % frameTime.asMicroseconds());
+		if (currentFrame + 1 < animation.getSize())
+			currentFrame++;
+		else {
+			currentFrame = 0;
+		}
+		setFrame(currentFrame);
+	}
 }
