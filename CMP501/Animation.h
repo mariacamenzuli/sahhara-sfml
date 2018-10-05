@@ -9,12 +9,19 @@ public:
 	explicit Animation(const sf::Texture& texture);
 	~Animation();
 
-	void addFrame(sf::IntRect rect);
+	struct Frame {
+		sf::IntRect rect;
+		sf::Vector2f displacement;
+
+		Frame(sf::IntRect rect, sf::Vector2f displacement) : rect(rect), displacement(displacement) {}
+	};
+
+	void addFrame(sf::IntRect rect, sf::Vector2f displacement = sf::Vector2f(0.0f, 0.0f));
 	const sf::Texture* getSpriteSheet() const;
 	std::size_t getSize() const;
-	const sf::IntRect& getFrame(std::size_t n) const;
+	const Frame& getFrame(std::size_t n) const;
 
 private:
-	std::vector<sf::IntRect> frames;
+	std::vector<Frame> frames;
 	const sf::Texture* texture;
 };

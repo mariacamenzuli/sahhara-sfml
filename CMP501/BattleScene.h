@@ -21,3 +21,6 @@ private:
 
 	void buildScene();
 };
+namespace WizardAnimations {
+	enum { RUN, JUMP, ATTACK, IDLE };
+}
