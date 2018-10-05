@@ -20,10 +20,32 @@ BattleScene::~BattleScene() {
 void BattleScene::handlePlayerInput(sf::Keyboard::Key key, bool isPressed) {
 	if (key == sf::Keyboard::Escape && isPressed) {
 		sceneDirector->initiateScene(GameSceneDirector::SceneId::MAIN_MENU);
+		return;
 	}
 }
 
 void BattleScene::update(sf::Time deltaTime) {
+	bool noMovementOccurred = true;
+	sf::Vector2f movement(0.f, 0.f);
+	float velocity = 500;
+
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::A)) {
+		noMovementOccurred = false;
+		movement.x -= velocity;
+		wizard->setAnimation(WizardAnimations::RUN_LEFT);
+	}
+
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::D)) {
+		noMovementOccurred = false;
+		movement.x += velocity;
+		wizard->setAnimation(WizardAnimations::RUN_RIGHT);
+	}
+
+	if (noMovementOccurred) {
+		wizard->setAnimation(WizardAnimations::IDLE_RIGHT);
+	}
+
+	wizard->move(movement * deltaTime.asSeconds());
 }
 
 SceneNode* BattleScene::getRootGameObject() {
@@ -111,16 +133,19 @@ void BattleScene::buildScene() {
 	wizard->addAnimation(WizardAnimations::RUN_LEFT, runLeftAnimation, (sf::seconds(0.133f)));
 	wizard->addAnimation(WizardAnimations::JUMP_RIGHT, jumpRightAnimation, (sf::seconds(0.75f)));
 	wizard->addAnimation(WizardAnimations::JUMP_LEFT, jumpLeftAnimation, (sf::seconds(0.75f)));
-	wizard->addAnimation(WizardAnimations::ATTACK_RIGHT, attackRightAnimation, (sf::seconds(0.533f)));
-	wizard->addAnimation(WizardAnimations::ATTACK_LEFT, attackLeftAnimation, (sf::seconds(0.533f)));
+	wizard->addAnimation(WizardAnimations::ATTACK_RIGHT, attackRightAnimation, (sf::seconds(0.033f)));
+	wizard->addAnimation(WizardAnimations::ATTACK_LEFT, attackLeftAnimation, (sf::seconds(0.033f)));
 	wizard->addAnimation(WizardAnimations::IDLE_RIGHT, idleRightAnimation, (sf::seconds(0.75f)));
 	wizard->addAnimation(WizardAnimations::IDLE_LEFT, idleLeftAnimation, (sf::seconds(0.75f)));
 	wizard->addAnimation(WizardAnimations::HURT_RIGHT, hurtRightAnimation, (sf::seconds(0.75f)));
 	wizard->addAnimation(WizardAnimations::HURT_LEFT, hurtLeftAnimation, (sf::seconds(0.75f)));
 	wizard->addAnimation(WizardAnimations::DEAD_RIGHT, deadRightAnimation, (sf::seconds(0.75f)));
 	wizard->addAnimation(WizardAnimations::DEAD_LEFT, deadLeftAnimation, (sf::seconds(0.75f)));
-	wizard->setPosition(425.0f, 850.0f);
+
+	this->wizard = wizard.get();
+
+	wizard->setPosition(0.0f, 850.0f);
 	wizard->setScale(0.85f, 0.85f);
-	wizard->setAnimation(WizardAnimations::DEAD_LEFT);
+	wizard->setAnimation(WizardAnimations::IDLE_RIGHT);
 	rootGameObject->attachChild(std::move(wizard));
 }

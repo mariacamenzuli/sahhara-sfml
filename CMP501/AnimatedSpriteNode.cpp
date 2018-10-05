@@ -13,6 +13,10 @@ void AnimatedSpriteNode::addAnimation(int animationId, const Animation& animatio
 }
 
 void AnimatedSpriteNode::setAnimation(const int animationId) {
+	if (currentAnimationId == animationId) {
+		return;
+	}
+	currentAnimationId = animationId;
 	this->currentAnimationConfig = &animations.find(animationId)->second;
 	currentFrame = 0;
 	sprite.setTexture(*currentAnimationConfig->animation.getSpriteSheet());

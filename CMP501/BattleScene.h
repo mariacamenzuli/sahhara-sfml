@@ -3,6 +3,7 @@
 #include "GameScene.h"
 #include "GameSceneDirector.h"
 #include <SFML/Graphics/Texture.hpp>
+#include "AnimatedSpriteNode.h"
 
 class ResourceLoader;
 
@@ -18,9 +19,11 @@ private:
 	GameSceneDirector* sceneDirector;
 	ResourceLoader* resourceLoader;
 	std::unique_ptr<SceneNode> rootGameObject;
+	AnimatedSpriteNode* wizard;
 
 	void buildScene();
 };
+
 namespace WizardAnimations {
 	enum {
 		RUN_RIGHT, JUMP_RIGHT, ATTACK_RIGHT, IDLE_RIGHT, HURT_RIGHT, DEAD_RIGHT,

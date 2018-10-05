@@ -24,6 +24,7 @@ private:
 	};
 
 	std::map<int, AnimationConfig> animations;
+	int currentAnimationId = -100;
 	AnimationConfig* currentAnimationConfig;
 	sf::Sprite sprite;
 	std::size_t currentFrame;
