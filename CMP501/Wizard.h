@@ -10,10 +10,13 @@ public:
 
 	const float runVelocity = 500;
 
-	void runLeft();
-	void runRight();
-	void idleLeft();
-	void idleRight();
+	enum Direction {
+		RIGHT, LEFT
+	};
+
+	void setDirection(Direction direction);
+	void run();
+	void idle();
 
 private:
 	const int animationRunRightId = 1;
@@ -28,6 +31,8 @@ private:
 	const int animationJumpLeftId = 10;
 	const int animationAttackRightId = 11;
 	const int animationAttackLeftId = 12;
+
+	Direction direction;
 
 	void buildSprite(ResourceLoader* resourceLoader);
 };

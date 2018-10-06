@@ -25,23 +25,24 @@ void BattleScene::handlePlayerInput(sf::Keyboard::Key key, bool isPressed) {
 }
 
 void BattleScene::update(sf::Time deltaTime) {
-	bool noMovementOccurred = true;
 	sf::Vector2f movement(0.f, 0.f);
 
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::A)) {
-		noMovementOccurred = false;
 		movement.x -= wizard->runVelocity;
-		wizard->runLeft();
 	}
 
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::D)) {
-		noMovementOccurred = false;
 		movement.x += wizard->runVelocity;
-		wizard->runRight();
 	}
 
-	if (noMovementOccurred) {
-		wizard->idleRight();
+	if (movement.x == 0.0f) {
+		wizard->idle();
+	} else if (movement.x < 0.0f) {
+		wizard->setDirection(Wizard::LEFT);
+		wizard->run();
+	} else {
+		wizard->setDirection(Wizard::RIGHT);
+		wizard->run();
 	}
 
 	wizard->move(movement * deltaTime.asSeconds());
@@ -65,7 +66,7 @@ void BattleScene::buildScene() {
 	this->wizard = wizard.get();
 	wizard->setPosition(0.0f, 850.0f);
 	wizard->setScale(0.85f, 0.85f);
-	wizard->idleRight();
+	wizard->idle();
 	rootGameObject->attachChild(std::move(wizard));
 
 	std::unique_ptr<FpsDisplay> fpsDisplay(new FpsDisplay(gameMetricsTracker));

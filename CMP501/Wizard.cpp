@@ -2,25 +2,31 @@
 
 Wizard::Wizard(ResourceLoader* resourceLoader) {
 	buildSprite(resourceLoader);
+	direction = RIGHT;
 }
-
 
 Wizard::~Wizard() = default;
 
-void Wizard::runLeft() {
-	setAnimation(animationRunLeftId);
+void Wizard::setDirection(Direction direction) {
+	this->direction = direction;
 }
 
-void Wizard::runRight() {
-	setAnimation(animationRunRightId);
+void Wizard::run() {
+	if (direction == RIGHT) {
+		setAnimation(animationRunRightId);
+		
+	} else {
+		setAnimation(animationRunLeftId);
+	}
 }
 
-void Wizard::idleLeft() {
-	setAnimation(animationIdleLeftId);
-}
+void Wizard::idle() {
+	if (direction == RIGHT) {
+		setAnimation(animationIdleRightId);
 
-void Wizard::idleRight() {
-	setAnimation(animationIdleRightId);
+	} else {
+		setAnimation(animationIdleLeftId);
+	}
 }
 
 void Wizard::buildSprite(ResourceLoader* resourceLoader) {
