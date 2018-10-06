@@ -4,12 +4,12 @@
 #include "GameSceneDirector.h"
 #include "AnimatedSpriteNode.h"
 #include "Wizard.h"
-
-class ResourceLoader;
+#include "GameMetricsTracker.h"
+#include "ResourceLoader.h"
 
 class BattleScene : public GameScene {
 public:
-	explicit BattleScene(GameSceneDirector* sceneDirector, ResourceLoader* resourceLoader);
+	explicit BattleScene(GameSceneDirector* sceneDirector, ResourceLoader* resourceLoader, GameMetricsTracker* gameMetricsTracker);
 	~BattleScene();
 
 	void handlePlayerInput(sf::Keyboard::Key key, bool isPressed) override;
@@ -18,6 +18,7 @@ public:
 private:
 	GameSceneDirector* sceneDirector;
 	ResourceLoader* resourceLoader;
+	GameMetricsTracker* gameMetricsTracker;
 	std::unique_ptr<SceneNode> rootGameObject;
 	Wizard* wizard;
 

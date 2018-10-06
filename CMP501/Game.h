@@ -3,6 +3,7 @@
 #include "GameScene.h"
 #include "GameSceneDirector.h"
 #include "ResourceLoader.h"
+#include "GameMetricsTracker.h"
 
 #include <SFML/Graphics/RenderWindow.hpp>
 
@@ -30,4 +31,5 @@ private:
 	sf::RenderWindow window;
 	std::unique_ptr<ActiveScene> activeScene;
 	ResourceLoader resourceLoader;
+	GameMetricsTracker gameMetricsTracker;
 };

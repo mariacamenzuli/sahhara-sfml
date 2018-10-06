@@ -10,8 +10,10 @@ public:
 	~TextNode();
 
 	sf::Text* getText();
-private:
+
+protected:
 	sf::Text text;
 
+private:
 	void drawCurrent(sf::RenderTarget& target, sf::RenderStates states) const override;
 };

@@ -13,7 +13,8 @@ public:
 	};
 
 	enum class FontId {
-		GAME_TITLE
+		GAME_TITLE,
+		FPS_DISPLAY
 	};
 
 	ResourceLoader();

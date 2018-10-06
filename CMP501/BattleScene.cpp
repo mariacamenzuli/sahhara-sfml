@@ -3,13 +3,12 @@
 #include "SpriteNode.h"
 #include "ResourceLoader.h"
 #include "EmptySceneNode.h"
-#include "Animation.h"
+#include "Wizard.h"
+#include "FpsDisplay.h"
 
 #include <SFML/Graphics/Sprite.hpp>
-#include "AnimatedSpriteNode.h"
-#include "Wizard.h"
 
-BattleScene::BattleScene(GameSceneDirector* sceneDirector, ResourceLoader* resourceLoader) : sceneDirector(sceneDirector), resourceLoader(resourceLoader), rootGameObject(new EmptySceneNode()) {
+BattleScene::BattleScene(GameSceneDirector* sceneDirector, ResourceLoader* resourceLoader, GameMetricsTracker* gameMetricsTracker) : sceneDirector(sceneDirector), resourceLoader(resourceLoader), gameMetricsTracker(gameMetricsTracker), rootGameObject(new EmptySceneNode()) {
 	resourceLoader->loadTexture(ResourceLoader::TextureId::WIZARD_PURPLE, "Resources/Sprite Sheets/wizard-purple.png");
 	buildScene();
 }
@@ -68,4 +67,8 @@ void BattleScene::buildScene() {
 	wizard->setScale(0.85f, 0.85f);
 	wizard->idleRight();
 	rootGameObject->attachChild(std::move(wizard));
+
+	std::unique_ptr<FpsDisplay> fpsDisplay(new FpsDisplay(gameMetricsTracker));
+	fpsDisplay->getText()->setFont(resourceLoader->getFont(ResourceLoader::FontId::FPS_DISPLAY));
+	rootGameObject->attachChild(std::move((fpsDisplay)));
 }

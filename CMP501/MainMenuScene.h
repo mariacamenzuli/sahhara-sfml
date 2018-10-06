@@ -3,10 +3,11 @@
 #include "GameScene.h"
 #include "GameSceneDirector.h"
 #include "ResourceLoader.h"
+#include "GameMetricsTracker.h"
 
 class MainMenuScene : public GameScene {
 public:
-	explicit MainMenuScene(GameSceneDirector* sceneDirector, ResourceLoader* resourceLoader);
+	explicit MainMenuScene(GameSceneDirector* sceneDirector, ResourceLoader* resourceLoader, GameMetricsTracker* gameMetricsTracker);
 	~MainMenuScene();
 
 	void handlePlayerInput(sf::Keyboard::Key key, bool isPressed) override;
@@ -15,6 +16,7 @@ public:
 private:
 	GameSceneDirector* sceneDirector;
 	ResourceLoader* resourceLoader;
+	GameMetricsTracker* gameMetricsTracker;
 	std::unique_ptr<SceneNode> rootGameObject;
 
 	void buildScene();

@@ -67,6 +67,12 @@
       <Filter>Source Files\Scene Nodes</Filter>
     </ClCompile>
     <ClCompile Include="Wizard.cpp">
+      <Filter>Source Files\Scene Nodes</Filter>
+    </ClCompile>
+    <ClCompile Include="FpsDisplay.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GameMetricsTracker.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -114,6 +120,12 @@
       <Filter>Header Files\Scene Nodes</Filter>
     </ClInclude>
     <ClInclude Include="Wizard.h">
+      <Filter>Header Files\Scene Nodes</Filter>
+    </ClInclude>
+    <ClInclude Include="FpsDisplay.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GameMetricsTracker.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

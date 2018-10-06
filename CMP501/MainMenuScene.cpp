@@ -6,8 +6,9 @@
 
 #include <SFML/Graphics/Sprite.hpp>
 #include <SFML/Graphics/Text.hpp>
+#include "FpsDisplay.h"
 
-MainMenuScene::MainMenuScene(GameSceneDirector* sceneDirector, ResourceLoader* resourceLoader) : sceneDirector(sceneDirector), resourceLoader(resourceLoader), rootGameObject(new EmptySceneNode()) {
+MainMenuScene::MainMenuScene(GameSceneDirector* sceneDirector, ResourceLoader* resourceLoader, GameMetricsTracker* gameMetricsTracker) : sceneDirector(sceneDirector), resourceLoader(resourceLoader), gameMetricsTracker(gameMetricsTracker), rootGameObject(new EmptySceneNode()) {
 	buildScene();
 }
 
@@ -47,4 +48,8 @@ void MainMenuScene::buildScene() {
 	std::unique_ptr<TextNode> gameTitle(new TextNode(gameTitleText));
 	gameTitle->setPosition(425.0f, 150.0f);
 	rootGameObject->attachChild(std::move(gameTitle));
+
+	std::unique_ptr<FpsDisplay> fpsDisplay(new FpsDisplay(gameMetricsTracker));
+	fpsDisplay->getText()->setFont(resourceLoader->getFont(ResourceLoader::FontId::FPS_DISPLAY));
+	rootGameObject->attachChild(std::move((fpsDisplay)));
 }

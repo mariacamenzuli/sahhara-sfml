@@ -19,8 +19,11 @@ Game::Game() {
 	window.create(sf::VideoMode(resolution.x, resolution.y),
 				  "Sahhara");
 
+	window.setFramerateLimit(60);
+
 	resourceLoader.loadTexture(ResourceLoader::TextureId::BACKGROUND, "Resources/Images/desert.png");
 	resourceLoader.loadFont(ResourceLoader::FontId::GAME_TITLE, "Resources/fonts/watermelon-script.ttf");
+	resourceLoader.loadFont(ResourceLoader::FontId::FPS_DISPLAY, "Resources/fonts/arial.ttf");
 
 	Game::initiateScene(SceneId::MAIN_MENU);
 }
@@ -47,11 +50,11 @@ void Game::initiateScene(const SceneId sceneId) {
 	switch (sceneId) {
 	case SceneId::MAIN_MENU:
 		std::cout << "Initiating Main Menu" << std::endl;
-		activeScene.reset(new ActiveScene(sceneId, new MainMenuScene(this, &resourceLoader)));
+		activeScene.reset(new ActiveScene(sceneId, new MainMenuScene(this, &resourceLoader, &gameMetricsTracker)));
 		break;
 	case SceneId::BATTLE:
 		std::cout << "Initiating Battle" << std::endl;
-		activeScene.reset(new ActiveScene(sceneId, new BattleScene(this, &resourceLoader)));
+		activeScene.reset(new ActiveScene(sceneId, new BattleScene(this, &resourceLoader, &gameMetricsTracker)));
 		break;
 	}
 }
@@ -83,6 +86,7 @@ void Game::processWindowEvents() {
 void Game::update(sf::Time deltaTime) {
 	activeScene->sceneController->update(deltaTime);
 	activeScene->sceneController->getRootGameObject()->update(deltaTime);
+	gameMetricsTracker.newLogicUpdate();
 }
 
 void Game::render() {
@@ -90,4 +94,5 @@ void Game::render() {
 	assert(activeScene->sceneController->getRootGameObject());
 	window.draw(*activeScene->sceneController->getRootGameObject());
 	window.display();
+	gameMetricsTracker.newFrameRendered();
 }
