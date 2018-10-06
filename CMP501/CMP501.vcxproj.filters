@@ -66,6 +66,9 @@
     <ClCompile Include="GameObjectNode.cpp">
       <Filter>Source Files\Scene Nodes</Filter>
     </ClCompile>
+    <ClCompile Include="Wizard.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Game.h">
@@ -109,6 +112,9 @@
     </ClInclude>
     <ClInclude Include="GameObjectNode.h">
       <Filter>Header Files\Scene Nodes</Filter>
+    </ClInclude>
+    <ClInclude Include="Wizard.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
