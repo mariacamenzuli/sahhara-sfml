@@ -22,5 +22,7 @@ private:
 	std::unique_ptr<SceneNode> rootGameObject;
 	Wizard* wizard;
 
+	const float gravity = 600.0f;
+
 	void buildScene();
 };

@@ -9,14 +9,20 @@ public:
 	~Wizard();
 
 	const float runVelocity = 500;
+	const float jumpKickOffVelocity = -650.0f;
+	const float jumpVelocity = -500.0f;
+	const float maxAirTime = 0.35f;
+	const float jumpKickOffTime = 0.1f;
 
 	enum Direction {
 		RIGHT, LEFT
 	};
 
-	void setDirection(Direction direction);
 	void run();
 	void idle();
+
+	Direction direction;
+	float timeInAir = 0.0f;
 
 private:
 	const int animationRunRightId = 1;
@@ -31,8 +37,6 @@ private:
 	const int animationJumpLeftId = 10;
 	const int animationAttackRightId = 11;
 	const int animationAttackLeftId = 12;
-
-	Direction direction;
 
 	void buildSprite(ResourceLoader* resourceLoader);
 };

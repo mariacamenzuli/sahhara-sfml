@@ -7,10 +7,6 @@ Wizard::Wizard(ResourceLoader* resourceLoader) {
 
 Wizard::~Wizard() = default;
 
-void Wizard::setDirection(Direction direction) {
-	this->direction = direction;
-}
-
 void Wizard::run() {
 	if (direction == RIGHT) {
 		setAnimation(animationRunRightId);

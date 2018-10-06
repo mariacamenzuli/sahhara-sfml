@@ -25,27 +25,45 @@ void BattleScene::handlePlayerInput(sf::Keyboard::Key key, bool isPressed) {
 }
 
 void BattleScene::update(sf::Time deltaTime) {
-	sf::Vector2f movement(0.f, 0.f);
+	sf::Vector2f velocity(0.0f, 0.0f);
+
+	if (wizard->getPosition().y >= 850.0f) { // is touching ground
+		wizard->timeInAir = 0.0f;
+
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space)) {
+			velocity.y = wizard->jumpKickOffVelocity;
+			wizard->timeInAir += deltaTime.asSeconds();
+		}
+	} else {
+		if (wizard->timeInAir < wizard->jumpKickOffTime) {
+			velocity.y = wizard->jumpKickOffVelocity;
+		} else if (wizard->timeInAir < wizard->maxAirTime) {
+			velocity.y = wizard->jumpVelocity;
+		} else {
+			velocity.y = gravity;
+		}
+		wizard->timeInAir += deltaTime.asSeconds();
+	}
 
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::A)) {
-		movement.x -= wizard->runVelocity;
+		velocity.x -= wizard->runVelocity;
 	}
 
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::D)) {
-		movement.x += wizard->runVelocity;
+		velocity.x += wizard->runVelocity;
 	}
 
-	if (movement.x == 0.0f) {
+	if (velocity.x == 0.0f) {
 		wizard->idle();
-	} else if (movement.x < 0.0f) {
-		wizard->setDirection(Wizard::LEFT);
+	} else if (velocity.x < 0.0f) {
+		wizard->direction = Wizard::LEFT;
 		wizard->run();
 	} else {
-		wizard->setDirection(Wizard::RIGHT);
+		wizard->direction = Wizard::RIGHT;
 		wizard->run();
 	}
 
-	wizard->move(movement * deltaTime.asSeconds());
+	wizard->move(velocity * deltaTime.asSeconds());
 }
 
 SceneNode* BattleScene::getRootGameObject() {
