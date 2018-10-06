@@ -63,7 +63,19 @@ void BattleScene::update(sf::Time deltaTime) {
 		wizard->run();
 	}
 
-	wizard->move(velocity * deltaTime.asSeconds());
+	auto updatedPosition = wizard->getPosition() + velocity * deltaTime.asSeconds();
+
+	if (updatedPosition.x < 0.0f) {
+		updatedPosition.x = 0.0f;
+	} else if (updatedPosition.x > 1780.0f) {
+		updatedPosition.x = 1780.0f;
+	}
+
+	if (updatedPosition.y > 850.0f) {
+		updatedPosition.y = 850.0f;
+	}
+
+	wizard->setPosition(updatedPosition);
 }
 
 SceneNode* BattleScene::getRootGameObject() {
