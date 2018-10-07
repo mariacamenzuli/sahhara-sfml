@@ -9,8 +9,10 @@
 
 Game::Game() {
 	sf::Vector2f resolution;
-	resolution.x = sf::VideoMode::getDesktopMode().width;
-	resolution.y = sf::VideoMode::getDesktopMode().height;
+	// resolution.x = sf::VideoMode::getDesktopMode().width;
+	// resolution.y = sf::VideoMode::getDesktopMode().height;
+	resolution.x = 960;
+	resolution.y = 540;
 
 	// window.create(sf::VideoMode(resolution.x, resolution.y),
 	// 			  "Sahhara",
@@ -24,6 +26,7 @@ Game::Game() {
 	resourceLoader.loadTexture(ResourceLoader::TextureId::BACKGROUND, "Resources/Images/desert.png");
 	resourceLoader.loadFont(ResourceLoader::FontId::GAME_TITLE, "Resources/fonts/watermelon-script.ttf");
 	resourceLoader.loadFont(ResourceLoader::FontId::FPS_DISPLAY, "Resources/fonts/arial.ttf");
+	resourceLoader.loadFont(ResourceLoader::FontId::GAME_TEXT, "Resources/fonts/gabriola.ttf");
 
 	Game::initiateScene(SceneId::MAIN_MENU);
 }
