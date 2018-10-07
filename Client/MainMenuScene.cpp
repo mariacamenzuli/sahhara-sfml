@@ -8,7 +8,7 @@
 #include <SFML/Graphics/Text.hpp>
 #include "FpsDisplay.h"
 
-MainMenuScene::MainMenuScene(GameSceneDirector* sceneDirector, ResourceLoader* resourceLoader, GameMetricsTracker* gameMetricsTracker) : sceneDirector(sceneDirector), resourceLoader(resourceLoader), gameMetricsTracker(gameMetricsTracker), rootGameObject(new EmptySceneNode()) {
+MainMenuScene::MainMenuScene(GameSceneDirector* sceneDirector, ResourceLoader* resourceLoader, GameMetricsTracker* gameMetricsTracker) : sceneDirector(sceneDirector), resourceLoader(resourceLoader), gameMetricsTracker(gameMetricsTracker), rootSceneNode(new EmptySceneNode()) {
 	buildScene();
 }
 
@@ -25,19 +25,19 @@ void MainMenuScene::handlePlayerInput(sf::Keyboard::Key key, bool isPressed) {
 void MainMenuScene::update(sf::Time deltaTime) {
 }
 
-SceneNode* MainMenuScene::getRootGameObject() {
-	return rootGameObject.get();
+SceneNode* MainMenuScene::getRootSceneNode() {
+	return rootSceneNode.get();
 }
 
 void MainMenuScene::buildScene() {
 	std::unique_ptr<CameraNode> camera(new CameraNode(sf::Vector2f(1920.0f, 1080.0f), 960.0f, 540.0f));
-	rootGameObject->attachChild(std::move((camera)));
+	rootSceneNode->attachChild(std::move((camera)));
 
 	sf::Sprite backgroundSprite = sf::Sprite(resourceLoader->getTexture(ResourceLoader::TextureId::BACKGROUND));
 
 	std::unique_ptr<SpriteNode> background(new SpriteNode(backgroundSprite));
 	background->setPosition(0.0f, 0.0f);
-	rootGameObject->attachChild(std::move(background));
+	rootSceneNode->attachChild(std::move(background));
 
 	sf::Text gameTitleText;
 	gameTitleText.setFont(resourceLoader->getFont(ResourceLoader::FontId::GAME_TITLE));
@@ -47,9 +47,9 @@ void MainMenuScene::buildScene() {
 
 	std::unique_ptr<TextNode> gameTitle(new TextNode(gameTitleText));
 	gameTitle->setPosition(425.0f, 150.0f);
-	rootGameObject->attachChild(std::move(gameTitle));
+	rootSceneNode->attachChild(std::move(gameTitle));
 
 	std::unique_ptr<FpsDisplay> fpsDisplay(new FpsDisplay(gameMetricsTracker));
 	fpsDisplay->getText()->setFont(resourceLoader->getFont(ResourceLoader::FontId::FPS_DISPLAY));
-	rootGameObject->attachChild(std::move((fpsDisplay)));
+	rootSceneNode->attachChild(std::move((fpsDisplay)));
 }

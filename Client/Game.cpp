@@ -85,14 +85,15 @@ void Game::processWindowEvents() {
 
 void Game::update(sf::Time deltaTime) {
 	activeScene->sceneController->update(deltaTime);
-	activeScene->sceneController->getRootGameObject()->update(deltaTime);
+	assert(activeScene->sceneController->getRootSceneNode());
+	activeScene->sceneController->getRootSceneNode()->update(deltaTime);
 	gameMetricsTracker.newLogicUpdate();
 }
 
 void Game::render() {
 	window.clear();
-	assert(activeScene->sceneController->getRootGameObject());
-	window.draw(*activeScene->sceneController->getRootGameObject());
+	assert(activeScene->sceneController->getRootSceneNode());
+	window.draw(*activeScene->sceneController->getRootSceneNode());
 	window.display();
 	gameMetricsTracker.newFrameRendered();
 }
