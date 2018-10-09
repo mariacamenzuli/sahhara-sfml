@@ -26,10 +26,10 @@ private:
 
 	const sf::Time timePerFrame = sf::seconds(1.f / 60.f);
 	sf::RenderWindow window;
-	std::unique_ptr<ActiveScene> activeScene;
 	ResourceLoader resourceLoader;
 	GameMetricsTracker gameMetricsTracker;
 	GameServer gameServer;
+	std::unique_ptr<ActiveScene> activeScene;
 
 	void processWindowEvents();
 	void update(sf::Time deltaTime);
