@@ -4,7 +4,7 @@
 #include <SFML/Network/TcpSocket.hpp>
 #include <SFML/Network/IpAddress.hpp>
 
-GameServer::GameServer() : lobbyTcpSocket(new sf::TcpSocket()) {
+GameServer::GameServer() : failedLobbyConnectAttempts(0), lobbyTcpSocket(new sf::TcpSocket()) {
 }
 
 GameServer::~GameServer() {
@@ -17,10 +17,13 @@ bool GameServer::connectToGameLobby() {
 	const sf::Socket::Status status = lobbyTcpSocket->connect(sf::IpAddress("127.0.0.1"), 53000, sf::microseconds(1));
 	if (status == sf::Socket::Done) {
 		std::cout << "Connected to game lobby." << std::endl;
-		lobbyTcpSocket->setBlocking(false);
+		lobbyTcpSocket->setBlocking(false); // todo: is this needed?
 		return true;
 	} else {
-		std::cout << "Attempting to connect to game lobby." << std::endl;
+		if (failedLobbyConnectAttempts % 120 == 0) {
+			std::cout << "Attempting to connect to game lobby..." << std::endl;
+		}
+		failedLobbyConnectAttempts++;
 		return false;
 	}
 }

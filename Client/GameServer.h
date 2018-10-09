@@ -11,5 +11,7 @@ public:
 	bool connectToGameLobby();
 
 private:
+	int failedLobbyConnectAttempts;
+
 	std::unique_ptr<sf::TcpSocket> lobbyTcpSocket;
 };

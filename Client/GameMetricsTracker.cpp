@@ -1,6 +1,6 @@
 #include "GameMetricsTracker.h"
 
-GameMetricsTracker::GameMetricsTracker(): logicUpdateCounter(0), logicUpdatesPerSecond(0), frameCounter(0), framesPerSecond(0) {
+GameMetricsTracker::GameMetricsTracker() : logicUpdatesPerSecond(0), framesPerSecond(0), logicUpdateCounter(0), frameCounter(0) {
 }
 
 GameMetricsTracker::~GameMetricsTracker() = default;
