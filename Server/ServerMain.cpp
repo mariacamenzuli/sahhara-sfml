@@ -1,12 +1,12 @@
-#include "MatchMaker.h"
+#include "GameLobby.h"
 
 #include <iostream>
 
 int main() {
-	MatchMaker matchMaker;
+	GameLobby gameLobby;
 
 	try {
-		matchMaker.run();
+		gameLobby.run();
 	} catch (const std::exception& e) {
 		std::cerr << "An error has occurred! Shutting down." << std::endl;
 		std::cerr << e.what() << std::endl;

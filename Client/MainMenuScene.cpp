@@ -3,18 +3,19 @@
 #include "SpriteNode.h"
 #include "CameraNode.h"
 #include "EmptySceneNode.h"
+#include "FpsDisplay.h"
 
 #include <SFML/Graphics/Sprite.hpp>
 #include <SFML/Graphics/Text.hpp>
-#include "FpsDisplay.h"
-#include <SFML/Network/Socket.hpp>
-#include <SFML/Network/TcpSocket.hpp>
 #include <SFML/Network/IpAddress.hpp>
-#include <iostream>
+#include <thread>
 
-MainMenuScene::MainMenuScene(GameSceneDirector* sceneDirector, ResourceLoader* resourceLoader, GameMetricsTracker* gameMetricsTracker) : sceneDirector(sceneDirector), resourceLoader(resourceLoader), gameMetricsTracker(gameMetricsTracker), rootSceneNode(new EmptySceneNode()) {
+MainMenuScene::MainMenuScene(GameSceneDirector* sceneDirector,
+							 ResourceLoader* resourceLoader,
+							 GameMetricsTracker* gameMetricsTracker,
+							 GameServer* gameServer) : sceneDirector(sceneDirector), resourceLoader(resourceLoader), gameMetricsTracker(gameMetricsTracker), gameServer(gameServer), rootSceneNode(new EmptySceneNode()) {
 	buildScene();
-	presentMenu();
+	initiateConnectionToServerLobby();
 }
 
 MainMenuScene::~MainMenuScene() = default;
@@ -24,25 +25,15 @@ void MainMenuScene::handlePlayerInput(sf::Keyboard::Key key, bool isPressed) {
 		sceneDirector->concludeCurrentScene();
 		return;
 	}
-	
-	switch (state) {
-	case State::PRESENTING_MENU:
-		if (key == sf::Keyboard::Enter && isPressed) {
-			connectToServer();
-			// sceneDirector->initiateScene(GameSceneDirector::SceneId::BATTLE);
-		}
-		break;
-	case State::CONNECTING_TO_SERVER: break;
-	case State::WAITING_FOR_CHALLENGER: break;
-	default:
-		throw std::runtime_error("Unknown main menu scene state");
-	}
 }
 
 void MainMenuScene::update(sf::Time deltaTime) {
 	switch (state) {
-	case State::PRESENTING_MENU:
-		;
+	case State::CONNECTING_TO_GAME_LOBBY:
+		if (gameServer->connectToGameLobby()) {
+			waitForChallenger();
+		}
+		break;
 	}
 }
 
@@ -67,7 +58,7 @@ void MainMenuScene::buildScene() {
 	gameTitleText.setFillColor(sf::Color::Black);
 
 	std::unique_ptr<TextNode> gameTitle(new TextNode(gameTitleText));
-	gameTitle->setPosition(425.0f, 150.0f);
+	gameTitle->setPosition(465.0f, 150.0f);
 	rootSceneNode->attachChild(std::move(gameTitle));
 
 	std::unique_ptr<FpsDisplay> fpsDisplay(new FpsDisplay(gameMetricsTracker));
@@ -75,44 +66,28 @@ void MainMenuScene::buildScene() {
 	rootSceneNode->attachChild(std::move((fpsDisplay)));
 }
 
-void MainMenuScene::presentMenu() {
-	state = State::PRESENTING_MENU;
+void MainMenuScene::initiateConnectionToServerLobby() {
+	state = State::CONNECTING_TO_GAME_LOBBY;
 
-	sf::Text findBattleText;
-	findBattleText.setFont(resourceLoader->getFont(ResourceLoader::FontId::GAME_TEXT));
-	findBattleText.setString("Find a Challenger");
-	findBattleText.setStyle(sf::Text::Bold);
-	findBattleText.setCharacterSize(75);
-	findBattleText.setFillColor(sf::Color::Black);
-	findBattleText.setOutlineColor(sf::Color::Yellow);
-	findBattleText.setOutlineThickness(3);
+	// gameServer->connectToLobby();
 
-	std::unique_ptr<TextNode> findBattleButton(new TextNode(findBattleText));
-	findBattleButton->setPosition(725.0f, 515.0f);
-	rootSceneNode->attachChild(std::move(findBattleButton));
+	sf::Text connectingText;
+	connectingText.setFont(resourceLoader->getFont(ResourceLoader::FontId::GAME_TEXT));
+	connectingText.setString("Connecting to Server...");
+	connectingText.setStyle(sf::Text::Bold);
+	connectingText.setCharacterSize(75);
+	connectingText.setFillColor(sf::Color::Black);
 
-	sf::Text exitText;
-	exitText.setFont(resourceLoader->getFont(ResourceLoader::FontId::GAME_TEXT));
-	exitText.setString("Exit");
-	exitText.setStyle(sf::Text::Bold);
-	exitText.setCharacterSize(75);
-	exitText.setFillColor(sf::Color::Black);
-
-	std::unique_ptr<TextNode> exitButton(new TextNode(exitText));
-	exitButton->setPosition(875.0f, 615.0f);
-	rootSceneNode->attachChild(std::move(exitButton));
+	std::unique_ptr<TextNode> connectingTextNode(new TextNode(connectingText));
+	connectingTextNode->setPosition(685.0f, 525.0f);
+	rootSceneNode->attachChild(std::move(connectingTextNode), "CONNECTING_MSG");
 }
 
-void MainMenuScene::connectToServer() {
-	state = State::CONNECTING_TO_SERVER;
+void MainMenuScene::clearConnectingToServerLobbyUi() {
+	rootSceneNode->detachChild(*rootSceneNode->getChild("CONNECTING_MSG"));
+}
 
-	std::cout << "Connecting to the server...";
-
-	sf::TcpSocket socket;
-	sf::Socket::Status status = socket.connect(sf::IpAddress("127.0.0.1"), 53000);
-	if (status != sf::Socket::Done) {
-		std::cout << "Failed to connect to the server";
-	}
-
-	std::cout << "Connected to the server";
+void MainMenuScene::waitForChallenger() {
+	state = State::WAITING_FOR_CHALLENGER;
+	sceneDirector->initiateScene(GameSceneDirector::SceneId::BATTLE);
 }

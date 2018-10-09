@@ -4,21 +4,18 @@
 #include "GameSceneDirector.h"
 #include "ResourceLoader.h"
 #include "GameMetricsTracker.h"
+#include "GameServer.h"
 
 #include <SFML/Graphics/RenderWindow.hpp>
 
-class Game : GameSceneDirector {
+class GameClient : GameSceneDirector {
 public:
-	Game();
-	~Game();
+	GameClient();
+	~GameClient();
 
 	void run();
 	void initiateScene(const SceneId sceneId) override;
 	void concludeCurrentScene() override;
-private:
-	void processWindowEvents();
-	void update(sf::Time deltaTime);
-	void render();
 private:
 	struct ActiveScene {
 		SceneId sceneId;
@@ -32,4 +29,9 @@ private:
 	std::unique_ptr<ActiveScene> activeScene;
 	ResourceLoader resourceLoader;
 	GameMetricsTracker gameMetricsTracker;
+	GameServer gameServer;
+
+	void processWindowEvents();
+	void update(sf::Time deltaTime);
+	void render();
 };

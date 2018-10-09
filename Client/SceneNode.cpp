@@ -7,9 +7,17 @@ SceneNode::SceneNode() = default;
 
 SceneNode::~SceneNode() = default;
 
-void SceneNode::attachChild(SceneNodePointer child) {
+SceneNode* SceneNode::attachChild(SceneNodePointer child) {
 	child->parent = this;
 	children.push_back(std::move(child));
+	return children.at(children.size() - 1).get();
+}
+
+SceneNode* SceneNode::attachChild(SceneNodePointer child, std::string label) {
+	auto childPtr = this->attachChild(std::move(child));
+	labeledChildren.insert(std::make_pair(label, childPtr));
+	return childPtr;
+
 }
 
 SceneNode::SceneNodePointer SceneNode::detachChild(const SceneNode& node) {
@@ -20,6 +28,14 @@ SceneNode::SceneNodePointer SceneNode::detachChild(const SceneNode& node) {
 	result->parent = nullptr;
 	children.erase(found);
 	return result;
+}
+
+SceneNode* SceneNode::getChild(std::string label) {
+	const auto found = labeledChildren.find(label);
+	if (found == labeledChildren.end()) {
+		return nullptr;
+	}
+	return found->second;
 }
 
 void SceneNode::draw(sf::RenderTarget& target, sf::RenderStates states) const {

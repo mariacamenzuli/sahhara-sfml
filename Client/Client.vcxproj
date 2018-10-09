@@ -129,9 +129,10 @@
     <ClCompile Include="CameraNode.cpp" />
     <ClCompile Include="EmptySceneNode.cpp" />
     <ClCompile Include="FpsDisplay.cpp" />
-    <ClCompile Include="Game.cpp" />
+    <ClCompile Include="GameClient.cpp" />
     <ClCompile Include="GameObjectNode.cpp" />
     <ClCompile Include="GameMetricsTracker.cpp" />
+    <ClCompile Include="GameServer.cpp" />
     <ClCompile Include="SpriteNode.cpp" />
     <ClCompile Include="TextNode.cpp" />
     <ClCompile Include="ClientMain.cpp" />
@@ -147,10 +148,11 @@
     <ClInclude Include="CameraNode.h" />
     <ClInclude Include="EmptySceneNode.h" />
     <ClInclude Include="FpsDisplay.h" />
-    <ClInclude Include="Game.h" />
+    <ClInclude Include="GameClient.h" />
     <ClInclude Include="GameObjectNode.h" />
     <ClInclude Include="GameSceneDirector.h" />
     <ClInclude Include="GameMetricsTracker.h" />
+    <ClInclude Include="GameServer.h" />
     <ClInclude Include="SpriteNode.h" />
     <ClInclude Include="TextNode.h" />
     <ClInclude Include="MainMenuScene.h" />

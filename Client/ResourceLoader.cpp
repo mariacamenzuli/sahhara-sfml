@@ -18,8 +18,11 @@ void ResourceLoader::loadTexture(TextureId textureId, const std::string& filenam
 }
 
 void ResourceLoader::releaseTexture(TextureId textureId) {
-	std::cout << "Releasing texture " << toString(textureId) << std::endl;
-	textureMap.erase(textureId);
+	const auto found = textureMap.find(textureId);
+	if (found != textureMap.end()) {
+		std::cout << "Releasing texture " << toString(textureId) << std::endl;
+		textureMap.erase(textureId);
+	}
 }
 
 const sf::Texture& ResourceLoader::getTexture(TextureId textureId) const {
@@ -59,6 +62,10 @@ std::string ResourceLoader::toString(FontId fontId) {
 	switch (fontId) {
 	case FontId::GAME_TITLE:
 		return "GAME_TITLE";
+	case FontId::FPS_DISPLAY:
+		return "FPS_DISPLAY";
+	case FontId::GAME_TEXT:
+		return "GAME_TEXT";
 	default:
 		return "UNKNOWN";
 	}

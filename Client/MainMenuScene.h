@@ -5,10 +5,14 @@
 #include "ResourceLoader.h"
 #include "GameMetricsTracker.h"
 #include "TextNode.h"
+#include "GameServer.h"
 
 class MainMenuScene : public GameScene {
 public:
-	explicit MainMenuScene(GameSceneDirector* sceneDirector, ResourceLoader* resourceLoader, GameMetricsTracker* gameMetricsTracker);
+	explicit MainMenuScene(GameSceneDirector* sceneDirector,
+						   ResourceLoader* resourceLoader,
+						   GameMetricsTracker* gameMetricsTracker,
+						   GameServer* gameServer);
 	~MainMenuScene();
 
 	void handlePlayerInput(sf::Keyboard::Key key, bool isPressed) override;
@@ -16,18 +20,19 @@ public:
 	SceneNode* getRootSceneNode() override;
 private:
 	enum class State {
-		PRESENTING_MENU,
-		CONNECTING_TO_SERVER,
+		CONNECTING_TO_GAME_LOBBY,
 		WAITING_FOR_CHALLENGER
 	};
 
 	GameSceneDirector* sceneDirector;
 	ResourceLoader* resourceLoader;
 	GameMetricsTracker* gameMetricsTracker;
+	GameServer* gameServer;
 	std::unique_ptr<SceneNode> rootSceneNode;
-	State state = State::PRESENTING_MENU;
+	State state = State::CONNECTING_TO_GAME_LOBBY;
 
 	void buildScene();
-	void presentMenu();
-	void connectToServer();
+	void initiateConnectionToServerLobby();
+	void inline clearConnectingToServerLobbyUi();
+	void waitForChallenger();
 };

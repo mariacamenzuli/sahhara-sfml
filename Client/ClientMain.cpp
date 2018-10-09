@@ -1,9 +1,9 @@
-#include "Game.h"
+#include "GameClient.h"
 
 #include <iostream>
 
 int main() {
-	Game game;
+	GameClient game;
 
 	try {
 		game.run();

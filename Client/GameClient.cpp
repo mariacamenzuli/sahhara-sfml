@@ -1,4 +1,4 @@
-#include "Game.h"
+#include "GameClient.h"
 
 #include "MainMenuScene.h"
 #include "BattleScene.h"
@@ -7,7 +7,7 @@
 #include <iostream>
 #include <cassert>
 
-Game::Game() {
+GameClient::GameClient() {
 	sf::Vector2f resolution;
 	// resolution.x = sf::VideoMode::getDesktopMode().width;
 	// resolution.y = sf::VideoMode::getDesktopMode().height;
@@ -28,12 +28,12 @@ Game::Game() {
 	resourceLoader.loadFont(ResourceLoader::FontId::FPS_DISPLAY, "Resources/fonts/arial.ttf");
 	resourceLoader.loadFont(ResourceLoader::FontId::GAME_TEXT, "Resources/fonts/gabriola.ttf");
 
-	Game::initiateScene(SceneId::MAIN_MENU);
+	GameClient::initiateScene(SceneId::MAIN_MENU);
 }
 
-Game::~Game() = default;
+GameClient::~GameClient() = default;
 
-void Game::run() {
+void GameClient::run() {
 	sf::Clock clock;
 	auto timeSinceLastUpdate = sf::Time::Zero;
 
@@ -49,11 +49,11 @@ void Game::run() {
 	}
 }
 
-void Game::initiateScene(const SceneId sceneId) {
+void GameClient::initiateScene(const SceneId sceneId) {
 	switch (sceneId) {
 	case SceneId::MAIN_MENU:
 		std::cout << "Initiating Main Menu" << std::endl;
-		activeScene.reset(new ActiveScene(sceneId, new MainMenuScene(this, &resourceLoader, &gameMetricsTracker)));
+		activeScene.reset(new ActiveScene(sceneId, new MainMenuScene(this, &resourceLoader, &gameMetricsTracker, &gameServer)));
 		break;
 	case SceneId::BATTLE:
 		std::cout << "Initiating Battle" << std::endl;
@@ -62,14 +62,14 @@ void Game::initiateScene(const SceneId sceneId) {
 	}
 }
 
-void Game::concludeCurrentScene() {
+void GameClient::concludeCurrentScene() {
 	if (activeScene->sceneId == SceneId::MAIN_MENU) {
 		std::cout << "Main Menu closed. Shutting down." << std::endl;
 		window.close();
 	}
 }
 
-void Game::processWindowEvents() {
+void GameClient::processWindowEvents() {
 	sf::Event event{};
 	while (window.pollEvent(event)) {
 		switch (event.type) {
@@ -86,14 +86,14 @@ void Game::processWindowEvents() {
 	}
 }
 
-void Game::update(sf::Time deltaTime) {
+void GameClient::update(sf::Time deltaTime) {
 	activeScene->sceneController->update(deltaTime);
 	assert(activeScene->sceneController->getRootSceneNode());
 	activeScene->sceneController->getRootSceneNode()->update(deltaTime);
 	gameMetricsTracker.newLogicUpdate();
 }
 
-void Game::render() {
+void GameClient::render() {
 	window.clear();
 	assert(activeScene->sceneController->getRootSceneNode());
 	window.draw(*activeScene->sceneController->getRootSceneNode());
