@@ -13,7 +13,7 @@
 MainMenuScene::MainMenuScene(GameSceneDirector* sceneDirector,
 							 ResourceLoader* resourceLoader,
 							 GameMetricsTracker* gameMetricsTracker,
-							 GameServer* gameServer) : sceneDirector(sceneDirector), resourceLoader(resourceLoader), gameMetricsTracker(gameMetricsTracker), gameServer(gameServer), rootSceneNode(new EmptySceneNode()) {
+							 GameServerConnection* gameServer) : sceneDirector(sceneDirector), resourceLoader(resourceLoader), gameMetricsTracker(gameMetricsTracker), gameServer(gameServer), rootSceneNode(new EmptySceneNode()) {
 	buildScene();
 	initiateConnectionToServerLobby();
 }
@@ -31,7 +31,17 @@ void MainMenuScene::update(sf::Time deltaTime) {
 	switch (state) {
 	case State::CONNECTING_TO_GAME_LOBBY:
 		if (gameServer->connectToGameLobby()) {
+			clearConnectingToServerLobbyUi();
 			waitForChallenger();
+		}
+		break;
+	case State::WAITING_FOR_CHALLENGER:
+		auto gameInfo = gameServer->findGame();
+		if (gameInfo.connectionStatus == GameServerConnection::ConnectionStatus::OK) {
+			sceneDirector->initiateScene(GameSceneDirector::SceneId::BATTLE);
+		} else if (gameInfo.connectionStatus == GameServerConnection::ConnectionStatus::ERROR) {
+			clearWaitingForChallengerUi();
+			initiateConnectionToServerLobby();
 		}
 		break;
 	}
@@ -69,8 +79,6 @@ void MainMenuScene::buildScene() {
 void MainMenuScene::initiateConnectionToServerLobby() {
 	state = State::CONNECTING_TO_GAME_LOBBY;
 
-	// gameServer->connectToLobby();
-
 	sf::Text connectingText;
 	connectingText.setFont(resourceLoader->getFont(ResourceLoader::FontId::GAME_TEXT));
 	connectingText.setString("Connecting to Server...");
@@ -89,5 +97,19 @@ void MainMenuScene::clearConnectingToServerLobbyUi() {
 
 void MainMenuScene::waitForChallenger() {
 	state = State::WAITING_FOR_CHALLENGER;
-	sceneDirector->initiateScene(GameSceneDirector::SceneId::BATTLE);
+
+	sf::Text connectingText;
+	connectingText.setFont(resourceLoader->getFont(ResourceLoader::FontId::GAME_TEXT));
+	connectingText.setString("Waiting for a Challenger...");
+	connectingText.setStyle(sf::Text::Bold);
+	connectingText.setCharacterSize(75);
+	connectingText.setFillColor(sf::Color::Black);
+
+	std::unique_ptr<TextNode> connectingTextNode(new TextNode(connectingText));
+	connectingTextNode->setPosition(635.0f, 525.0f);
+	rootSceneNode->attachChild(std::move(connectingTextNode), "WAITING_MSG");
+}
+
+void MainMenuScene::clearWaitingForChallengerUi() {
+	rootSceneNode->detachChild(*rootSceneNode->getChild("WAITING_MSG"));
 }

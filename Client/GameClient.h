@@ -4,7 +4,7 @@
 #include "GameSceneDirector.h"
 #include "ResourceLoader.h"
 #include "GameMetricsTracker.h"
-#include "GameServer.h"
+#include "GameServerConnection.h"
 
 #include <SFML/Graphics/RenderWindow.hpp>
 
@@ -28,7 +28,7 @@ private:
 	sf::RenderWindow window;
 	ResourceLoader resourceLoader;
 	GameMetricsTracker gameMetricsTracker;
-	GameServer gameServer;
+	GameServerConnection gameServer;
 	std::unique_ptr<ActiveScene> activeScene;
 
 	void processWindowEvents();

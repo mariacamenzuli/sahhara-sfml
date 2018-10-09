@@ -132,7 +132,7 @@
     <ClCompile Include="GameClient.cpp" />
     <ClCompile Include="GameObjectNode.cpp" />
     <ClCompile Include="GameMetricsTracker.cpp" />
-    <ClCompile Include="GameServer.cpp" />
+    <ClCompile Include="GameServerConnection.cpp" />
     <ClCompile Include="SpriteNode.cpp" />
     <ClCompile Include="TextNode.cpp" />
     <ClCompile Include="ClientMain.cpp" />
@@ -152,7 +152,7 @@
     <ClInclude Include="GameObjectNode.h" />
     <ClInclude Include="GameSceneDirector.h" />
     <ClInclude Include="GameMetricsTracker.h" />
-    <ClInclude Include="GameServer.h" />
+    <ClInclude Include="GameServerConnection.h" />
     <ClInclude Include="SpriteNode.h" />
     <ClInclude Include="TextNode.h" />
     <ClInclude Include="MainMenuScene.h" />

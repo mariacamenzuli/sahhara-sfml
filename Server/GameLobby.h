@@ -4,7 +4,7 @@
 #include <queue>
 #include <memory>
 
-class GameLobby { //todo: add support for a third player?
+class GameLobby {
 public:
 	GameLobby();
 	~GameLobby();
@@ -15,4 +15,6 @@ private:
 	const int maxOngoingGames = 1;
 	int ongoingGames = 0;
 	std::queue<std::unique_ptr<sf::TcpSocket>> clientsAwaitingGame;
+
+	bool isReadyForGame(sf::TcpSocket* playerConnection);
 };
