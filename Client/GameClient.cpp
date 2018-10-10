@@ -23,10 +23,13 @@ GameClient::GameClient() {
 
 	window.setFramerateLimit(60);
 
+	resourceLoader.loadImage(ResourceLoader::ImageId::WINDOW_ICON, "Resources/Images/wizard-hat.png");
 	resourceLoader.loadTexture(ResourceLoader::TextureId::BACKGROUND, "Resources/Images/desert.png");
 	resourceLoader.loadFont(ResourceLoader::FontId::GAME_TITLE, "Resources/fonts/watermelon-script.ttf");
 	resourceLoader.loadFont(ResourceLoader::FontId::FPS_DISPLAY, "Resources/fonts/arial.ttf");
 	resourceLoader.loadFont(ResourceLoader::FontId::GAME_TEXT, "Resources/fonts/gabriola.ttf");
+
+	window.setIcon(50, 50, resourceLoader.getImage(ResourceLoader::ImageId::WINDOW_ICON)->getPixelsPtr());
 
 	GameClient::initiateScene(SceneId::MAIN_MENU);
 }

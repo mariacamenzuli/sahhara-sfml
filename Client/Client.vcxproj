@@ -161,6 +161,9 @@
     <ClInclude Include="SceneNode.h" />
     <ClInclude Include="Wizard.h" />
   </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="client.rc" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

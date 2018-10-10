@@ -129,6 +129,9 @@
     <ClInclude Include="GameLobby.h" />
     <ClInclude Include="ServerSignal.h" />
   </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="server.rc" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
