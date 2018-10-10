@@ -55,14 +55,14 @@ void MainMenuScene::buildScene() {
 	std::unique_ptr<CameraNode> camera(new CameraNode(sf::Vector2f(1920.0f, 1080.0f), 960.0f, 540.0f));
 	rootSceneNode->attachChild(std::move((camera)));
 
-	sf::Sprite backgroundSprite = sf::Sprite(resourceLoader->getTexture(ResourceLoader::TextureId::BACKGROUND));
+	sf::Sprite backgroundSprite = sf::Sprite(*resourceLoader->getTexture(ResourceLoader::TextureId::BACKGROUND));
 
 	std::unique_ptr<SpriteNode> background(new SpriteNode(backgroundSprite));
 	background->setPosition(0.0f, 0.0f);
 	rootSceneNode->attachChild(std::move(background));
 
 	sf::Text gameTitleText;
-	gameTitleText.setFont(resourceLoader->getFont(ResourceLoader::FontId::GAME_TITLE));
+	gameTitleText.setFont(*resourceLoader->getFont(ResourceLoader::FontId::GAME_TITLE));
 	gameTitleText.setString("Sahhara");
 	gameTitleText.setCharacterSize(250);
 	gameTitleText.setFillColor(sf::Color::Black);
@@ -72,7 +72,7 @@ void MainMenuScene::buildScene() {
 	rootSceneNode->attachChild(std::move(gameTitle));
 
 	std::unique_ptr<FpsDisplay> fpsDisplay(new FpsDisplay(gameMetricsTracker));
-	fpsDisplay->getText()->setFont(resourceLoader->getFont(ResourceLoader::FontId::FPS_DISPLAY));
+	fpsDisplay->getText()->setFont(*resourceLoader->getFont(ResourceLoader::FontId::FPS_DISPLAY));
 	rootSceneNode->attachChild(std::move((fpsDisplay)));
 }
 
@@ -80,7 +80,7 @@ void MainMenuScene::initiateConnectionToServerLobby() {
 	state = State::CONNECTING_TO_GAME_LOBBY;
 
 	sf::Text connectingText;
-	connectingText.setFont(resourceLoader->getFont(ResourceLoader::FontId::GAME_TEXT));
+	connectingText.setFont(*resourceLoader->getFont(ResourceLoader::FontId::GAME_TEXT));
 	connectingText.setString("Connecting to Server...");
 	connectingText.setStyle(sf::Text::Bold);
 	connectingText.setCharacterSize(75);
@@ -99,7 +99,7 @@ void MainMenuScene::waitForChallenger() {
 	state = State::WAITING_FOR_CHALLENGER;
 
 	sf::Text connectingText;
-	connectingText.setFont(resourceLoader->getFont(ResourceLoader::FontId::GAME_TEXT));
+	connectingText.setFont(*resourceLoader->getFont(ResourceLoader::FontId::GAME_TEXT));
 	connectingText.setString("Waiting for a Challenger...");
 	connectingText.setStyle(sf::Text::Bold);
 	connectingText.setCharacterSize(75);

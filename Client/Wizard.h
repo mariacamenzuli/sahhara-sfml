@@ -5,7 +5,15 @@
 
 class Wizard : public AnimatedSpriteNode {
 public:
-	Wizard(ResourceLoader* resourceLoader);
+	enum class Direction {
+		RIGHT, LEFT
+	};
+
+	enum class Color {
+		PURPLE, ORANGE
+	};
+
+	Wizard(Color color, ResourceLoader* resourceLoader);
 	~Wizard();
 
 	const float runVelocity = 500;
@@ -13,10 +21,6 @@ public:
 	const float jumpVelocity = -500.0f;
 	const float maxAirTime = 0.35f;
 	const float jumpKickOffTime = 0.1f;
-
-	enum Direction {
-		RIGHT, LEFT
-	};
 
 	void run();
 	void idle();
@@ -38,5 +42,19 @@ private:
 	const int animationAttackRightId = 11;
 	const int animationAttackLeftId = 12;
 
+	Color color;
+
 	void buildSprite(ResourceLoader* resourceLoader);
+	inline Animation buildRunRightAnimation(ResourceLoader* resourceLoader);
+	inline Animation buildRunLeftAnimation(ResourceLoader* resourceLoader);
+	inline Animation buildDeadRightAnimation(ResourceLoader* resourceLoader);
+	inline Animation buildDeadLeftAnimation(ResourceLoader* resourceLoader);
+	inline Animation buildHurtRightAnimation(ResourceLoader* resourceLoader);
+	inline Animation buildHurtLeftAnimation(ResourceLoader* resourceLoader);
+	inline Animation buildIdleRightAnimation(ResourceLoader* resourceLoader);
+	inline Animation buildIdleLeftAnimation(ResourceLoader* resourceLoader);
+	inline Animation buildJumpRightAnimation(ResourceLoader* resourceLoader);
+	inline Animation buildJumpLeftAnimation(ResourceLoader* resourceLoader);
+	inline Animation buildAttackRightAnimation(ResourceLoader* resourceLoader);
+	inline Animation buildAttackLeftAnimation(ResourceLoader* resourceLoader);
 };

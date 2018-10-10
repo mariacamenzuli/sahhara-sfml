@@ -25,10 +25,10 @@ void ResourceLoader::releaseTexture(TextureId textureId) {
 	}
 }
 
-const sf::Texture& ResourceLoader::getTexture(TextureId textureId) const {
+const sf::Texture* ResourceLoader::getTexture(TextureId textureId) const {
 	const auto found = textureMap.find(textureId);
 	assert(found != textureMap.end());
-	return *found->second;
+	return found->second.get();
 }
 
 void ResourceLoader::loadFont(FontId fontId, const std::string& filename) {
@@ -41,10 +41,10 @@ void ResourceLoader::loadFont(FontId fontId, const std::string& filename) {
 	assert(inserted.second);
 }
 
-const sf::Font& ResourceLoader::getFont(FontId fontId) const {
+const sf::Font* ResourceLoader::getFont(FontId fontId) const {
 	const auto found = fontMap.find(fontId);
 	assert(found != fontMap.end());
-	return *found->second;
+	return found->second.get();
 }
 
 std::string ResourceLoader::toString(TextureId textureId) {
@@ -53,6 +53,8 @@ std::string ResourceLoader::toString(TextureId textureId) {
 		return "BACKGROUND";
 	case TextureId::WIZARD_PURPLE:
 		return "WIZARD_PURPLE";
+	case TextureId::WIZARD_ORANGE:
+		return "WIZARD_ORANGE";
 	default:
 		return "UNKNOWN";
 	}

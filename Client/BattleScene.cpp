@@ -10,11 +10,13 @@
 
 BattleScene::BattleScene(GameSceneDirector* sceneDirector, ResourceLoader* resourceLoader, GameMetricsTracker* gameMetricsTracker) : sceneDirector(sceneDirector), resourceLoader(resourceLoader), gameMetricsTracker(gameMetricsTracker), rootSceneNode(new EmptySceneNode()) {
 	resourceLoader->loadTexture(ResourceLoader::TextureId::WIZARD_PURPLE, "Resources/Sprite Sheets/wizard-purple.png");
+	resourceLoader->loadTexture(ResourceLoader::TextureId::WIZARD_ORANGE, "Resources/Sprite Sheets/wizard-orange.png");
 	buildScene();
 }
 
 BattleScene::~BattleScene() {
 	resourceLoader->releaseTexture(ResourceLoader::TextureId::WIZARD_PURPLE);
+	resourceLoader->releaseTexture(ResourceLoader::TextureId::WIZARD_ORANGE);
 };
 
 void BattleScene::handlePlayerInput(sf::Keyboard::Key key, bool isPressed) {
@@ -56,10 +58,10 @@ void BattleScene::update(sf::Time deltaTime) {
 	if (velocity.x == 0.0f) {
 		wizard->idle();
 	} else if (velocity.x < 0.0f) {
-		wizard->direction = Wizard::LEFT;
+		wizard->direction = Wizard::Direction::LEFT;
 		wizard->run();
 	} else {
-		wizard->direction = Wizard::RIGHT;
+		wizard->direction = Wizard::Direction::RIGHT;
 		wizard->run();
 	}
 
@@ -86,13 +88,13 @@ void BattleScene::buildScene() {
 	std::unique_ptr<CameraNode> camera(new CameraNode(sf::Vector2f(1920.0f, 1080.0f), 960.0f, 540.0f));
 	rootSceneNode->attachChild(std::move((camera)));
 
-	sf::Sprite backgroundSprite = sf::Sprite(resourceLoader->getTexture(ResourceLoader::TextureId::BACKGROUND));
+	sf::Sprite backgroundSprite = sf::Sprite(*resourceLoader->getTexture(ResourceLoader::TextureId::BACKGROUND));
 
 	std::unique_ptr<SpriteNode> background(new SpriteNode(backgroundSprite));
 	background->setPosition(0.0f, 0.0f);
 	rootSceneNode->attachChild(std::move(background));
 
-	std::unique_ptr<Wizard> wizard(new Wizard(resourceLoader));
+	std::unique_ptr<Wizard> wizard(new Wizard(Wizard::Color::ORANGE, resourceLoader));
 	this->wizard = wizard.get();
 	wizard->setPosition(0.0f, 850.0f);
 	wizard->setScale(0.85f, 0.85f);
@@ -100,6 +102,6 @@ void BattleScene::buildScene() {
 	rootSceneNode->attachChild(std::move(wizard));
 
 	std::unique_ptr<FpsDisplay> fpsDisplay(new FpsDisplay(gameMetricsTracker));
-	fpsDisplay->getText()->setFont(resourceLoader->getFont(ResourceLoader::FontId::FPS_DISPLAY));
+	fpsDisplay->getText()->setFont(*resourceLoader->getFont(ResourceLoader::FontId::FPS_DISPLAY));
 	rootSceneNode->attachChild(std::move((fpsDisplay)));
 }

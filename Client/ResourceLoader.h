@@ -9,7 +9,8 @@ class ResourceLoader {
 public:
 	enum class TextureId {
 		BACKGROUND,
-		WIZARD_PURPLE
+		WIZARD_PURPLE,
+		WIZARD_ORANGE
 	};
 
 	enum class FontId {
@@ -23,10 +24,10 @@ public:
 
 	void loadTexture(TextureId textureId, const std::string& filename);
 	void releaseTexture(TextureId textureId);
-	const sf::Texture& getTexture(TextureId textureId) const;
+	const sf::Texture* getTexture(TextureId textureId) const;
 
 	void loadFont(FontId fontId, const std::string& filename);
-	const sf::Font& getFont(FontId fontId) const;
+	const sf::Font* getFont(FontId fontId) const;
 
 private:
 	std::map<TextureId, std::unique_ptr<sf::Texture>> textureMap;
