@@ -13,6 +13,7 @@ public:
 
     enum class TextureId {
         BACKGROUND,
+        GROUND,
         WIZARD_PURPLE,
         WIZARD_ORANGE
     };

@@ -64,6 +64,12 @@ void MainMenuScene::buildScene() {
     std::unique_ptr<SpriteNode> background(new SpriteNode(backgroundSprite));
     background->setPosition(0.0f, 0.0f);
     rootSceneNode->attachChild(std::move(background));
+    
+    sf::Sprite groundSprite = sf::Sprite(*resourceLoader->getTexture(ResourceLoader::TextureId::GROUND));
+
+    std::unique_ptr<SpriteNode> ground(new SpriteNode(groundSprite));
+    ground->setPosition(0.0f, 983.0f);
+    rootSceneNode->attachChild(std::move(ground));
 
     sf::Text gameTitleText;
     gameTitleText.setFont(*resourceLoader->getFont(ResourceLoader::FontId::GAME_TITLE));

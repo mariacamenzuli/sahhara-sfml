@@ -15,8 +15,8 @@ GameClient::GameClient() {
     resolution.y = 540;
 
     // window.create(sf::VideoMode(resolution.x, resolution.y),
-    // 			  "Sahhara",
-    // 			  sf::Style::Fullscreen);
+    			  // "Sahhara",
+    			  // sf::Style::Fullscreen);
 
     window.create(sf::VideoMode(resolution.x, resolution.y),
                   "Sahhara");
@@ -25,6 +25,7 @@ GameClient::GameClient() {
 
     resourceLoader.loadImage(ResourceLoader::ImageId::WINDOW_ICON, "Resources/Images/wizard-hat.png");
     resourceLoader.loadTexture(ResourceLoader::TextureId::BACKGROUND, "Resources/Images/desert.png");
+    resourceLoader.loadTexture(ResourceLoader::TextureId::GROUND, "Resources/Images/ground.png");
     resourceLoader.loadFont(ResourceLoader::FontId::GAME_TITLE, "Resources/fonts/watermelon-script.ttf");
     resourceLoader.loadFont(ResourceLoader::FontId::FPS_DISPLAY, "Resources/fonts/arial.ttf");
     resourceLoader.loadFont(ResourceLoader::FontId::GAME_TEXT, "Resources/fonts/gabriola.ttf");

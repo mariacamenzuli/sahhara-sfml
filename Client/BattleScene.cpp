@@ -34,44 +34,44 @@ void BattleScene::handlePlayerInput(sf::Keyboard::Key key, bool isPressed) {
 void BattleScene::update(sf::Time deltaTime) {
     sf::Vector2f velocity(0.0f, 0.0f);
 
-    if (wizard1->getPosition().y >= 850.0f) {
+    if (player1Wizard->getPosition().y >= 865.0f) {
         // is touching ground
-        wizard1->timeInAir = 0.0f;
+        player1Wizard->timeInAir = 0.0f;
 
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space)) {
-            velocity.y = wizard1->jumpKickOffVelocity;
-            wizard1->timeInAir += deltaTime.asSeconds();
+            velocity.y = player1Wizard->jumpKickOffVelocity;
+            player1Wizard->timeInAir += deltaTime.asSeconds();
         }
     } else {
-        if (wizard1->timeInAir < wizard1->jumpKickOffTime) {
-            velocity.y = wizard1->jumpKickOffVelocity;
-        } else if (wizard1->timeInAir < wizard1->maxAirTime) {
-            velocity.y = wizard1->jumpVelocity;
+        if (player1Wizard->timeInAir < player1Wizard->jumpKickOffTime) {
+            velocity.y = player1Wizard->jumpKickOffVelocity;
+        } else if (player1Wizard->timeInAir < player1Wizard->maxAirTime) {
+            velocity.y = player1Wizard->jumpVelocity;
         } else {
             velocity.y = gravity;
         }
-        wizard1->timeInAir += deltaTime.asSeconds();
+        player1Wizard->timeInAir += deltaTime.asSeconds();
     }
 
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::A)) {
-        velocity.x -= wizard1->runVelocity;
+        velocity.x -= player1Wizard->runVelocity;
     }
 
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::D)) {
-        velocity.x += wizard1->runVelocity;
+        velocity.x += player1Wizard->runVelocity;
     }
 
     if (velocity.x == 0.0f) {
-        wizard1->idle();
+        player1Wizard->idle();
     } else if (velocity.x < 0.0f) {
-        wizard1->direction = Wizard::Direction::LEFT;
-        wizard1->run();
+        player1Wizard->direction = Wizard::Direction::LEFT;
+        player1Wizard->run();
     } else {
-        wizard1->direction = Wizard::Direction::RIGHT;
-        wizard1->run();
+        player1Wizard->direction = Wizard::Direction::RIGHT;
+        player1Wizard->run();
     }
 
-    auto updatedPosition = wizard1->getPosition() + velocity * deltaTime.asSeconds();
+    auto updatedPosition = player1Wizard->getPosition() + velocity * deltaTime.asSeconds();
 
     if (updatedPosition.x < 0.0f) {
         updatedPosition.x = 0.0f;
@@ -79,11 +79,11 @@ void BattleScene::update(sf::Time deltaTime) {
         updatedPosition.x = 1780.0f;
     }
 
-    if (updatedPosition.y > 850.0f) {
-        updatedPosition.y = 850.0f;
+    if (updatedPosition.y > 865.0f) {
+        updatedPosition.y = 865.0f;
     }
 
-    wizard1->setPosition(updatedPosition);
+    player1Wizard->setPosition(updatedPosition);
 }
 
 SceneNode* BattleScene::getRootSceneNode() {
@@ -100,17 +100,23 @@ void BattleScene::buildScene() {
     background->setPosition(0.0f, 0.0f);
     rootSceneNode->attachChild(std::move(background));
 
+    sf::Sprite groundSprite = sf::Sprite(*resourceLoader->getTexture(ResourceLoader::TextureId::GROUND));
+
+    std::unique_ptr<SpriteNode> ground(new SpriteNode(groundSprite));
+    ground->setPosition(0.0f, 983.0f);
+    rootSceneNode->attachChild(std::move(ground));
+
     std::unique_ptr<Wizard> wizard1(new Wizard(Wizard::Color::PURPLE, resourceLoader));
-    this->wizard1 = wizard1.get();
-    wizard1->setPosition(0.0f, 850.0f);
+    this->player1Wizard = wizard1.get();
+    wizard1->setPosition(0.0f, 865.0f);
     wizard1->setScale(0.85f, 0.85f);
     wizard1->direction = Wizard::Direction::RIGHT;
     wizard1->idle();
     rootSceneNode->attachChild(std::move(wizard1));
 
     std::unique_ptr<Wizard> wizard2(new Wizard(Wizard::Color::ORANGE, resourceLoader));
-    this->wizard2 = wizard2.get();
-    wizard2->setPosition(1780.0f, 850.0f);
+    this->player2Wizard = wizard2.get();
+    wizard2->setPosition(1780.0f, 865.0f);
     wizard2->setScale(0.85f, 0.85f);
     wizard2->direction = Wizard::Direction::LEFT;
     wizard2->idle();
