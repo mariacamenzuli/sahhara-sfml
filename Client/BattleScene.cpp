@@ -29,43 +29,43 @@ void BattleScene::handlePlayerInput(sf::Keyboard::Key key, bool isPressed) {
 void BattleScene::update(sf::Time deltaTime) {
 	sf::Vector2f velocity(0.0f, 0.0f);
 
-	if (wizard->getPosition().y >= 850.0f) { // is touching ground
-		wizard->timeInAir = 0.0f;
+	if (wizard1->getPosition().y >= 850.0f) { // is touching ground
+		wizard1->timeInAir = 0.0f;
 
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space)) {
-			velocity.y = wizard->jumpKickOffVelocity;
-			wizard->timeInAir += deltaTime.asSeconds();
+			velocity.y = wizard1->jumpKickOffVelocity;
+			wizard1->timeInAir += deltaTime.asSeconds();
 		}
 	} else {
-		if (wizard->timeInAir < wizard->jumpKickOffTime) {
-			velocity.y = wizard->jumpKickOffVelocity;
-		} else if (wizard->timeInAir < wizard->maxAirTime) {
-			velocity.y = wizard->jumpVelocity;
+		if (wizard1->timeInAir < wizard1->jumpKickOffTime) {
+			velocity.y = wizard1->jumpKickOffVelocity;
+		} else if (wizard1->timeInAir < wizard1->maxAirTime) {
+			velocity.y = wizard1->jumpVelocity;
 		} else {
 			velocity.y = gravity;
 		}
-		wizard->timeInAir += deltaTime.asSeconds();
+		wizard1->timeInAir += deltaTime.asSeconds();
 	}
 
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::A)) {
-		velocity.x -= wizard->runVelocity;
+		velocity.x -= wizard1->runVelocity;
 	}
 
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::D)) {
-		velocity.x += wizard->runVelocity;
+		velocity.x += wizard1->runVelocity;
 	}
 
 	if (velocity.x == 0.0f) {
-		wizard->idle();
+		wizard1->idle();
 	} else if (velocity.x < 0.0f) {
-		wizard->direction = Wizard::Direction::LEFT;
-		wizard->run();
+		wizard1->direction = Wizard::Direction::LEFT;
+		wizard1->run();
 	} else {
-		wizard->direction = Wizard::Direction::RIGHT;
-		wizard->run();
+		wizard1->direction = Wizard::Direction::RIGHT;
+		wizard1->run();
 	}
 
-	auto updatedPosition = wizard->getPosition() + velocity * deltaTime.asSeconds();
+	auto updatedPosition = wizard1->getPosition() + velocity * deltaTime.asSeconds();
 
 	if (updatedPosition.x < 0.0f) {
 		updatedPosition.x = 0.0f;
@@ -77,7 +77,7 @@ void BattleScene::update(sf::Time deltaTime) {
 		updatedPosition.y = 850.0f;
 	}
 
-	wizard->setPosition(updatedPosition);
+	wizard1->setPosition(updatedPosition);
 }
 
 SceneNode* BattleScene::getRootSceneNode() {
@@ -94,12 +94,21 @@ void BattleScene::buildScene() {
 	background->setPosition(0.0f, 0.0f);
 	rootSceneNode->attachChild(std::move(background));
 
-	std::unique_ptr<Wizard> wizard(new Wizard(Wizard::Color::ORANGE, resourceLoader));
-	this->wizard = wizard.get();
-	wizard->setPosition(0.0f, 850.0f);
-	wizard->setScale(0.85f, 0.85f);
-	wizard->idle();
-	rootSceneNode->attachChild(std::move(wizard));
+	std::unique_ptr<Wizard> wizard1(new Wizard(Wizard::Color::PURPLE, resourceLoader));
+	this->wizard1 = wizard1.get();
+	wizard1->setPosition(0.0f, 850.0f);
+	wizard1->setScale(0.85f, 0.85f);
+	wizard1->direction = Wizard::Direction::RIGHT;
+	wizard1->idle();
+	rootSceneNode->attachChild(std::move(wizard1));
+
+	std::unique_ptr<Wizard> wizard2(new Wizard(Wizard::Color::ORANGE, resourceLoader));
+	this->wizard2 = wizard2.get();
+	wizard2->setPosition(1780.0f, 850.0f);
+	wizard2->setScale(0.85f, 0.85f);
+	wizard2->direction = Wizard::Direction::LEFT;
+	wizard2->idle();
+	rootSceneNode->attachChild(std::move(wizard2));
 
 	std::unique_ptr<FpsDisplay> fpsDisplay(new FpsDisplay(gameMetricsTracker));
 	fpsDisplay->getText()->setFont(*resourceLoader->getFont(ResourceLoader::FontId::FPS_DISPLAY));

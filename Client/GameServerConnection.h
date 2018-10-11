@@ -15,6 +15,7 @@ public:
 
 	struct GameInitInfo {
 		ConnectionStatus connectionStatus;
+		bool isPlayer1;
 
 		explicit GameInitInfo(ConnectionStatus connectionStatus) : connectionStatus(connectionStatus) {
 		}
