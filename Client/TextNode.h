@@ -6,14 +6,14 @@
 
 class TextNode : public GameObjectNode {
 public:
-	explicit TextNode(sf::Text text);
-	~TextNode();
+    explicit TextNode(sf::Text text);
+    ~TextNode();
 
-	sf::Text* getText();
+    sf::Text* getText();
 
 protected:
-	sf::Text text;
+    sf::Text text;
 
 private:
-	void drawCurrent(sf::RenderTarget& target, sf::RenderStates states) const override;
+    void drawCurrent(sf::RenderTarget& target, sf::RenderStates states) const override;
 };

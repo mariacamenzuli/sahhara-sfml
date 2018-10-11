@@ -6,30 +6,32 @@
 
 class GameServerConnection {
 public:
-	GameServerConnection();
-	~GameServerConnection();
+    GameServerConnection();
+    ~GameServerConnection();
 
-	enum class ConnectionStatus {
-		NOT_READY, ERROR, OK
-	};
+    enum class ConnectionStatus {
+        NOT_READY,
+        ERROR,
+        OK
+    };
 
-	struct GameInitInfo {
-		ConnectionStatus connectionStatus;
-		bool isPlayer1;
+    struct GameInitInfo {
+        ConnectionStatus connectionStatus;
+        bool isPlayer1;
 
-		explicit GameInitInfo(ConnectionStatus connectionStatus) : connectionStatus(connectionStatus) {
-		}
-	};
+        explicit GameInitInfo(ConnectionStatus connectionStatus) : connectionStatus(connectionStatus) {
+        }
+    };
 
-	bool connectToGameLobby();
-	GameInitInfo findGame();
+    bool connectToGameLobby();
+    GameInitInfo findGame();
 
 private:
-	const char serverFoundGameMatchSignal = '~';
-	const char clientReadyForMatchSignal = '!';
+    const char serverFoundGameMatchSignal = '~';
+    const char clientReadyForMatchSignal = '!';
 
-	int failedLobbyConnectAttempts;
-	int failedFindGameAttempts;
+    int failedLobbyConnectAttempts;
+    int failedFindGameAttempts;
 
-	std::unique_ptr<sf::TcpSocket> lobbyTcpSocket;
+    std::unique_ptr<sf::TcpSocket> lobbyTcpSocket;
 };

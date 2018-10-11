@@ -4,18 +4,18 @@
 
 class GameMetricsTracker {
 public:
-	GameMetricsTracker();
-	~GameMetricsTracker();
+    GameMetricsTracker();
+    ~GameMetricsTracker();
 
-	unsigned int logicUpdatesPerSecond;
-	unsigned int framesPerSecond;
+    unsigned int logicUpdatesPerSecond;
+    unsigned int framesPerSecond;
 
-	void newLogicUpdate();
-	void newFrameRendered();
+    void newLogicUpdate();
+    void newFrameRendered();
 
 private:
-	unsigned int logicUpdateCounter;
-	unsigned int frameCounter;
-	sf::Clock lupsClock;
-	sf::Clock fpsClock;
+    unsigned int logicUpdateCounter;
+    unsigned int frameCounter;
+    sf::Clock lupsClock;
+    sf::Clock fpsClock;
 };

@@ -10,28 +10,29 @@
 
 class GameClient : GameSceneDirector {
 public:
-	GameClient();
-	~GameClient();
+    GameClient();
+    ~GameClient();
 
-	void run();
-	void initiateScene(const SceneId sceneId) override;
-	void concludeCurrentScene() override;
+    void run();
+    void initiateScene(const SceneId sceneId) override;
+    void concludeCurrentScene() override;
 private:
-	struct ActiveScene {
-		SceneId sceneId;
-		std::unique_ptr<GameScene> sceneController;
+    struct ActiveScene {
+        SceneId sceneId;
+        std::unique_ptr<GameScene> sceneController;
 
-		ActiveScene(const SceneId sceneId, GameScene* gameScene): sceneId(sceneId), sceneController(gameScene) { }
-	};
+        ActiveScene(const SceneId sceneId, GameScene* gameScene): sceneId(sceneId), sceneController(gameScene) {
+        }
+    };
 
-	const sf::Time timePerFrame = sf::seconds(1.f / 60.f);
-	sf::RenderWindow window;
-	ResourceLoader resourceLoader;
-	GameMetricsTracker gameMetricsTracker;
-	GameServerConnection gameServer;
-	std::unique_ptr<ActiveScene> activeScene;
+    const sf::Time timePerFrame = sf::seconds(1.f / 60.f);
+    sf::RenderWindow window;
+    ResourceLoader resourceLoader;
+    GameMetricsTracker gameMetricsTracker;
+    GameServerConnection gameServer;
+    std::unique_ptr<ActiveScene> activeScene;
 
-	void processWindowEvents();
-	void update(sf::Time deltaTime);
-	void render();
+    void processWindowEvents();
+    void update(sf::Time deltaTime);
+    void render();
 };

@@ -9,32 +9,32 @@
 
 class MainMenuScene : public GameScene {
 public:
-	explicit MainMenuScene(GameSceneDirector* sceneDirector,
-						   ResourceLoader* resourceLoader,
-						   GameMetricsTracker* gameMetricsTracker,
-						   GameServerConnection* gameServer);
-	~MainMenuScene();
+    explicit MainMenuScene(GameSceneDirector* sceneDirector,
+                           ResourceLoader* resourceLoader,
+                           GameMetricsTracker* gameMetricsTracker,
+                           GameServerConnection* gameServer);
+    ~MainMenuScene();
 
-	void handlePlayerInput(sf::Keyboard::Key key, bool isPressed) override;
-	void update(sf::Time deltaTime) override;
-	SceneNode* getRootSceneNode() override;
+    void handlePlayerInput(sf::Keyboard::Key key, bool isPressed) override;
+    void update(sf::Time deltaTime) override;
+    SceneNode* getRootSceneNode() override;
 private:
-	enum class State {
-		CONNECTING_TO_GAME_LOBBY,
-		WAITING_FOR_CHALLENGER
-	};
+    enum class State {
+        CONNECTING_TO_GAME_LOBBY,
+        WAITING_FOR_CHALLENGER
+    };
 
-	GameSceneDirector* sceneDirector;
-	ResourceLoader* resourceLoader;
-	GameMetricsTracker* gameMetricsTracker;
-	GameServerConnection* gameServer;
-	std::unique_ptr<SceneNode> rootSceneNode;
-	State state = State::CONNECTING_TO_GAME_LOBBY;
+    GameSceneDirector* sceneDirector;
+    ResourceLoader* resourceLoader;
+    GameMetricsTracker* gameMetricsTracker;
+    GameServerConnection* gameServer;
+    std::unique_ptr<SceneNode> rootSceneNode;
+    State state = State::CONNECTING_TO_GAME_LOBBY;
 
-	void buildScene();
+    void buildScene();
 
-	void initiateConnectionToServerLobby();
-	void inline clearConnectingToServerLobbyUi();
-	void waitForChallenger();
-	void inline clearWaitingForChallengerUi();
+    void initiateConnectionToServerLobby();
+    void inline clearConnectingToServerLobbyUi();
+    void waitForChallenger();
+    void inline clearWaitingForChallengerUi();
 };

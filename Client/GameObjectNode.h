@@ -6,9 +6,9 @@
 
 class GameObjectNode : public SceneNode, public sf::Transformable {
 public:
-	GameObjectNode();
-	~GameObjectNode();
+    GameObjectNode();
+    ~GameObjectNode();
 
-	void draw(sf::RenderTarget& target, sf::RenderStates states) const override final;
+    void draw(sf::RenderTarget& target, sf::RenderStates states) const override final;
 };
 

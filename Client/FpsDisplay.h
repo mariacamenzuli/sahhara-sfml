@@ -7,12 +7,12 @@
 
 class FpsDisplay : public TextNode {
 public:
-	FpsDisplay(GameMetricsTracker* gameMetricsTracker);
-	~FpsDisplay();
+    FpsDisplay(GameMetricsTracker* gameMetricsTracker);
+    ~FpsDisplay();
 
 private:
-	GameMetricsTracker* gameMetricsTracker;
+    GameMetricsTracker* gameMetricsTracker;
 
-	void updateCurrent(sf::Time deltaTime) override;
-	void inline updateDisplay();
+    void updateCurrent(sf::Time deltaTime) override;
+    void inline updateDisplay();
 };

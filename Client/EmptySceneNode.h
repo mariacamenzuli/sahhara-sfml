@@ -3,10 +3,10 @@
 
 class EmptySceneNode : public SceneNode {
 public:
-	EmptySceneNode();
-	~EmptySceneNode();
+    EmptySceneNode();
+    ~EmptySceneNode();
 
 private:
-	void drawCurrent(sf::RenderTarget& target, sf::RenderStates states) const override;
+    void drawCurrent(sf::RenderTarget& target, sf::RenderStates states) const override;
 };
 

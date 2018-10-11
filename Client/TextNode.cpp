@@ -3,14 +3,15 @@
 #include <SFML/Graphics/RenderTarget.hpp>
 #include <utility>
 
-TextNode::TextNode(sf::Text text) : text(std::move(text)) { }
+TextNode::TextNode(sf::Text text) : text(std::move(text)) {
+}
 
 TextNode::~TextNode() = default;
 
 sf::Text* TextNode::getText() {
-	return &text;
+    return &text;
 }
 
 void TextNode::drawCurrent(sf::RenderTarget& target, sf::RenderStates states) const {
-	target.draw(text, states);
+    target.draw(text, states);
 }

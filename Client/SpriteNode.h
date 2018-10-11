@@ -6,13 +6,13 @@
 
 class SpriteNode : public GameObjectNode {
 public:
-	explicit SpriteNode(sf::Sprite sprite);
-	~SpriteNode();
+    explicit SpriteNode(sf::Sprite sprite);
+    ~SpriteNode();
 
-	sf::Sprite* getSprite();
+    sf::Sprite* getSprite();
 
 private:
-	sf::Sprite sprite;
+    sf::Sprite sprite;
 
-	void drawCurrent(sf::RenderTarget& target, sf::RenderStates states) const override;
+    void drawCurrent(sf::RenderTarget& target, sf::RenderStates states) const override;
 };
