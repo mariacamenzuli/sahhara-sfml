@@ -7,16 +7,16 @@
 
 class GameLobby {
 public:
-	GameLobby();
-	~GameLobby();
+    GameLobby();
+    ~GameLobby();
 
-	void run();
+    void run();
 
 private:
-	sf::TcpListener lobbyListenerSocket;
-	const int maxOngoingGames = 1;
-	int ongoingGames = 0;
-	std::queue<std::unique_ptr<sf::TcpSocket>> clientsAwaitingGame;
+    sf::TcpListener lobbyListenerSocket;
+    const int maxOngoingGames = 1;
+    int ongoingGames = 0;
+    std::queue<std::unique_ptr<sf::TcpSocket>> clientsAwaitingGame;
 
-	bool isReadyForGame(sf::TcpSocket* playerConnection);
+    bool isReadyForGame(sf::TcpSocket* playerConnection);
 };

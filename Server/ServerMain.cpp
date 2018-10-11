@@ -2,7 +2,8 @@
 
 #include <iostream>
 
-const char * BANNER = R"(
+const char* BANNER =
+    R"(
   __ _  __ _ _ __ ___   ___   
  / _` |/ _` | '_ ` _ \ / _ \  
 | (_| | (_| | | | | | |  __/  
@@ -16,17 +17,17 @@ const char * BANNER = R"(
 )";
 
 int main() {
-	std::cout << BANNER << std::endl;
+    std::cout << BANNER << std::endl;
 
-	GameLobby gameLobby;
+    GameLobby gameLobby;
 
-	try {
-		gameLobby.run();
-	} catch (const std::exception& e) {
-		std::cerr << "An error has occurred! Shutting down." << std::endl;
-		std::cerr << e.what() << std::endl;
-		return 1;
-	}
+    try {
+        gameLobby.run();
+    } catch (const std::exception& e) {
+        std::cerr << "An error has occurred! Shutting down." << std::endl;
+        std::cerr << e.what() << std::endl;
+        return 1;
+    }
 
-	return 0;
+    return 0;
 }
