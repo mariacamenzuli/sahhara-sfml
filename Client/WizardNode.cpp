@@ -1,44 +1,44 @@
-#include "Wizard.h"
+#include "WizardNode.h"
 
-Wizard::Wizard(Color color, ResourceLoader* resourceLoader) : color(color) {
+WizardNode::WizardNode(Color color, ResourceLoader* resourceLoader) : color(color) {
     buildSprite(resourceLoader);
     direction = Direction::RIGHT;
 }
 
-Wizard::~Wizard() = default;
+WizardNode::~WizardNode() = default;
 
-void Wizard::run() {
+void WizardNode::run() {
     if (direction == Direction::RIGHT) {
-        setAnimation(animationRunRightId);
+        setAnimation(WizardAnimation::RUN_RIGHT);
     } else {
-        setAnimation(animationRunLeftId);
+        setAnimation(WizardAnimation::RUN_LEFT);
     }
 }
 
-void Wizard::idle() {
+void WizardNode::idle() {
     if (direction == Direction::RIGHT) {
-        setAnimation(animationIdleRightId);
+        setAnimation(WizardAnimation::IDLE_RIGHT);
     } else {
-        setAnimation(animationIdleLeftId);
+        setAnimation(WizardAnimation::IDLE_LEFT);
     }
 }
 
-void Wizard::buildSprite(ResourceLoader* resourceLoader) {
-    addAnimation(animationRunRightId, buildRunRightAnimation(resourceLoader), (sf::seconds(0.133f)));
-    addAnimation(animationRunLeftId, buildRunLeftAnimation(resourceLoader), (sf::seconds(0.133f)));
-    addAnimation(animationJumpRightId, buildJumpRightAnimation(resourceLoader), (sf::seconds(0.75f)));
-    addAnimation(animationJumpLeftId, buildJumpLeftAnimation(resourceLoader), (sf::seconds(0.75f)));
-    addAnimation(animationAttackRightId, buildAttackRightAnimation(resourceLoader), (sf::seconds(0.033f)));
-    addAnimation(animationAttackLeftId, buildAttackLeftAnimation(resourceLoader), (sf::seconds(0.033f)));
-    addAnimation(animationIdleRightId, buildIdleRightAnimation(resourceLoader), (sf::seconds(0.75f)));
-    addAnimation(animationIdleLeftId, buildIdleLeftAnimation(resourceLoader), (sf::seconds(0.75f)));
-    addAnimation(animationHurtRightId, buildHurtRightAnimation(resourceLoader), (sf::seconds(0.75f)));
-    addAnimation(animationHurtLeftId, buildHurtLeftAnimation(resourceLoader), (sf::seconds(0.75f)));
-    addAnimation(animationDeadRightId, buildDeadRightAnimation(resourceLoader), (sf::seconds(0.75f)));
-    addAnimation(animationDeadLeftId, buildDeadLeftAnimation(resourceLoader), (sf::seconds(0.75f)));
+void WizardNode::buildSprite(ResourceLoader* resourceLoader) {
+    addAnimation(WizardAnimation::RUN_RIGHT, buildRunRightAnimation(resourceLoader), (sf::seconds(0.133f)));
+    addAnimation(WizardAnimation::RUN_LEFT, buildRunLeftAnimation(resourceLoader), (sf::seconds(0.133f)));
+    addAnimation(WizardAnimation::JUMP_RIGHT, buildJumpRightAnimation(resourceLoader), (sf::seconds(0.75f)));
+    addAnimation(WizardAnimation::JUMP_LEFT, buildJumpLeftAnimation(resourceLoader), (sf::seconds(0.75f)));
+    addAnimation(WizardAnimation::ATTACK_RIGHT, buildAttackRightAnimation(resourceLoader), (sf::seconds(0.033f)));
+    addAnimation(WizardAnimation::ATTACK_LEFT, buildAttackLeftAnimation(resourceLoader), (sf::seconds(0.033f)));
+    addAnimation(WizardAnimation::IDLE_RIGHT, buildIdleRightAnimation(resourceLoader), (sf::seconds(0.75f)));
+    addAnimation(WizardAnimation::IDLE_LEFT, buildIdleLeftAnimation(resourceLoader), (sf::seconds(0.75f)));
+    addAnimation(WizardAnimation::HURT_RIGHT, buildHurtRightAnimation(resourceLoader), (sf::seconds(0.75f)));
+    addAnimation(WizardAnimation::HURT_LEFT, buildHurtLeftAnimation(resourceLoader), (sf::seconds(0.75f)));
+    addAnimation(WizardAnimation::DEAD_RIGHT, buildDeadRightAnimation(resourceLoader), (sf::seconds(0.75f)));
+    addAnimation(WizardAnimation::DEAD_LEFT, buildDeadLeftAnimation(resourceLoader), (sf::seconds(0.75f)));
 }
 
-Animation Wizard::buildRunRightAnimation(ResourceLoader* resourceLoader) {
+Animation WizardNode::buildRunRightAnimation(ResourceLoader* resourceLoader) {
     if (color == Color::PURPLE) {
         Animation runRightAnimation(*resourceLoader->getTexture(ResourceLoader::TextureId::WIZARD_PURPLE));
         runRightAnimation.addFrame(sf::IntRect(0, 663, 166, 156));
@@ -56,7 +56,7 @@ Animation Wizard::buildRunRightAnimation(ResourceLoader* resourceLoader) {
     }
 }
 
-Animation Wizard::buildRunLeftAnimation(ResourceLoader* resourceLoader) {
+Animation WizardNode::buildRunLeftAnimation(ResourceLoader* resourceLoader) {
     if (color == Color::PURPLE) {
         Animation runLeftAnimation(*resourceLoader->getTexture(ResourceLoader::TextureId::WIZARD_PURPLE));
         runLeftAnimation.addFrame(sf::IntRect(1444, 663, 166, 156));
@@ -74,7 +74,7 @@ Animation Wizard::buildRunLeftAnimation(ResourceLoader* resourceLoader) {
     }
 }
 
-Animation Wizard::buildDeadRightAnimation(ResourceLoader* resourceLoader) {
+Animation WizardNode::buildDeadRightAnimation(ResourceLoader* resourceLoader) {
     if (color == Color::PURPLE) {
         Animation deadRightAnimation(*resourceLoader->getTexture(ResourceLoader::TextureId::WIZARD_PURPLE));
         deadRightAnimation.addFrame(sf::IntRect(0, 174, 174, 165), sf::Vector2f(0.0f, -15.0f));
@@ -92,7 +92,7 @@ Animation Wizard::buildDeadRightAnimation(ResourceLoader* resourceLoader) {
     }
 }
 
-Animation Wizard::buildDeadLeftAnimation(ResourceLoader* resourceLoader) {
+Animation WizardNode::buildDeadLeftAnimation(ResourceLoader* resourceLoader) {
     if (color == Color::PURPLE) {
         Animation deadLeftAnimation(*resourceLoader->getTexture(ResourceLoader::TextureId::WIZARD_PURPLE));
         deadLeftAnimation.addFrame(sf::IntRect(1436, 174, 174, 165));
@@ -110,7 +110,7 @@ Animation Wizard::buildDeadLeftAnimation(ResourceLoader* resourceLoader) {
     }
 }
 
-Animation Wizard::buildHurtRightAnimation(ResourceLoader* resourceLoader) {
+Animation WizardNode::buildHurtRightAnimation(ResourceLoader* resourceLoader) {
     if (color == Color::PURPLE) {
         Animation hurtRightAnimation(*resourceLoader->getTexture(ResourceLoader::TextureId::WIZARD_PURPLE));
         hurtRightAnimation.addFrame(sf::IntRect(0, 339, 174, 165), sf::Vector2f(0.0f, -10.0f));
@@ -126,7 +126,7 @@ Animation Wizard::buildHurtRightAnimation(ResourceLoader* resourceLoader) {
     }
 }
 
-Animation Wizard::buildHurtLeftAnimation(ResourceLoader* resourceLoader) {
+Animation WizardNode::buildHurtLeftAnimation(ResourceLoader* resourceLoader) {
     if (color == Color::PURPLE) {
         Animation hurtLeftAnimation(*resourceLoader->getTexture(ResourceLoader::TextureId::WIZARD_PURPLE));
         hurtLeftAnimation.addFrame(sf::IntRect(1436, 339, 174, 165), sf::Vector2f(0.0f, -10.0f));
@@ -142,7 +142,7 @@ Animation Wizard::buildHurtLeftAnimation(ResourceLoader* resourceLoader) {
     }
 }
 
-Animation Wizard::buildIdleRightAnimation(ResourceLoader* resourceLoader) {
+Animation WizardNode::buildIdleRightAnimation(ResourceLoader* resourceLoader) {
     if (color == Color::PURPLE) {
         Animation idleRightAnimation(*resourceLoader->getTexture(ResourceLoader::TextureId::WIZARD_PURPLE));
         idleRightAnimation.addFrame(sf::IntRect(522, 339, 143, 150));
@@ -160,7 +160,7 @@ Animation Wizard::buildIdleRightAnimation(ResourceLoader* resourceLoader) {
     }
 }
 
-Animation Wizard::buildIdleLeftAnimation(ResourceLoader* resourceLoader) {
+Animation WizardNode::buildIdleLeftAnimation(ResourceLoader* resourceLoader) {
     if (color == Color::PURPLE) {
         Animation idleLeftAnimation(*resourceLoader->getTexture(ResourceLoader::TextureId::WIZARD_PURPLE));
         idleLeftAnimation.addFrame(sf::IntRect(945, 339, 143, 148));
@@ -178,7 +178,7 @@ Animation Wizard::buildIdleLeftAnimation(ResourceLoader* resourceLoader) {
     }
 }
 
-Animation Wizard::buildJumpRightAnimation(ResourceLoader* resourceLoader) {
+Animation WizardNode::buildJumpRightAnimation(ResourceLoader* resourceLoader) {
     if (color == Color::PURPLE) {
         Animation jumpRightAnimation(*resourceLoader->getTexture(ResourceLoader::TextureId::WIZARD_PURPLE));
         jumpRightAnimation.addFrame(sf::IntRect(286, 504, 172, 145));
@@ -194,7 +194,7 @@ Animation Wizard::buildJumpRightAnimation(ResourceLoader* resourceLoader) {
     }
 }
 
-Animation Wizard::buildJumpLeftAnimation(ResourceLoader* resourceLoader) {
+Animation WizardNode::buildJumpLeftAnimation(ResourceLoader* resourceLoader) {
     if (color == Color::PURPLE) {
         Animation jumpLeftAnimation(*resourceLoader->getTexture(ResourceLoader::TextureId::WIZARD_PURPLE));
         jumpLeftAnimation.addFrame(sf::IntRect(1152, 504, 172, 145), sf::Vector2f(-10.0f, 0.0f));
@@ -210,7 +210,7 @@ Animation Wizard::buildJumpLeftAnimation(ResourceLoader* resourceLoader) {
     }
 }
 
-Animation Wizard::buildAttackRightAnimation(ResourceLoader* resourceLoader) {
+Animation WizardNode::buildAttackRightAnimation(ResourceLoader* resourceLoader) {
     if (color == Color::PURPLE) {
         Animation attackRightAnimation(*resourceLoader->getTexture(ResourceLoader::TextureId::WIZARD_PURPLE));
         attackRightAnimation.addFrame(sf::IntRect(0, 0, 168, 143));
@@ -226,7 +226,7 @@ Animation Wizard::buildAttackRightAnimation(ResourceLoader* resourceLoader) {
     }
 }
 
-Animation Wizard::buildAttackLeftAnimation(ResourceLoader* resourceLoader) {
+Animation WizardNode::buildAttackLeftAnimation(ResourceLoader* resourceLoader) {
     if (color == Color::PURPLE) {
         Animation attackLeftAnimation(*resourceLoader->getTexture(ResourceLoader::TextureId::WIZARD_PURPLE));
         attackLeftAnimation.addFrame(sf::IntRect(1442, 0, 168, 143));

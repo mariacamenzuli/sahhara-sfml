@@ -133,13 +133,15 @@
     <ClCompile Include="GameObjectNode.cpp" />
     <ClCompile Include="GameMetricsTracker.cpp" />
     <ClCompile Include="GameServerConnection.cpp" />
+    <ClCompile Include="LocallyControlledWizardController.cpp" />
     <ClCompile Include="SpriteNode.cpp" />
+    <ClCompile Include="StationaryWizardController.cpp" />
     <ClCompile Include="TextNode.cpp" />
     <ClCompile Include="ClientMain.cpp" />
     <ClCompile Include="MainMenuScene.cpp" />
     <ClCompile Include="ResourceLoader.cpp" />
     <ClCompile Include="SceneNode.cpp" />
-    <ClCompile Include="Wizard.cpp" />
+    <ClCompile Include="WizardNode.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AnimatedSpriteNode.h" />
@@ -153,13 +155,16 @@
     <ClInclude Include="GameSceneDirector.h" />
     <ClInclude Include="GameMetricsTracker.h" />
     <ClInclude Include="GameServerConnection.h" />
+    <ClInclude Include="LocallyControlledWizardController.h" />
     <ClInclude Include="SpriteNode.h" />
+    <ClInclude Include="StationaryWizardController.h" />
     <ClInclude Include="TextNode.h" />
     <ClInclude Include="MainMenuScene.h" />
     <ClInclude Include="GameScene.h" />
     <ClInclude Include="ResourceLoader.h" />
     <ClInclude Include="SceneNode.h" />
-    <ClInclude Include="Wizard.h" />
+    <ClInclude Include="WizardController.h" />
+    <ClInclude Include="WizardNode.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="client.rc" />

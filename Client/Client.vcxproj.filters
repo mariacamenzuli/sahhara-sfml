@@ -60,9 +60,6 @@
     <ClCompile Include="GameObjectNode.cpp">
       <Filter>Source Files\Scene Nodes</Filter>
     </ClCompile>
-    <ClCompile Include="Wizard.cpp">
-      <Filter>Source Files\Scene Nodes</Filter>
-    </ClCompile>
     <ClCompile Include="FpsDisplay.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -76,6 +73,15 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="GameServerConnection.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="WizardNode.cpp">
+      <Filter>Source Files\Scene Nodes</Filter>
+    </ClCompile>
+    <ClCompile Include="StationaryWizardController.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="LocallyControlledWizardController.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -119,9 +125,6 @@
     <ClInclude Include="GameObjectNode.h">
       <Filter>Header Files\Scene Nodes</Filter>
     </ClInclude>
-    <ClInclude Include="Wizard.h">
-      <Filter>Header Files\Scene Nodes</Filter>
-    </ClInclude>
     <ClInclude Include="FpsDisplay.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -132,6 +135,18 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="GameServerConnection.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="WizardNode.h">
+      <Filter>Header Files\Scene Nodes</Filter>
+    </ClInclude>
+    <ClInclude Include="WizardController.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="StationaryWizardController.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="LocallyControlledWizardController.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

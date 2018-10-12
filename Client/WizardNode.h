@@ -3,7 +3,22 @@
 #include "AnimatedSpriteNode.h"
 #include "ResourceLoader.h"
 
-class Wizard : public AnimatedSpriteNode {
+namespace  WizardAnimation {
+    const int RUN_RIGHT = 1;
+    const int RUN_LEFT = 2;
+    const int DEAD_RIGHT = 3;
+    const int DEAD_LEFT = 4;
+    const int HURT_RIGHT = 5;
+    const int HURT_LEFT = 6;
+    const int IDLE_RIGHT = 7;
+    const int IDLE_LEFT = 8;
+    const int JUMP_RIGHT = 9;
+    const int JUMP_LEFT = 10;
+    const int ATTACK_RIGHT = 11;
+    const int ATTACK_LEFT = 12;
+}
+
+class WizardNode : public AnimatedSpriteNode {
 public:
     enum class Direction {
         RIGHT,
@@ -15,8 +30,8 @@ public:
         ORANGE
     };
 
-    Wizard(Color color, ResourceLoader* resourceLoader);
-    ~Wizard();
+    WizardNode(Color color, ResourceLoader* resourceLoader);
+    ~WizardNode();
 
     const float runVelocity = 500;
     const float jumpKickOffVelocity = -650.0f;
@@ -27,23 +42,11 @@ public:
     void run();
     void idle();
 
+
     Direction direction;
     float timeInAir = 0.0f;
 
 private:
-    const int animationRunRightId = 1;
-    const int animationRunLeftId = 2;
-    const int animationDeadRightId = 3;
-    const int animationDeadLeftId = 4;
-    const int animationHurtRightId = 5;
-    const int animationHurtLeftId = 6;
-    const int animationIdleRightId = 7;
-    const int animationIdleLeftId = 8;
-    const int animationJumpRightId = 9;
-    const int animationJumpLeftId = 10;
-    const int animationAttackRightId = 11;
-    const int animationAttackLeftId = 12;
-
     Color color;
 
     void buildSprite(ResourceLoader* resourceLoader);
