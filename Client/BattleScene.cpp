@@ -26,7 +26,7 @@ BattleScene::~BattleScene() {
 
 void BattleScene::handlePlayerInput(sf::Keyboard::Key key, bool isPressed) {
     if (key == sf::Keyboard::Escape && isPressed) {
-        sceneDirector->initiateScene(GameSceneDirector::SceneId::MAIN_MENU);
+        sceneDirector->transitionToScene(GameSceneDirector::SceneId::MAIN_MENU);
         return;
     }
 }

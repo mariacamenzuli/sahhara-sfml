@@ -32,7 +32,7 @@ GameClient::GameClient() {
 
     window.setIcon(50, 50, resourceLoader.getImage(ResourceLoader::ImageId::WINDOW_ICON)->getPixelsPtr());
 
-    GameClient::initiateScene(SceneId::MAIN_MENU);
+    GameClient::transitionToScene(SceneId::MAIN_MENU);
 }
 
 GameClient::~GameClient() = default;
@@ -53,7 +53,7 @@ void GameClient::run() {
     }
 }
 
-void GameClient::initiateScene(const SceneId sceneId) {
+void GameClient::transitionToScene(const SceneId sceneId) {
     switch (sceneId) {
     case SceneId::MAIN_MENU:
         std::cout << "Initiating Main Menu" << std::endl;

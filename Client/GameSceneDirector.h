@@ -9,6 +9,6 @@ public:
 
     virtual ~GameSceneDirector() = default;
 
-    virtual void initiateScene(const SceneId sceneId) = 0;
+    virtual void transitionToScene(const SceneId sceneId) = 0;
     virtual void concludeCurrentScene() = 0;
 };

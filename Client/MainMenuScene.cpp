@@ -67,7 +67,7 @@ void MainMenuScene::update(sf::Time deltaTime) {
         operationStatus = gameServer->verifyGameLaunch(&gameOn);
         if (operationStatus == GameServerConnection::NonBlockingNetworkOperationStatus::COMPLETE) {
             if (gameOn) {
-                sceneDirector->initiateScene(GameSceneDirector::SceneId::BATTLE);
+                sceneDirector->transitionToScene(GameSceneDirector::SceneId::BATTLE);
             } else {
                 state = State::WAITING_FOR_GAME_MATCH;
             }

@@ -14,7 +14,7 @@ public:
     ~GameClient();
 
     void run();
-    void initiateScene(const SceneId sceneId) override;
+    void transitionToScene(const SceneId sceneId) override;
     void concludeCurrentScene() override;
 private:
     struct ActiveScene {
