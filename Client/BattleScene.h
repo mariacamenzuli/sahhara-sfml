@@ -20,8 +20,8 @@ private:
     ResourceLoader* resourceLoader;
     GameMetricsTracker* gameMetricsTracker;
     std::unique_ptr<SceneNode> rootSceneNode;
-    Wizard* wizard1;
-    Wizard* wizard2;
+    Wizard* player1Wizard;
+    Wizard* player2Wizard;
 
     const float gravity = 600.0f;
 

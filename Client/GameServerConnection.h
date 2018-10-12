@@ -9,22 +9,21 @@ public:
     GameServerConnection();
     ~GameServerConnection();
 
-    enum class ConnectionStatus {
+    enum class NonBlockingNetworkOperationStatus {
         NOT_READY,
         ERROR,
-        OK
+        COMPLETE
     };
 
     struct GameInitInfo {
-        ConnectionStatus connectionStatus;
+        // NonBlockingNetworkOperationStatus connectionStatus;
         bool isPlayer1;
-
-        explicit GameInitInfo(ConnectionStatus connectionStatus) : connectionStatus(connectionStatus) {
-        }
     };
 
     bool connectToGameLobby();
-    GameInitInfo findGame();
+    NonBlockingNetworkOperationStatus findGame();
+    NonBlockingNetworkOperationStatus acceptGame();
+    std::pair<NonBlockingNetworkOperationStatus, bool> verifyGameLaunch();
 
 private:
     const char serverFoundGameMatchSignal = '~';
@@ -33,5 +32,5 @@ private:
     int failedLobbyConnectAttempts;
     int failedFindGameAttempts;
 
-    std::unique_ptr<sf::TcpSocket> lobbyTcpSocket;
+    std::unique_ptr<sf::TcpSocket> serverTcpSocket;
 };

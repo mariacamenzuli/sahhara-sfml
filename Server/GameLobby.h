@@ -19,4 +19,6 @@ private:
     std::queue<std::unique_ptr<sf::TcpSocket>> clientsAwaitingGame;
 
     bool isReadyForGame(sf::TcpSocket* playerConnection);
+    void signalGameOn(sf::TcpSocket* playerConnection);
+    void signalGameOff(sf::TcpSocket* playerConnection);
 };

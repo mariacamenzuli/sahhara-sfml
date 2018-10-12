@@ -32,6 +32,7 @@ void MainMenuScene::handlePlayerInput(sf::Keyboard::Key key, bool isPressed) {
 }
 
 void MainMenuScene::update(sf::Time deltaTime) {
+    GameServerConnection::NonBlockingNetworkOperationStatus operationStatus;
     switch (state) {
     case State::CONNECTING_TO_GAME_LOBBY:
         if (gameServer->connectToGameLobby()) {
@@ -39,15 +40,36 @@ void MainMenuScene::update(sf::Time deltaTime) {
             waitForChallenger();
         }
         break;
-    case State::WAITING_FOR_CHALLENGER:
-        auto gameInfo = gameServer->findGame();
-        if (gameInfo.connectionStatus == GameServerConnection::ConnectionStatus::OK) {
-            sceneDirector->initiateScene(GameSceneDirector::SceneId::BATTLE);
-        } else if (gameInfo.connectionStatus == GameServerConnection::ConnectionStatus::ERROR) {
+    case State::WAITING_FOR_GAME_MATCH:
+        operationStatus = gameServer->findGame();
+        if (operationStatus == GameServerConnection::NonBlockingNetworkOperationStatus::COMPLETE) {
+            state = State::ACCEPTING_GAME_MATCH;
+        } else if (operationStatus == GameServerConnection::NonBlockingNetworkOperationStatus::ERROR) {
             clearWaitingForChallengerUi();
             initiateConnectionToServerLobby();
         }
         break;
+    case State::ACCEPTING_GAME_MATCH:
+        operationStatus = gameServer->acceptGame();
+        if (operationStatus == GameServerConnection::NonBlockingNetworkOperationStatus::COMPLETE) {
+            state = State::WAITING_FOR_GAME_GO_AHEAD;
+        } else if (operationStatus == GameServerConnection::NonBlockingNetworkOperationStatus::ERROR) {
+            clearWaitingForChallengerUi();
+            initiateConnectionToServerLobby();
+        }
+        break;
+    case State::WAITING_FOR_GAME_GO_AHEAD:
+        auto gameLaunchStatus = gameServer->verifyGameLaunch();
+        if (gameLaunchStatus.first == GameServerConnection::NonBlockingNetworkOperationStatus::COMPLETE) {
+            if (gameLaunchStatus.second) {
+                sceneDirector->initiateScene(GameSceneDirector::SceneId::BATTLE);
+            } else {
+                state = State::WAITING_FOR_GAME_MATCH;
+            }
+        } else if (gameLaunchStatus.first == GameServerConnection::NonBlockingNetworkOperationStatus::ERROR) {
+            clearWaitingForChallengerUi();
+            initiateConnectionToServerLobby();
+        }
     }
 }
 
@@ -106,7 +128,7 @@ void MainMenuScene::clearConnectingToServerLobbyUi() {
 }
 
 void MainMenuScene::waitForChallenger() {
-    state = State::WAITING_FOR_CHALLENGER;
+    state = State::WAITING_FOR_GAME_MATCH;
 
     sf::Text connectingText;
     connectingText.setFont(*resourceLoader->getFont(ResourceLoader::FontId::GAME_TEXT));

@@ -1,15 +1,18 @@
 #pragma once
 
 #include <SFML/Network/IpAddress.hpp>
+#include <SFML/Network/TcpSocket.hpp>
 
 class Game {
 public:
-    Game(sf::IpAddress player1Ip, short player1Port, sf::IpAddress player2Ip, short player2Port);
+    Game(std::unique_ptr<sf::TcpSocket> player1TcpConnection, std::unique_ptr<sf::TcpSocket> player2TcpConnection);
     ~Game();
 
+    void run();
+
 private:
-    sf::IpAddress player1Ip;
-    short player1Port;
-    sf::IpAddress player2Ip;
-    short player2Port;
+    std::unique_ptr<sf::TcpSocket> player1TcpConnection;
+    std::unique_ptr<sf::TcpSocket> player2TcpConnection;
+
+    void initialize();
 };
