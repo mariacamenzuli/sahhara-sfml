@@ -35,7 +35,7 @@ private:
 
     void buildScene();
 
-    void initiateConnectionToServerLobby();
+    void showConnectingToServerLobbyUi();
     void inline clearConnectingToServerLobbyUi();
     void waitForChallenger();
     void inline clearWaitingForChallengerUi();

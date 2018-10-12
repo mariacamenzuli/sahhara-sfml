@@ -14,7 +14,7 @@ public:
 
 private:
     sf::TcpListener lobbyListenerSocket;
-    const int maxOngoingGames = 1;
+    const int maxOngoingGames = 2;
     int ongoingGames = 0;
     std::queue<std::unique_ptr<sf::TcpSocket>> clientsAwaitingGame;
 

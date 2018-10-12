@@ -5,7 +5,7 @@
 #include <SFML/Network/IpAddress.hpp>
 
 GameServerConnection::GameServerConnection() : failedLobbyConnectAttempts(0),
-                                               failedFindGameAttempts(0),
+                                               networkOperationAttempts(0),
                                                serverTcpSocket(new sf::TcpSocket()) {
 }
 
@@ -30,7 +30,7 @@ bool GameServerConnection::connectToGameLobby() {
 }
 
 GameServerConnection::NonBlockingNetworkOperationStatus GameServerConnection::findGame() {
-    if (failedFindGameAttempts % 120 == 0) {
+    if (networkOperationAttempts % 120 == 0) {
         std::cout << "Waiting for a game match..." << std::endl;
     }
 
@@ -39,45 +39,48 @@ GameServerConnection::NonBlockingNetworkOperationStatus GameServerConnection::fi
     const auto serverDataReceiveStatus = serverTcpSocket->receive(dataReceived, 1, receiveCount);
 
     if (serverDataReceiveStatus == sf::Socket::Error) {
-        failedFindGameAttempts++;
+        networkOperationAttempts++;
         std::cout << "An unexpected error has occurred. Resetting connection to the server." << std::endl;
         serverTcpSocket->disconnect();
         return NonBlockingNetworkOperationStatus::ERROR;
     } else if (serverDataReceiveStatus == sf::Socket::Disconnected) {
-        failedFindGameAttempts++;
+        networkOperationAttempts++;
         std::cout << "An unexpected error has occurred. Lost connection to the server." << std::endl;
         serverTcpSocket->disconnect();
         return NonBlockingNetworkOperationStatus::ERROR;
     } else if (serverDataReceiveStatus != sf::Socket::Done) {
-        failedFindGameAttempts++;
+        networkOperationAttempts++;
         return NonBlockingNetworkOperationStatus::NOT_READY;
     }
 
     if (dataReceived[0] != serverFoundGameMatchSignal) {
-        failedFindGameAttempts++;
+        networkOperationAttempts++;
         std::cout << "Received an unexpected signal from the server. Resetting connection to the server." << std::endl;
         serverTcpSocket->disconnect();
         return NonBlockingNetworkOperationStatus::ERROR;
     }
 
     std::cout << "Game match found." << std::endl;
+    networkOperationAttempts = 0;
 
     return NonBlockingNetworkOperationStatus::COMPLETE;
 }
 
 GameServerConnection::NonBlockingNetworkOperationStatus GameServerConnection::acceptGame() {
-    std::cout << "Accepting match up..." << std::endl;
+    if (networkOperationAttempts % 120 == 0) {
+        std::cout << "Signaling acceptance of game match..." << std::endl;
+    }
 
     std::size_t sendCount = 0;
     const auto clientDataSentStatus = serverTcpSocket->send(&clientReadyForMatchSignal, 1, sendCount);
 
     if (clientDataSentStatus == sf::Socket::Error) {
-        failedFindGameAttempts++;
+        networkOperationAttempts++;
         std::cout << "An unexpected error has occurred. Resetting connection to the server." << std::endl;
         serverTcpSocket->disconnect();
         return NonBlockingNetworkOperationStatus::ERROR;
     } else if (clientDataSentStatus == sf::Socket::Disconnected) {
-        failedFindGameAttempts++;
+        networkOperationAttempts++;
         std::cout << "An unexpected error has occurred. Lost connection to the server." << std::endl;
         serverTcpSocket->disconnect();
         return NonBlockingNetworkOperationStatus::ERROR;
@@ -85,37 +88,46 @@ GameServerConnection::NonBlockingNetworkOperationStatus GameServerConnection::ac
         return NonBlockingNetworkOperationStatus::NOT_READY;
     }
 
+    std::cout << "Acceptance signaled." << std::endl;
+    networkOperationAttempts = 0;
+
     return NonBlockingNetworkOperationStatus::COMPLETE;
 }
 
-std::pair<GameServerConnection::NonBlockingNetworkOperationStatus, bool> GameServerConnection::verifyGameLaunch() {
-    std::cout << "Verifying game launch..." << std::endl;
+GameServerConnection::NonBlockingNetworkOperationStatus GameServerConnection::verifyGameLaunch(bool* gameOn) {
+    if (networkOperationAttempts % 120 == 0) {
+        std::cout << "Waiting for a game match to be verified..." << std::endl;
+    }
+
+    *gameOn = false;
 
     char dataReceived[1];
     std::size_t receiveCount;
     const auto serverDataReceiveStatus = serverTcpSocket->receive(dataReceived, 1, receiveCount);
 
     if (serverDataReceiveStatus == sf::Socket::Error) {
-        failedFindGameAttempts++;
+        networkOperationAttempts++;
         std::cout << "An unexpected error has occurred. Resetting connection to the server." << std::endl;
         serverTcpSocket->disconnect();
-        return std::make_pair(NonBlockingNetworkOperationStatus::ERROR, false);
+        return NonBlockingNetworkOperationStatus::ERROR;
     } else if (serverDataReceiveStatus == sf::Socket::Disconnected) {
-        failedFindGameAttempts++;
+        networkOperationAttempts++;
         std::cout << "An unexpected error has occurred. Lost connection to the server." << std::endl;
         serverTcpSocket->disconnect();
-        return std::make_pair(NonBlockingNetworkOperationStatus::ERROR, false);
+        return NonBlockingNetworkOperationStatus::ERROR;
     } else if (serverDataReceiveStatus != sf::Socket::Done) {
-        failedFindGameAttempts++;
-        return std::make_pair(NonBlockingNetworkOperationStatus::NOT_READY, false);
+        networkOperationAttempts++;
+        return NonBlockingNetworkOperationStatus::NOT_READY;
     }
 
     if (dataReceived[0] == '-') {
-        std::cout << "Game could not be initialized." << std::endl;
-        return std::make_pair(NonBlockingNetworkOperationStatus::COMPLETE, false);
+        std::cout << "Game has been called off. Opponent may have disconnected." << std::endl;
+        return NonBlockingNetworkOperationStatus::COMPLETE;
     }
 
-    std::cout << "Game initialized." << std::endl;
+    std::cout << "Game match verified. Launching game." << std::endl;
+    *gameOn = true;
+    networkOperationAttempts = 0;
 
-    return std::make_pair(NonBlockingNetworkOperationStatus::COMPLETE, true);
+    return NonBlockingNetworkOperationStatus::COMPLETE;
 }

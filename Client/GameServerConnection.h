@@ -23,14 +23,14 @@ public:
     bool connectToGameLobby();
     NonBlockingNetworkOperationStatus findGame();
     NonBlockingNetworkOperationStatus acceptGame();
-    std::pair<NonBlockingNetworkOperationStatus, bool> verifyGameLaunch();
+    NonBlockingNetworkOperationStatus verifyGameLaunch(bool* gameOn);
 
 private:
     const char serverFoundGameMatchSignal = '~';
     const char clientReadyForMatchSignal = '!';
 
     int failedLobbyConnectAttempts;
-    int failedFindGameAttempts;
+    int networkOperationAttempts;
 
     std::unique_ptr<sf::TcpSocket> serverTcpSocket;
 };
