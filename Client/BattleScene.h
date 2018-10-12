@@ -7,10 +7,14 @@
 #include "GameMetricsTracker.h"
 #include "ResourceLoader.h"
 #include "WizardController.h"
+#include "GameServerConnection.h"
 
 class BattleScene : public GameScene {
 public:
-    explicit BattleScene(GameSceneDirector* sceneDirector, ResourceLoader* resourceLoader, GameMetricsTracker* gameMetricsTracker);
+    explicit BattleScene(GameSceneDirector* sceneDirector,
+                         ResourceLoader* resourceLoader,
+                         GameMetricsTracker* gameMetricsTracker,
+                         GameServerConnection* gameServer);
     ~BattleScene();
 
     static constexpr float GRAVITY = 600.0f;
@@ -22,6 +26,7 @@ private:
     GameSceneDirector* sceneDirector;
     ResourceLoader* resourceLoader;
     GameMetricsTracker* gameMetricsTracker;
+    GameServerConnection* gameServer;
     std::unique_ptr<SceneNode> rootSceneNode;
     WizardNode* player1Wizard;
     WizardNode* player2Wizard;

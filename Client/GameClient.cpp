@@ -61,7 +61,7 @@ void GameClient::transitionToScene(const SceneId sceneId) {
         break;
     case SceneId::BATTLE:
         std::cout << "Initiating Battle" << std::endl;
-        activeScene.reset(new ActiveScene(sceneId, new BattleScene(this, &resourceLoader, &gameMetricsTracker)));
+        activeScene.reset(new ActiveScene(sceneId, new BattleScene(this, &resourceLoader, &gameMetricsTracker, &gameServer)));
         break;
     }
 }

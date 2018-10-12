@@ -15,15 +15,11 @@ public:
         COMPLETE
     };
 
-    struct GameInitInfo {
-        // NonBlockingNetworkOperationStatus connectionStatus;
-        bool isPlayer1;
-    };
-
     bool connectToGameLobby();
     NonBlockingNetworkOperationStatus findGame();
     NonBlockingNetworkOperationStatus acceptGame();
     NonBlockingNetworkOperationStatus verifyGameLaunch(bool* gameOn);
+    bool getIsPlayer1(); //todo: change into a more generic getGameUpdate that returns a union?
 
 private:
     const char serverFoundGameMatchSignal = '~';

@@ -12,11 +12,13 @@
 
 BattleScene::BattleScene(GameSceneDirector* sceneDirector,
                          ResourceLoader* resourceLoader,
-                         GameMetricsTracker* gameMetricsTracker) : sceneDirector(sceneDirector),
-                                                                   resourceLoader(resourceLoader),
-                                                                   gameMetricsTracker(gameMetricsTracker),
-                                                                   rootSceneNode(new EmptySceneNode()),
-                                                                   localWizardController(new StationaryWizardController()) {
+                         GameMetricsTracker* gameMetricsTracker,
+                         GameServerConnection* gameServer) : sceneDirector(sceneDirector),
+                                                             resourceLoader(resourceLoader),
+                                                             gameMetricsTracker(gameMetricsTracker),
+                                                             gameServer(gameServer),
+                                                             rootSceneNode(new EmptySceneNode()),
+                                                             localWizardController(new StationaryWizardController()) {
     resourceLoader->loadTexture(ResourceLoader::TextureId::WIZARD_PURPLE, "Resources/Sprite Sheets/wizard-purple.png");
     resourceLoader->loadTexture(ResourceLoader::TextureId::WIZARD_ORANGE, "Resources/Sprite Sheets/wizard-orange.png");
     buildScene();
@@ -78,5 +80,10 @@ void BattleScene::buildScene() {
     fpsDisplay->getText()->setFont(*resourceLoader->getFont(ResourceLoader::FontId::FPS_DISPLAY));
     rootSceneNode->attachChild(std::move((fpsDisplay)));
 
-    localWizardController.reset(new LocallyControlledWizardController(player1Wizard)); // todo: set the player 1 wizard or player 2 wizard as locally controller based on input from the server
+    auto isPlayer1 = gameServer->getIsPlayer1(); //todo: move this
+    if (isPlayer1) {
+        localWizardController.reset(new LocallyControlledWizardController(player1Wizard));
+    } else {
+        localWizardController.reset(new LocallyControlledWizardController(player2Wizard));
+    }
 }

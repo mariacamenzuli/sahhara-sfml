@@ -1,4 +1,5 @@
 #include "Game.h"
+#include "NetworkCommunicationSignals.h"
 
 Game::Game(int gameId,
            std::unique_ptr<sf::TcpSocket> player1TcpConnection,
@@ -22,13 +23,13 @@ void Game::run() {
 }
 
 void Game::initialize() {
-    // sf::Packet gameOnPacketPlayer1;
-    // gameOnPacketPlayer1.append(&SERVER_SIGNAL_GAME_ON, 1);
-    // gameOnPacketPlayer1 << SERVER_SIGNAL_IS_PLAYER_1;
-    // player1TcpConnection->send(gameOnPacketPlayer1); //todo handle error
-    //
-    // sf::Packet gameOnPacketPlayer2;
-    // gameOnPacketPlayer2.append(&SERVER_SIGNAL_GAME_ON, 1);
-    // gameOnPacketPlayer2 << SERVER_SIGNAL_IS_NOT_PLAYER_1;
-    // player2TcpConnection->send(gameOnPacketPlayer2); //todo handle error
+    char player1GameInitData[2];
+    player1GameInitData[0] = ServerSignal::GAME_INIT;
+    player1GameInitData[1] = ServerSignal::IS_PLAYER_1;
+    player1TcpConnection->send(player1GameInitData, 2); //todo handle error
+
+    char player2GameInitData[2];
+    player2GameInitData[0] = ServerSignal::GAME_INIT;
+    player2GameInitData[1] = ServerSignal::IS_NOT_PLAYER_1;
+    player2TcpConnection->send(player2GameInitData, 2); //todo handle error
 }

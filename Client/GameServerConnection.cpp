@@ -131,3 +131,13 @@ GameServerConnection::NonBlockingNetworkOperationStatus GameServerConnection::ve
 
     return NonBlockingNetworkOperationStatus::COMPLETE;
 }
+
+bool GameServerConnection::getIsPlayer1() {
+    char dataReceived[2];
+    std::size_t receiveCount;
+    serverTcpSocket->setBlocking(true); //todo fix
+    const auto serverDataReceiveStatus = serverTcpSocket->receive(dataReceived, 2, receiveCount);
+    serverTcpSocket->setBlocking(false);
+    bool isPlayer1 = dataReceived[1];
+    return isPlayer1;
+}
