@@ -1,12 +1,13 @@
 #include "GameLobby.h"
 #include "Game.h"
-#include "ServerSignal.h"
+#include "NetworkCommunicationSignals.h"
 
 #include <SFML/Network/TcpListener.hpp>
 #include <SFML/Network/TcpSocket.hpp>
-#include <iostream>
+#include <thread>
 
-GameLobby::GameLobby() = default;
+GameLobby::GameLobby(ThreadLogger& threadLogger) : logger(threadLogger) {
+};
 
 GameLobby::~GameLobby() {
     lobbyListenerSocket.close();
@@ -22,50 +23,51 @@ void GameLobby::run() {
         throw std::runtime_error("Failed to start listening on TCP socket 53000.");
     }
 
-    std::cout << "Listening for new game requests on TCP port 53000." << std::endl;
+    logger.info("Listening for new game requests on TCP port 53000.");
 
     while (true) {
         std::unique_ptr<sf::TcpSocket> newPlayerConnection(new sf::TcpSocket());
         if (lobbyListenerSocket.accept(*newPlayerConnection) != sf::Socket::Done) {
-            std::cout << "Failed to accept a new TCP connection." << std::endl;
+            logger.info("Failed to accept a new TCP connection.");
             continue;
         }
 
-        std::cout << "----------------------------------" << std::endl;
-        std::cout << "Accepted connection from [" << newPlayerConnection->getRemoteAddress().toString() << ":" << newPlayerConnection->getRemotePort() << "]." << std::endl;
+        logger.info("----------------------------------");
+        logger.info("Accepted connection from [" + newPlayerConnection->getRemoteAddress().toString() + ":" + std::to_string(newPlayerConnection->getRemotePort()) + "].");
 
         if (clientsAwaitingGame.empty()) {
-            std::cout << "Not enough players to start a game yet." << std::endl;
-            std::cout << "Queueing new connection for match up." << std::endl;
+            logger.info("Not enough players to start a game yet.");
+            logger.info("Queueing new connection for match up.");
             clientsAwaitingGame.push(std::move(newPlayerConnection));
         } else if (ongoingGames >= maxOngoingGames) {
-            std::cout << "Number of ongoing games is at the maximum allowed." << std::endl;
-            std::cout << "Queueing new connection for match up." << std::endl;
+            logger.info("Number of ongoing games is at the maximum allowed.");
+            logger.info("Queueing new connection for match up.");
             clientsAwaitingGame.push(std::move(newPlayerConnection));
         } else {
             sf::TcpSocket* opponentMatched = clientsAwaitingGame.front().get();
-            std::cout << "Matched with queueing connection [" << opponentMatched->getRemoteAddress().toString() << ":" << opponentMatched->getRemotePort() << "]." << std::endl;
-            std::cout << "Verifying connections." << std::endl;
+            logger.info("Matched with queueing connection [" + opponentMatched->getRemoteAddress().toString() + ":" + std::to_string(opponentMatched->getRemotePort()) + "].");
+            logger.info("Verifying connections.");
 
             const bool opponentReady = isReadyForGame(opponentMatched);
             const bool newPlayerReady = isReadyForGame(newPlayerConnection.get());
 
             if (opponentReady && newPlayerReady) {
-                std::cout << "Starting game." << std::endl;
+                logger.info("Starting new game thread.");
 
                 signalGameOn(opponentMatched);
                 signalGameOn(newPlayerConnection.get());
 
-                Game game(std::move(clientsAwaitingGame.front()), std::move(newPlayerConnection));
+                uniqueGamesStarted++;
+                Game game(uniqueGamesStarted, std::move(clientsAwaitingGame.front()), std::move(newPlayerConnection));
                 clientsAwaitingGame.pop();
 
-                // game.run();
-
+                std::thread gameThread(&Game::run, &game);
+                gameThread.join();
 
                 ongoingGames++;
             } else {
                 if (!opponentReady) {
-                    std::cout << "Connection to [" << opponentMatched->getRemoteAddress().toString() << ":" << opponentMatched->getRemotePort() << "] has been lost." << std::endl;
+                    logger.info("Connection to [" + opponentMatched->getRemoteAddress().toString() + ":" + std::to_string(opponentMatched->getRemotePort()) + "] has been lost.");
                     opponentMatched->disconnect();
                     clientsAwaitingGame.pop();
                 } else {
@@ -73,11 +75,11 @@ void GameLobby::run() {
                 }
 
                 if (!newPlayerReady) {
-                    std::cout << "Connection to [" << newPlayerConnection->getRemoteAddress().toString() << ":" << newPlayerConnection->getRemotePort() << "] has been lost." << std::endl;
+                    logger.info("Connection to [" + newPlayerConnection->getRemoteAddress().toString() + ":" + std::to_string(newPlayerConnection->getRemotePort()) + "] has been lost.");
                     newPlayerConnection->disconnect();
                 } else {
                     signalGameOff(newPlayerConnection.get());
-                    std::cout << "Queueing new connection for match up." << std::endl;
+                    logger.info("Queueing new connection for match up.");
                     clientsAwaitingGame.push(std::move(newPlayerConnection));
                 }
             }
@@ -89,11 +91,11 @@ bool GameLobby::isReadyForGame(sf::TcpSocket* playerConnection) {
     char dataReceived[1];
     std::size_t received;
 
-    if (playerConnection->send(&SERVER_SIGNAL_FOUND_GAME_MATCH, 1) != sf::Socket::Done) {
+    if (playerConnection->send(&ServerSignal::FOUND_GAME_MATCH, 1) != sf::Socket::Done) {
         return false;
     }
 
-    if (playerConnection->receive(dataReceived, 1, received) != sf::Socket::Done || dataReceived[0] != CLIENT_SIGNAL_READY_FOR_MATCH) {
+    if (playerConnection->receive(dataReceived, 1, received) != sf::Socket::Done || dataReceived[0] != ClientSignal::READY_FOR_MATCH) {
         return false;
     }
 
@@ -101,9 +103,9 @@ bool GameLobby::isReadyForGame(sf::TcpSocket* playerConnection) {
 }
 
 void GameLobby::signalGameOn(sf::TcpSocket* playerConnection) {
-    playerConnection->send(&SERVER_SIGNAL_GAME_ON, 1);
+    playerConnection->send(&ServerSignal::GAME_ON, 1);
 }
 
 void GameLobby::signalGameOff(sf::TcpSocket* playerConnection) {
-    playerConnection->send(&SERVER_SIGNAL_GAME_OFF, 1);
+    playerConnection->send(&ServerSignal::GAME_OFF, 1);
 }

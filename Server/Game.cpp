@@ -1,20 +1,24 @@
 #include "Game.h"
-#include "ServerSignal.h"
 
-#include <SFML/Network/Packet.hpp>
-
-Game::Game(std::unique_ptr<sf::TcpSocket> player1TcpConnection,
-           std::unique_ptr<sf::TcpSocket> player2TcpConnection) : player1TcpConnection(std::move(player1TcpConnection)),
-                                                                  player2TcpConnection(std::move(player2TcpConnection)) {
+Game::Game(int gameId,
+           std::unique_ptr<sf::TcpSocket> player1TcpConnection,
+           std::unique_ptr<sf::TcpSocket> player2TcpConnection) : gameId(gameId),
+                                                                  player1TcpConnection(std::move(player1TcpConnection)),
+                                                                  player2TcpConnection(std::move(player2TcpConnection)),
+                                                                  logger(ThreadLogger("game-" + std::to_string(gameId))) {
 }
 
 Game::~Game() {
     player1TcpConnection->disconnect();
     player2TcpConnection->disconnect();
-};
+}
 
 void Game::run() {
+    logger.info("Starting up.");
+
     initialize();
+
+    logger.info("Shutting down.");
 }
 
 void Game::initialize() {

@@ -1,6 +1,7 @@
 #include "GameLobby.h"
 
 #include <iostream>
+#include "ThreadLogger.h"
 
 const char* BANNER =
     R"(
@@ -19,13 +20,14 @@ const char* BANNER =
 int main() {
     std::cout << BANNER << std::endl;
 
-    GameLobby gameLobby;
+    ThreadLogger mainThreadLogger("main-thread");
+    GameLobby gameLobby(mainThreadLogger);
 
     try {
         gameLobby.run();
     } catch (const std::exception& e) {
-        std::cerr << "An error has occurred! Shutting down." << std::endl;
-        std::cerr << e.what() << std::endl;
+        mainThreadLogger.error("An error has occurred! Shutting down.");
+        mainThreadLogger.error(e.what());
         return 1;
     }
 
