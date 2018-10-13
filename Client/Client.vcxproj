@@ -134,6 +134,7 @@
     <ClCompile Include="GameMetricsTracker.cpp" />
     <ClCompile Include="GameServerConnection.cpp" />
     <ClCompile Include="LocallyControlledWizardController.cpp" />
+    <ClCompile Include="AuthoritativeGameUpdate.cpp" />
     <ClCompile Include="SpriteNode.cpp" />
     <ClCompile Include="StationaryWizardController.cpp" />
     <ClCompile Include="TextNode.cpp" />
@@ -156,6 +157,7 @@
     <ClInclude Include="GameMetricsTracker.h" />
     <ClInclude Include="GameServerConnection.h" />
     <ClInclude Include="LocallyControlledWizardController.h" />
+    <ClInclude Include="AuthoritativeGameUpdate.h" />
     <ClInclude Include="SpriteNode.h" />
     <ClInclude Include="StationaryWizardController.h" />
     <ClInclude Include="TextNode.h" />

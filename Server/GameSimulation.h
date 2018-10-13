@@ -4,18 +4,21 @@
 #include <SFML/Network/TcpSocket.hpp>
 #include "ThreadLogger.h"
 
-class Game {
+class GameSimulation {
 public:
-    Game(int gameId, std::unique_ptr<sf::TcpSocket> player1TcpConnection, std::unique_ptr<sf::TcpSocket> player2TcpConnection);
-    ~Game();
+    GameSimulation(int gameId, std::unique_ptr<sf::TcpSocket> player1TcpConnection, std::unique_ptr<sf::TcpSocket> player2TcpConnection);
+    ~GameSimulation();
 
     void run();
+    void terminate();
+    int getGameId() const;
 
 private:
     int gameId;
     std::unique_ptr<sf::TcpSocket> player1TcpConnection;
     std::unique_ptr<sf::TcpSocket> player2TcpConnection;
     ThreadLogger logger;
+    bool gameShouldEnd = false;
 
     void initialize();
 };

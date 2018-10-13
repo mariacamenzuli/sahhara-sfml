@@ -21,10 +21,10 @@
     <ClCompile Include="GameLobby.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Game.cpp">
+    <ClCompile Include="ThreadLogger.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ThreadLogger.cpp">
+    <ClCompile Include="GameSimulation.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -32,10 +32,10 @@
     <ClInclude Include="GameLobby.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Game.h">
+    <ClInclude Include="ThreadLogger.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="ThreadLogger.h">
+    <ClInclude Include="GameSimulation.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

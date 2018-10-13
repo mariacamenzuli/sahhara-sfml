@@ -1,7 +1,7 @@
-#include "Game.h"
+#include "GameSimulation.h"
 #include "NetworkCommunicationSignals.h"
 
-Game::Game(int gameId,
+GameSimulation::GameSimulation(int gameId,
            std::unique_ptr<sf::TcpSocket> player1TcpConnection,
            std::unique_ptr<sf::TcpSocket> player2TcpConnection) : gameId(gameId),
                                                                   player1TcpConnection(std::move(player1TcpConnection)),
@@ -9,20 +9,32 @@ Game::Game(int gameId,
                                                                   logger(ThreadLogger("game-" + std::to_string(gameId))) {
 }
 
-Game::~Game() {
+GameSimulation::~GameSimulation() {
     player1TcpConnection->disconnect();
     player2TcpConnection->disconnect();
 }
 
-void Game::run() {
+void GameSimulation::run() {
     logger.info("Starting up.");
 
     initialize();
 
+    while (!gameShouldEnd) {
+        
+    }
+
     logger.info("Shutting down.");
 }
 
-void Game::initialize() {
+void GameSimulation::terminate() {
+    gameShouldEnd = true;
+}
+
+int GameSimulation::getGameId() const {
+    return gameId;
+}
+
+void GameSimulation::initialize() {
     char player1GameInitData[2];
     player1GameInitData[0] = ServerSignal::GAME_INIT;
     player1GameInitData[1] = ServerSignal::IS_PLAYER_1;

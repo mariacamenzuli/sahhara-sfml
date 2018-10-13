@@ -1,20 +1,29 @@
 #include "GameLobby.h"
-#include "Game.h"
+#include "GameSimulation.h"
 #include "NetworkCommunicationSignals.h"
 
 #include <SFML/Network/TcpListener.hpp>
 #include <SFML/Network/TcpSocket.hpp>
 #include <thread>
 
-GameLobby::GameLobby(ThreadLogger& threadLogger) : logger(threadLogger) {
-};
+GameLobby::GameLobby(): logger(ThreadLogger("game-lobby")) {
+}
 
 GameLobby::~GameLobby() {
+    logger.info("Shutting down server.");
+
     lobbyListenerSocket.close();
     while (!clientsAwaitingGame.empty()) {
         sf::TcpSocket* clientInQueue = clientsAwaitingGame.front().get();
+        logger.info("Closing connection to [" + clientInQueue->getRemoteAddress().toString() + ":" + std::to_string(clientInQueue->getRemotePort()) + "].");
         clientInQueue->disconnect();
         clientsAwaitingGame.pop();
+    }
+
+    for (auto& ongoingGame : ongoingGames) {
+        logger.info("Terminating game-" + std::to_string(ongoingGame.simulation->getGameId()));
+        ongoingGame.simulation->terminate();
+        ongoingGame.thread.join();
     }
 }
 
@@ -25,12 +34,17 @@ void GameLobby::run() {
 
     logger.info("Listening for new game requests on TCP port 53000.");
 
-    while (true) {
+    while (shouldRun) {
+        lobbyListenerSocket.setBlocking(false);
         std::unique_ptr<sf::TcpSocket> newPlayerConnection(new sf::TcpSocket());
-        if (lobbyListenerSocket.accept(*newPlayerConnection) != sf::Socket::Done) {
+        auto status = lobbyListenerSocket.accept(*newPlayerConnection);
+        if (status == sf::Socket::NotReady) {
+            continue;
+        } else if (status != sf::Socket::Done) {
             logger.info("Failed to accept a new TCP connection.");
             continue;
         }
+        lobbyListenerSocket.setBlocking(true);
 
         logger.info("----------------------------------");
         logger.info("Accepted connection from [" + newPlayerConnection->getRemoteAddress().toString() + ":" + std::to_string(newPlayerConnection->getRemotePort()) + "].");
@@ -39,7 +53,7 @@ void GameLobby::run() {
             logger.info("Not enough players to start a game yet.");
             logger.info("Queueing new connection for match up.");
             clientsAwaitingGame.push(std::move(newPlayerConnection));
-        } else if (ongoingGames >= maxOngoingGames) {
+        } else if (ongoingGames.size() >= maxOngoingGames) {
             logger.info("Number of ongoing games is at the maximum allowed.");
             logger.info("Queueing new connection for match up.");
             clientsAwaitingGame.push(std::move(newPlayerConnection));
@@ -58,13 +72,11 @@ void GameLobby::run() {
                 signalGameOn(newPlayerConnection.get());
 
                 uniqueGamesStarted++;
-                Game game(uniqueGamesStarted, std::move(clientsAwaitingGame.front()), std::move(newPlayerConnection));
+                std::unique_ptr<GameSimulation> gameSimulation(new GameSimulation(uniqueGamesStarted, std::move(clientsAwaitingGame.front()), std::move(newPlayerConnection)));
                 clientsAwaitingGame.pop();
+                std::thread gameThread(&GameSimulation::run, gameSimulation.get());
 
-                std::thread gameThread(&Game::run, &game);
-                gameThread.join();
-
-                ongoingGames++;
+                ongoingGames.emplace_back(std::move(gameSimulation), gameThread);
             } else {
                 if (!opponentReady) {
                     logger.info("Connection to [" + opponentMatched->getRemoteAddress().toString() + ":" + std::to_string(opponentMatched->getRemotePort()) + "] has been lost.");
@@ -85,6 +97,10 @@ void GameLobby::run() {
             }
         }
     }
+}
+
+void GameLobby::terminate() {
+    shouldRun = false;
 }
 
 bool GameLobby::isReadyForGame(sf::TcpSocket* playerConnection) {

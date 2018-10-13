@@ -9,6 +9,7 @@
 #include <SFML/Graphics/Sprite.hpp>
 #include "StationaryWizardController.h"
 #include "LocallyControlledWizardController.h"
+#include <iostream>
 
 BattleScene::BattleScene(GameSceneDirector* sceneDirector,
                          ResourceLoader* resourceLoader,
@@ -31,12 +32,37 @@ BattleScene::~BattleScene() {
 
 void BattleScene::handlePlayerInput(sf::Keyboard::Key key, bool isPressed) {
     if (key == sf::Keyboard::Escape && isPressed) {
+        std::cout << "Terminating battle." << std::endl;
         sceneDirector->transitionToScene(GameSceneDirector::SceneId::MAIN_MENU);
         return;
     }
 }
 
 void BattleScene::update(sf::Time deltaTime, bool isGameInFocus) {
+    AuthoritativeGameUpdate serverUpdate;
+    const auto serverUpdateStatus = gameServer->getAuthoritativeGameUpdate(serverUpdate);
+
+    if (serverUpdateStatus == GameServerConnection::NonBlockingNetworkOperationStatus::COMPLETE) {
+        switch (serverUpdate.type) {
+        case AuthoritativeGameUpdate::Type::INIT:
+            if (serverUpdate.init.isPlayer1) {
+                std::cout << "Assigned to locally control player 1." << std::endl;
+                localWizardController.reset(new LocallyControlledWizardController(player1Wizard));
+            } else {
+                std::cout << "Assigned to locally control player 2." << std::endl;
+                localWizardController.reset(new LocallyControlledWizardController(player2Wizard));
+            }
+            break;
+        default:
+            std::cout << "Received unrecognized update type." << std::endl;
+            break;
+        }
+    } else if (serverUpdateStatus == GameServerConnection::NonBlockingNetworkOperationStatus::ERROR) {
+        std::cout << "Terminating battle." << std::endl;
+        sceneDirector->transitionToScene(GameSceneDirector::SceneId::MAIN_MENU);
+        return;
+    }
+
     localWizardController->update(deltaTime, isGameInFocus);
 }
 
@@ -79,11 +105,4 @@ void BattleScene::buildScene() {
     std::unique_ptr<FpsDisplay> fpsDisplay(new FpsDisplay(gameMetricsTracker));
     fpsDisplay->getText()->setFont(*resourceLoader->getFont(ResourceLoader::FontId::FPS_DISPLAY));
     rootSceneNode->attachChild(std::move((fpsDisplay)));
-
-    auto isPlayer1 = gameServer->getIsPlayer1(); //todo: move this
-    if (isPlayer1) {
-        localWizardController.reset(new LocallyControlledWizardController(player1Wizard));
-    } else {
-        localWizardController.reset(new LocallyControlledWizardController(player2Wizard));
-    }
 }

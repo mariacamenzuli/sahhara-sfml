@@ -133,12 +133,35 @@ GameServerConnection::NonBlockingNetworkOperationStatus GameServerConnection::ve
     return NonBlockingNetworkOperationStatus::COMPLETE;
 }
 
-bool GameServerConnection::getIsPlayer1() {
-    char dataReceived[2];
+GameServerConnection::NonBlockingNetworkOperationStatus GameServerConnection::getAuthoritativeGameUpdate(AuthoritativeGameUpdate& gameUpdate) {
+    // todo: handle 1 receive not getting an entire command or getting more than one command
     std::size_t receiveCount;
-    serverTcpSocket->setBlocking(true); //todo fix
-    const auto serverDataReceiveStatus = serverTcpSocket->receive(dataReceived, 2, receiveCount);
-    serverTcpSocket->setBlocking(false);
-    bool isPlayer1 = dataReceived[1];
-    return isPlayer1;
+    const auto serverDataReceiveStatus = serverTcpSocket->receive(tcpDataReceiveBuffer, 10, receiveCount);
+
+    if (serverDataReceiveStatus == sf::Socket::Error) {
+        std::cout << "An unexpected error has occurred. Resetting connection to the server." << std::endl;
+        serverTcpSocket->disconnect();
+        return NonBlockingNetworkOperationStatus::ERROR;
+    } else if (serverDataReceiveStatus == sf::Socket::Disconnected) {
+        std::cout << "An unexpected error has occurred. Lost connection to the server." << std::endl;
+        serverTcpSocket->disconnect();
+        return NonBlockingNetworkOperationStatus::ERROR;
+    } else if (serverDataReceiveStatus != sf::Socket::Done) {
+        return NonBlockingNetworkOperationStatus::NOT_READY;
+    }
+
+    gameUpdate.type = AuthoritativeGameUpdate::determineUpdateType(tcpDataReceiveBuffer[0]);
+    switch (gameUpdate.type) {
+    case AuthoritativeGameUpdate::Type::INIT:
+        gameUpdate.init = AuthoritativeGameUpdate::InitUpdate(tcpDataReceiveBuffer[1]);
+        break;
+    case AuthoritativeGameUpdate::Type::UNKNOWN:
+    default:
+        std::cout << "Received an unexpected signal from the server. Resetting connection to the server." << std::endl;
+        serverTcpSocket->disconnect();
+        return NonBlockingNetworkOperationStatus::ERROR;
+    }
+
+    return NonBlockingNetworkOperationStatus::COMPLETE;
+
 }

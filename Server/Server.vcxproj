@@ -120,13 +120,13 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Game.cpp" />
+    <ClCompile Include="GameSimulation.cpp" />
     <ClCompile Include="GameLobby.cpp" />
     <ClCompile Include="ServerMain.cpp" />
     <ClCompile Include="ThreadLogger.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Game.h" />
+    <ClInclude Include="GameSimulation.h" />
     <ClInclude Include="GameLobby.h" />
     <ClInclude Include="ThreadLogger.h" />
   </ItemGroup>

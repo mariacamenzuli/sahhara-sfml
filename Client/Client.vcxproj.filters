@@ -25,6 +25,12 @@
     <Filter Include="Source Files\Scene Nodes">
       <UniqueIdentifier>{1156eb10-d870-4824-b772-8069fba21e0c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Character Control">
+      <UniqueIdentifier>{1ae89b6f-7565-4c44-bf07-01d38dee241c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Character Control">
+      <UniqueIdentifier>{fbd7df2a-3434-48f9-abe3-e5050e9def97}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="BattleScene.cpp">
@@ -79,9 +85,12 @@
       <Filter>Source Files\Scene Nodes</Filter>
     </ClCompile>
     <ClCompile Include="StationaryWizardController.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Character Control</Filter>
     </ClCompile>
     <ClCompile Include="LocallyControlledWizardController.cpp">
+      <Filter>Source Files\Character Control</Filter>
+    </ClCompile>
+    <ClCompile Include="AuthoritativeGameUpdate.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -141,12 +150,15 @@
       <Filter>Header Files\Scene Nodes</Filter>
     </ClInclude>
     <ClInclude Include="WizardController.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\Character Control</Filter>
     </ClInclude>
     <ClInclude Include="StationaryWizardController.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\Character Control</Filter>
     </ClInclude>
     <ClInclude Include="LocallyControlledWizardController.h">
+      <Filter>Header Files\Character Control</Filter>
+    </ClInclude>
+    <ClInclude Include="AuthoritativeGameUpdate.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

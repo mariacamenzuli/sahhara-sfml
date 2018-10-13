@@ -1,7 +1,7 @@
 #include "GameLobby.h"
+#include "ThreadLogger.h"
 
 #include <iostream>
-#include "ThreadLogger.h"
 
 const char* BANNER =
     R"(
@@ -21,10 +21,21 @@ int main() {
     std::cout << BANNER << std::endl;
 
     ThreadLogger mainThreadLogger("main-thread");
-    GameLobby gameLobby(mainThreadLogger);
+    GameLobby gameLobby;
+    bool shouldQuit = false;
+    std::string input;
 
     try {
-        gameLobby.run();
+        std::thread lobbyThread(&GameLobby::run, &gameLobby);
+        while (!shouldQuit) {
+            std::cin >> input;
+
+            if (input == "quit" || input == "q") {
+                shouldQuit = true;
+            }
+        }
+        gameLobby.terminate();
+        lobbyThread.join();
     } catch (const std::exception& e) {
         mainThreadLogger.error("An error has occurred! Shutting down.");
         mainThreadLogger.error(e.what());
