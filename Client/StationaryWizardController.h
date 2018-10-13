@@ -7,6 +7,6 @@ public:
     StationaryWizardController();
     ~StationaryWizardController();
 
-    void update(sf::Time deltaTime) override;
+    void update(sf::Time deltaTime, bool isGameInFocus) override;
 };
 

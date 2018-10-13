@@ -45,13 +45,13 @@ void SceneNode::draw(sf::RenderTarget& target, sf::RenderStates states) const {
     }
 }
 
-void SceneNode::update(sf::Time deltaTime) {
-    updateCurrent(deltaTime);
+void SceneNode::update(sf::Time deltaTime, bool isGameInFocus) {
+    updateCurrent(deltaTime, isGameInFocus);
     for (const auto& child : children) {
-        child->update(deltaTime);
+        child->update(deltaTime, isGameInFocus);
     }
 }
 
-void SceneNode::updateCurrent(sf::Time deltaTime) {
+void SceneNode::updateCurrent(sf::Time deltaTime, bool isGameInFocus) {
     // no-op
 }

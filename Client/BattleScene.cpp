@@ -36,8 +36,8 @@ void BattleScene::handlePlayerInput(sf::Keyboard::Key key, bool isPressed) {
     }
 }
 
-void BattleScene::update(sf::Time deltaTime) {
-    localWizardController->update(deltaTime);
+void BattleScene::update(sf::Time deltaTime, bool isGameInFocus) {
+    localWizardController->update(deltaTime, isGameInFocus);
 }
 
 SceneNode* BattleScene::getRootSceneNode() {

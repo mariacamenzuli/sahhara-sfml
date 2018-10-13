@@ -9,7 +9,7 @@ FpsDisplay::FpsDisplay(GameMetricsTracker* gameMetricsTracker) : TextNode(sf::Te
 
 FpsDisplay::~FpsDisplay() = default;
 
-void FpsDisplay::updateCurrent(sf::Time deltaTime) {
+void FpsDisplay::updateCurrent(sf::Time deltaTime, bool isGameInFocus) {
     updateDisplay();
 }
 

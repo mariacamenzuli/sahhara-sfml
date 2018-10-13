@@ -20,7 +20,7 @@ public:
     static constexpr float GRAVITY = 600.0f;
 
     void handlePlayerInput(sf::Keyboard::Key key, bool isPressed) override;
-    void update(sf::Time deltaTime) override;
+    void update(sf::Time deltaTime, bool isGameInFocus) override;
     SceneNode* getRootSceneNode() override;
 private:
     GameSceneDirector* sceneDirector;

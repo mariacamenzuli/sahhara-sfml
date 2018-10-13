@@ -91,9 +91,9 @@ void GameClient::processWindowEvents() {
 }
 
 void GameClient::update(sf::Time deltaTime) {
-    activeScene->sceneController->update(deltaTime);
+    activeScene->sceneController->update(deltaTime, window.hasFocus());
     assert(activeScene->sceneController->getRootSceneNode());
-    activeScene->sceneController->getRootSceneNode()->update(deltaTime);
+    activeScene->sceneController->getRootSceneNode()->update(deltaTime, window.hasFocus());
     gameMetricsTracker.newLogicUpdate();
 }
 

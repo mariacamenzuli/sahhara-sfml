@@ -13,6 +13,6 @@ public:
 private:
     GameMetricsTracker* gameMetricsTracker;
 
-    void updateCurrent(sf::Time deltaTime) override;
+    void updateCurrent(sf::Time deltaTime, bool isGameInFocus) override;
     void inline updateDisplay();
 };

@@ -33,7 +33,7 @@ void AnimatedSpriteNode::drawCurrent(sf::RenderTarget& target, sf::RenderStates 
     target.draw(sprite, states);
 }
 
-void AnimatedSpriteNode::updateCurrent(sf::Time deltaTime) {
+void AnimatedSpriteNode::updateCurrent(sf::Time deltaTime, bool isGameInFocus) {
     timeSinceLastUpdate += deltaTime;
 
     if (timeSinceLastUpdate >= currentAnimationConfig->frameTime) {

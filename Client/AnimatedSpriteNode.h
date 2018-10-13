@@ -32,5 +32,5 @@ private:
     sf::Time timeSinceLastUpdate;
 
     void drawCurrent(sf::RenderTarget& target, sf::RenderStates states) const override;
-    void updateCurrent(sf::Time deltaTime) override;
+    void updateCurrent(sf::Time deltaTime, bool isGameInFocus) override;
 };

@@ -20,7 +20,7 @@ public:
     SceneNodePointer detachChild(const SceneNode& node);
     SceneNode* getChild(std::string label);
     void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
-    void update(sf::Time deltaTime);
+    void update(sf::Time deltaTime, bool isGameInFocus);
 
 protected:
     std::vector<SceneNodePointer> children;
@@ -28,5 +28,5 @@ protected:
     SceneNode* parent;
 
     virtual void drawCurrent(sf::RenderTarget& target, sf::RenderStates states) const = 0;
-    virtual void updateCurrent(sf::Time deltaTime);
+    virtual void updateCurrent(sf::Time deltaTime, bool isGameInFocus);
 };

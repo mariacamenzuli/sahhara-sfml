@@ -4,8 +4,8 @@
 
 class WizardController {
 public:
-    virtual ~WizardController() {}
+    virtual ~WizardController() = default;
 
-    virtual void update(sf::Time deltaTime) = 0;
+    virtual void update(sf::Time deltaTime, bool isGameInFocus) = 0;
 };
 

@@ -3,10 +3,10 @@
 
 class LocallyControlledWizardController : public WizardController {
 public:
-    LocallyControlledWizardController(WizardNode* wizard);
+    explicit LocallyControlledWizardController(WizardNode* wizard);
     ~LocallyControlledWizardController();
 
-    void update(sf::Time deltaTime) override;
+    void update(sf::Time deltaTime, bool isGameInFocus) override;
 
 private:
     WizardNode* wizard;

@@ -8,14 +8,14 @@ LocallyControlledWizardController::LocallyControlledWizardController(WizardNode*
 
 LocallyControlledWizardController::~LocallyControlledWizardController() = default;
 
-void LocallyControlledWizardController::update(sf::Time deltaTime) {
+void LocallyControlledWizardController::update(sf::Time deltaTime, bool isGameInFocus) {
     sf::Vector2f velocity(0.0f, 0.0f);
 
     if (wizard->getPosition().y >= 865.0f) {
         // is touching ground
         wizard->timeInAir = 0.0f;
 
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space)) {
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space) && isGameInFocus) {
             velocity.y = wizard->jumpKickOffVelocity;
             wizard->timeInAir += deltaTime.asSeconds();
         }
@@ -30,11 +30,11 @@ void LocallyControlledWizardController::update(sf::Time deltaTime) {
         wizard->timeInAir += deltaTime.asSeconds();
     }
 
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::A)) {
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::A) && isGameInFocus) {
         velocity.x -= wizard->runVelocity;
     }
 
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::D)) {
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::D) && isGameInFocus) {
         velocity.x += wizard->runVelocity;
     }
 

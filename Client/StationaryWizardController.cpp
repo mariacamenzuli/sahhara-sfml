@@ -4,6 +4,6 @@ StationaryWizardController::StationaryWizardController() = default;
 
 StationaryWizardController::~StationaryWizardController() = default;
 
-void StationaryWizardController::update(sf::Time deltaTime) {
+void StationaryWizardController::update(sf::Time deltaTime, bool isGameInFocus) {
     // no-op
 }
