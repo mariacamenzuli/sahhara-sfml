@@ -76,7 +76,7 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SFML)\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SFML)\include;$(SolutionDir)\Common</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <AdditionalLibraryDirectories>$(SFML)\lib</AdditionalLibraryDirectories>
@@ -128,7 +128,6 @@
   <ItemGroup>
     <ClInclude Include="Game.h" />
     <ClInclude Include="GameLobby.h" />
-    <ClInclude Include="NetworkCommunicationSignals.h" />
     <ClInclude Include="ThreadLogger.h" />
   </ItemGroup>
   <ItemGroup>

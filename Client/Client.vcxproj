@@ -78,7 +78,7 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SFML)\include;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SFML)\include;$(SolutionDir)\Common</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <AdditionalLibraryDirectories>$(SFML)\lib</AdditionalLibraryDirectories>

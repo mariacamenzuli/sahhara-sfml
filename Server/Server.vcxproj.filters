@@ -35,9 +35,6 @@
     <ClInclude Include="Game.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="NetworkCommunicationSignals.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="ThreadLogger.h">
       <Filter>Header Files</Filter>
     </ClInclude>

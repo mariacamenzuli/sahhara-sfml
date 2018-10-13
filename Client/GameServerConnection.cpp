@@ -1,4 +1,5 @@
 #include "GameServerConnection.h"
+#include "NetworkCommunicationSignals.h"
 
 #include <iostream>
 #include <SFML/Network/TcpSocket.hpp>
@@ -53,7 +54,7 @@ GameServerConnection::NonBlockingNetworkOperationStatus GameServerConnection::fi
         return NonBlockingNetworkOperationStatus::NOT_READY;
     }
 
-    if (dataReceived[0] != serverFoundGameMatchSignal) {
+    if (dataReceived[0] != ServerSignal::FOUND_GAME_MATCH) {
         networkOperationAttempts++;
         std::cout << "Received an unexpected signal from the server. Resetting connection to the server." << std::endl;
         serverTcpSocket->disconnect();
@@ -72,7 +73,7 @@ GameServerConnection::NonBlockingNetworkOperationStatus GameServerConnection::ac
     }
 
     std::size_t sendCount = 0;
-    const auto clientDataSentStatus = serverTcpSocket->send(&clientReadyForMatchSignal, 1, sendCount);
+    const auto clientDataSentStatus = serverTcpSocket->send(&ClientSignal::READY_FOR_MATCH, 1, sendCount);
 
     if (clientDataSentStatus == sf::Socket::Error) {
         networkOperationAttempts++;

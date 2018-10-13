@@ -22,9 +22,6 @@ public:
     bool getIsPlayer1(); //todo: change into a more generic getGameUpdate that returns a union?
 
 private:
-    const char serverFoundGameMatchSignal = '~';
-    const char clientReadyForMatchSignal = '!';
-
     int failedLobbyConnectAttempts;
     int networkOperationAttempts;
 
