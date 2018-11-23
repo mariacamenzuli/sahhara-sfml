@@ -44,10 +44,10 @@ void GameClient::run() {
     while (window.isOpen()) {
         processWindowEvents();
         timeSinceLastUpdate += clock.restart();
-        while (timeSinceLastUpdate > timePerFrame) {
-            timeSinceLastUpdate -= timePerFrame;
+        while (timeSinceLastUpdate > timePerSimulationTick) { //todo: run prediction in between simulation ticks?
+            timeSinceLastUpdate -= timePerSimulationTick;
             processWindowEvents();
-            update(timePerFrame);
+            update(timePerSimulationTick);
         }
         render();
     }

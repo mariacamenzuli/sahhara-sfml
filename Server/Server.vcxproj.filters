@@ -13,6 +13,12 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Source Files\Util">
+      <UniqueIdentifier>{04c3f8f3-409b-425a-b1f1-3ed64d3286b4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Util">
+      <UniqueIdentifier>{dc64eced-fdc0-410d-afc5-b799b69dc3fe}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ServerMain.cpp">
@@ -22,7 +28,7 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="ThreadLogger.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Util</Filter>
     </ClCompile>
     <ClCompile Include="GameSimulation.cpp">
       <Filter>Source Files</Filter>
@@ -33,7 +39,7 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="ThreadLogger.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\Util</Filter>
     </ClInclude>
     <ClInclude Include="GameSimulation.h">
       <Filter>Header Files</Filter>

@@ -42,7 +42,7 @@ void BattleScene::update(sf::Time deltaTime, bool isGameInFocus) {
     AuthoritativeGameUpdate serverUpdate;
     const auto serverUpdateStatus = gameServer->getAuthoritativeGameUpdate(serverUpdate);
 
-    if (serverUpdateStatus == GameServerConnection::NonBlockingNetworkOperationStatus::COMPLETE) {
+    if (serverUpdateStatus == GameServerConnection::NonBlockingNetOpStatus::COMPLETE) {
         switch (serverUpdate.type) {
         case AuthoritativeGameUpdate::Type::INIT:
             if (serverUpdate.init.isPlayer1) {
@@ -57,7 +57,7 @@ void BattleScene::update(sf::Time deltaTime, bool isGameInFocus) {
             std::cout << "Received unrecognized update type." << std::endl;
             break;
         }
-    } else if (serverUpdateStatus == GameServerConnection::NonBlockingNetworkOperationStatus::ERROR) {
+    } else if (serverUpdateStatus == GameServerConnection::NonBlockingNetOpStatus::ERROR) {
         std::cout << "Terminating battle." << std::endl;
         sceneDirector->transitionToScene(GameSceneDirector::SceneId::MAIN_MENU);
         return;

@@ -2,6 +2,7 @@
 #include "NetworkCommunicationSignals.h"
 
 #include <iostream>
+#include <SFML/Network/Packet.hpp>
 #include <SFML/Network/TcpSocket.hpp>
 #include <SFML/Network/IpAddress.hpp>
 
@@ -30,138 +31,151 @@ bool GameServerConnection::connectToGameLobby() {
     }
 }
 
-GameServerConnection::NonBlockingNetworkOperationStatus GameServerConnection::findGame() {
+GameServerConnection::NonBlockingNetOpStatus GameServerConnection::findGame() {
     if (networkOperationAttempts % 120 == 0) {
         std::cout << "Waiting for a game match..." << std::endl;
     }
 
-    char dataReceived[1];
-    std::size_t receiveCount;
-    const auto serverDataReceiveStatus = serverTcpSocket->receive(dataReceived, 1, receiveCount);
+    sf::Packet matchFoundPacket;
+    const auto serverDataReceiveStatus = serverTcpSocket->receive(matchFoundPacket);
 
     if (serverDataReceiveStatus == sf::Socket::Error) {
         networkOperationAttempts++;
         std::cout << "An unexpected error has occurred. Resetting connection to the server." << std::endl;
         serverTcpSocket->disconnect();
-        return NonBlockingNetworkOperationStatus::ERROR;
+        return NonBlockingNetOpStatus::ERROR;
     } else if (serverDataReceiveStatus == sf::Socket::Disconnected) {
         networkOperationAttempts++;
         std::cout << "An unexpected error has occurred. Lost connection to the server." << std::endl;
         serverTcpSocket->disconnect();
-        return NonBlockingNetworkOperationStatus::ERROR;
+        return NonBlockingNetOpStatus::ERROR;
     } else if (serverDataReceiveStatus != sf::Socket::Done) {
         networkOperationAttempts++;
-        return NonBlockingNetworkOperationStatus::NOT_READY;
+        return NonBlockingNetOpStatus::NOT_READY;
     }
 
-    if (dataReceived[0] != ServerSignal::FOUND_GAME_MATCH) {
+    sf::Int8 signal;
+    matchFoundPacket >> signal;
+
+    if (signal != ServerSignal::FOUND_GAME_MATCH) {
         networkOperationAttempts++;
         std::cout << "Received an unexpected signal from the server. Resetting connection to the server." << std::endl;
         serverTcpSocket->disconnect();
-        return NonBlockingNetworkOperationStatus::ERROR;
+        return NonBlockingNetOpStatus::ERROR;
     }
 
     std::cout << "Game match found." << std::endl;
     networkOperationAttempts = 0;
 
-    return NonBlockingNetworkOperationStatus::COMPLETE;
+    return NonBlockingNetOpStatus::COMPLETE;
 }
 
-GameServerConnection::NonBlockingNetworkOperationStatus GameServerConnection::acceptGame() {
+GameServerConnection::NonBlockingNetOpStatus GameServerConnection::acceptGame() {
     if (networkOperationAttempts % 120 == 0) {
         std::cout << "Signaling acceptance of game match..." << std::endl;
     }
 
-    std::size_t sendCount = 0;
-    const auto clientDataSentStatus = serverTcpSocket->send(&ClientSignal::READY_FOR_MATCH, 1, sendCount);
+    sf::Packet acceptMatchPacket;
+    acceptMatchPacket << static_cast<sf::Int8>(ClientSignal::READY_FOR_MATCH);
+    const auto clientDataSentStatus = serverTcpSocket->send(acceptMatchPacket);
 
     if (clientDataSentStatus == sf::Socket::Error) {
         networkOperationAttempts++;
         std::cout << "An unexpected error has occurred. Resetting connection to the server." << std::endl;
         serverTcpSocket->disconnect();
-        return NonBlockingNetworkOperationStatus::ERROR;
+        return NonBlockingNetOpStatus::ERROR;
     } else if (clientDataSentStatus == sf::Socket::Disconnected) {
         networkOperationAttempts++;
         std::cout << "An unexpected error has occurred. Lost connection to the server." << std::endl;
         serverTcpSocket->disconnect();
-        return NonBlockingNetworkOperationStatus::ERROR;
-    } else if (clientDataSentStatus != sf::Socket::Done || sendCount == 0) {
-        return NonBlockingNetworkOperationStatus::NOT_READY;
+        return NonBlockingNetOpStatus::ERROR;
+    } else if (clientDataSentStatus != sf::Socket::Done) {
+        return NonBlockingNetOpStatus::NOT_READY;
     }
 
     std::cout << "Acceptance signaled." << std::endl;
     networkOperationAttempts = 0;
 
-    return NonBlockingNetworkOperationStatus::COMPLETE;
+    return NonBlockingNetOpStatus::COMPLETE;
 }
 
-GameServerConnection::NonBlockingNetworkOperationStatus GameServerConnection::verifyGameLaunch(bool* gameOn) {
+GameServerConnection::NonBlockingNetOpStatus GameServerConnection::verifyGameLaunch(bool* gameOn) {
     if (networkOperationAttempts % 120 == 0) {
         std::cout << "Waiting for a game match to be verified..." << std::endl;
     }
 
     *gameOn = false;
 
-    char dataReceived[1];
-    std::size_t receiveCount;
-    const auto serverDataReceiveStatus = serverTcpSocket->receive(dataReceived, 1, receiveCount);
+    sf::Packet gameOnOrOffPacket;
+    const auto serverDataReceiveStatus = serverTcpSocket->receive(gameOnOrOffPacket);
 
     if (serverDataReceiveStatus == sf::Socket::Error) {
         networkOperationAttempts++;
         std::cout << "An unexpected error has occurred. Resetting connection to the server." << std::endl;
         serverTcpSocket->disconnect();
-        return NonBlockingNetworkOperationStatus::ERROR;
+        return NonBlockingNetOpStatus::ERROR;
     } else if (serverDataReceiveStatus == sf::Socket::Disconnected) {
         networkOperationAttempts++;
         std::cout << "An unexpected error has occurred. Lost connection to the server." << std::endl;
         serverTcpSocket->disconnect();
-        return NonBlockingNetworkOperationStatus::ERROR;
+        return NonBlockingNetOpStatus::ERROR;
     } else if (serverDataReceiveStatus != sf::Socket::Done) {
         networkOperationAttempts++;
-        return NonBlockingNetworkOperationStatus::NOT_READY;
+        return NonBlockingNetOpStatus::NOT_READY;
     }
 
-    if (dataReceived[0] == '-') {
+    sf::Int8 signal;
+    gameOnOrOffPacket >> signal;
+
+    if (signal == ServerSignal::GAME_OFF) {
         std::cout << "Game has been called off. Opponent may have disconnected." << std::endl;
-        return NonBlockingNetworkOperationStatus::COMPLETE;
+        return NonBlockingNetOpStatus::COMPLETE;
+    } else if (signal != ServerSignal::GAME_ON) {
+        std::cout << "Received an unexpected signal from the server." << std::endl;
+        return NonBlockingNetOpStatus::ERROR;
     }
 
     std::cout << "Game match verified. Launching game." << std::endl;
     *gameOn = true;
     networkOperationAttempts = 0;
 
-    return NonBlockingNetworkOperationStatus::COMPLETE;
+    return NonBlockingNetOpStatus::COMPLETE;
 }
 
-GameServerConnection::NonBlockingNetworkOperationStatus GameServerConnection::getAuthoritativeGameUpdate(AuthoritativeGameUpdate& gameUpdate) {
+GameServerConnection::NonBlockingNetOpStatus GameServerConnection::getAuthoritativeGameUpdate(AuthoritativeGameUpdate& gameUpdate) {
     // todo: handle 1 receive not getting an entire command or getting more than one command
-    std::size_t receiveCount;
-    const auto serverDataReceiveStatus = serverTcpSocket->receive(tcpDataReceiveBuffer, 10, receiveCount);
+    // todo: also listen on a udp socket
+    sf::Packet signalPacket;
+    const auto serverDataReceiveStatus = serverTcpSocket->receive(signalPacket);
 
     if (serverDataReceiveStatus == sf::Socket::Error) {
         std::cout << "An unexpected error has occurred. Resetting connection to the server." << std::endl;
         serverTcpSocket->disconnect();
-        return NonBlockingNetworkOperationStatus::ERROR;
+        return NonBlockingNetOpStatus::ERROR;
     } else if (serverDataReceiveStatus == sf::Socket::Disconnected) {
         std::cout << "An unexpected error has occurred. Lost connection to the server." << std::endl;
         serverTcpSocket->disconnect();
-        return NonBlockingNetworkOperationStatus::ERROR;
+        return NonBlockingNetOpStatus::ERROR;
     } else if (serverDataReceiveStatus != sf::Socket::Done) {
-        return NonBlockingNetworkOperationStatus::NOT_READY;
+        return NonBlockingNetOpStatus::NOT_READY;
     }
 
-    gameUpdate.type = AuthoritativeGameUpdate::determineUpdateType(tcpDataReceiveBuffer[0]);
+    sf::Int8 signalType;
+    signalPacket >> signalType;
+    gameUpdate.type = AuthoritativeGameUpdate::determineUpdateType(signalType);
     switch (gameUpdate.type) {
     case AuthoritativeGameUpdate::Type::INIT:
-        gameUpdate.init = AuthoritativeGameUpdate::InitUpdate(tcpDataReceiveBuffer[1]);
+        bool isPlayer1;
+        signalPacket >> isPlayer1;
+        gameUpdate.init = AuthoritativeGameUpdate::InitUpdate(isPlayer1);
         break;
     case AuthoritativeGameUpdate::Type::UNKNOWN:
     default:
         std::cout << "Received an unexpected signal from the server. Resetting connection to the server." << std::endl;
         serverTcpSocket->disconnect();
-        return NonBlockingNetworkOperationStatus::ERROR;
+        return NonBlockingNetOpStatus::ERROR;
     }
 
-    return NonBlockingNetworkOperationStatus::COMPLETE;
+    return NonBlockingNetOpStatus::COMPLETE;
 
 }

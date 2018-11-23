@@ -11,22 +11,21 @@ public:
     GameServerConnection();
     ~GameServerConnection();
 
-    enum class NonBlockingNetworkOperationStatus {
+    enum class NonBlockingNetOpStatus {
         NOT_READY,
         ERROR,
         COMPLETE
     };
 
     bool connectToGameLobby();
-    NonBlockingNetworkOperationStatus findGame();
-    NonBlockingNetworkOperationStatus acceptGame();
-    NonBlockingNetworkOperationStatus verifyGameLaunch(bool* gameOn);
-    NonBlockingNetworkOperationStatus getAuthoritativeGameUpdate(AuthoritativeGameUpdate& gameUpdate);
+    NonBlockingNetOpStatus findGame();
+    NonBlockingNetOpStatus acceptGame();
+    NonBlockingNetOpStatus verifyGameLaunch(bool* gameOn);
+    NonBlockingNetOpStatus getAuthoritativeGameUpdate(AuthoritativeGameUpdate& gameUpdate);
 
 private:
     int failedLobbyConnectAttempts;
     int networkOperationAttempts;
-    char tcpDataReceiveBuffer[10];
 
     std::unique_ptr<sf::TcpSocket> serverTcpSocket;
 };

@@ -25,7 +25,7 @@ private:
         }
     };
 
-    const sf::Time timePerFrame = sf::seconds(1.f / 60.f);
+    const sf::Time timePerSimulationTick = sf::seconds(1.f / 60.f);
     sf::RenderWindow window;
     ResourceLoader resourceLoader;
     GameMetricsTracker gameMetricsTracker;

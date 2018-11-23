@@ -31,11 +31,14 @@
     <Filter Include="Source Files\Character Control">
       <UniqueIdentifier>{fbd7df2a-3434-48f9-abe3-e5050e9def97}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Network">
+      <UniqueIdentifier>{cc8763ab-cf70-42fc-9db6-ad018e05d3c6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Network">
+      <UniqueIdentifier>{a0c0ca77-6299-4121-94fd-3b66689a3ad6}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="BattleScene.cpp">
-      <Filter>Source Files\Scenes</Filter>
-    </ClCompile>
     <ClCompile Include="MainMenuScene.cpp">
       <Filter>Source Files\Scenes</Filter>
     </ClCompile>
@@ -78,9 +81,6 @@
     <ClCompile Include="GameClient.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="GameServerConnection.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="WizardNode.cpp">
       <Filter>Source Files\Scene Nodes</Filter>
     </ClCompile>
@@ -90,8 +90,14 @@
     <ClCompile Include="LocallyControlledWizardController.cpp">
       <Filter>Source Files\Character Control</Filter>
     </ClCompile>
+    <ClCompile Include="GameServerConnection.cpp">
+      <Filter>Source Files\Network</Filter>
+    </ClCompile>
     <ClCompile Include="AuthoritativeGameUpdate.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Network</Filter>
+    </ClCompile>
+    <ClCompile Include="BattleScene.cpp">
+      <Filter>Source Files\Scenes</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -102,9 +108,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="MainMenuScene.h">
-      <Filter>Header Files\Scenes</Filter>
-    </ClInclude>
-    <ClInclude Include="BattleScene.h">
       <Filter>Header Files\Scenes</Filter>
     </ClInclude>
     <ClInclude Include="SceneNode.h">
@@ -143,9 +146,6 @@
     <ClInclude Include="GameClient.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="GameServerConnection.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="WizardNode.h">
       <Filter>Header Files\Scene Nodes</Filter>
     </ClInclude>
@@ -159,7 +159,13 @@
       <Filter>Header Files\Character Control</Filter>
     </ClInclude>
     <ClInclude Include="AuthoritativeGameUpdate.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\Network</Filter>
+    </ClInclude>
+    <ClInclude Include="GameServerConnection.h">
+      <Filter>Header Files\Network</Filter>
+    </ClInclude>
+    <ClInclude Include="BattleScene.h">
+      <Filter>Header Files\Scenes</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

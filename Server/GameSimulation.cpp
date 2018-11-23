@@ -1,6 +1,9 @@
 #include "GameSimulation.h"
 #include "NetworkCommunicationSignals.h"
 
+#include <SFML/Network/Packet.hpp>
+#include <SFML/System/Clock.hpp>
+
 GameSimulation::GameSimulation(int gameId,
            std::unique_ptr<sf::TcpSocket> player1TcpConnection,
            std::unique_ptr<sf::TcpSocket> player2TcpConnection) : gameId(gameId),
@@ -19,8 +22,14 @@ void GameSimulation::run() {
 
     initialize();
 
+    sf::Clock clock;
+    auto timeSinceLastUpdate = sf::Time::Zero;
+
     while (!gameShouldEnd) {
-        
+        timeSinceLastUpdate += clock.restart();
+        while (timeSinceLastUpdate > timePerSimulationTick) {
+            timeSinceLastUpdate -= timePerSimulationTick;
+        }
     }
 
     logger.info("Shutting down.");
@@ -35,13 +44,11 @@ int GameSimulation::getGameId() const {
 }
 
 void GameSimulation::initialize() {
-    char player1GameInitData[2];
-    player1GameInitData[0] = ServerSignal::GAME_INIT;
-    player1GameInitData[1] = ServerSignal::IS_PLAYER_1;
-    player1TcpConnection->send(player1GameInitData, 2); //todo handle error
+    sf::Packet player1GameOnPacket;
+    player1GameOnPacket << static_cast<sf::Int8>(ServerSignal::GAME_INIT) << ServerSignal::IS_PLAYER_1;
+    player1TcpConnection->send(player1GameOnPacket);
 
-    char player2GameInitData[2];
-    player2GameInitData[0] = ServerSignal::GAME_INIT;
-    player2GameInitData[1] = ServerSignal::IS_NOT_PLAYER_1;
-    player2TcpConnection->send(player2GameInitData, 2); //todo handle error
+    sf::Packet player2GameOnPacket;
+    player2GameOnPacket << static_cast<sf::Int8>(ServerSignal::GAME_INIT) << ServerSignal::IS_NOT_PLAYER_1;
+    player2TcpConnection->send(player2GameOnPacket); //todo handle error
 }

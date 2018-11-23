@@ -2,6 +2,7 @@
 #include "GameSimulation.h"
 #include "NetworkCommunicationSignals.h"
 
+#include <SFML/Network/Packet.hpp>
 #include <SFML/Network/TcpListener.hpp>
 #include <SFML/Network/TcpSocket.hpp>
 #include <thread>
@@ -34,8 +35,8 @@ void GameLobby::run() {
 
     logger.info("Listening for new game requests on TCP port 53000.");
 
+    lobbyListenerSocket.setBlocking(false);
     while (shouldRun) {
-        lobbyListenerSocket.setBlocking(false);
         std::unique_ptr<sf::TcpSocket> newPlayerConnection(new sf::TcpSocket());
         auto status = lobbyListenerSocket.accept(*newPlayerConnection);
         if (status == sf::Socket::NotReady) {
@@ -44,7 +45,6 @@ void GameLobby::run() {
             logger.info("Failed to accept a new TCP connection.");
             continue;
         }
-        lobbyListenerSocket.setBlocking(true);
 
         logger.info("----------------------------------");
         logger.info("Accepted connection from [" + newPlayerConnection->getRemoteAddress().toString() + ":" + std::to_string(newPlayerConnection->getRemotePort()) + "].");
@@ -53,7 +53,7 @@ void GameLobby::run() {
             logger.info("Not enough players to start a game yet.");
             logger.info("Queueing new connection for match up.");
             clientsAwaitingGame.push(std::move(newPlayerConnection));
-        } else if (ongoingGames.size() >= maxOngoingGames) {
+        } else if (ongoingGames.size() >= maxOngoingGames) { // todo: then we need to check if any new games can be started if an ongoing game terminates
             logger.info("Number of ongoing games is at the maximum allowed.");
             logger.info("Queueing new connection for match up.");
             clientsAwaitingGame.push(std::move(newPlayerConnection));
@@ -104,24 +104,33 @@ void GameLobby::terminate() {
 }
 
 bool GameLobby::isReadyForGame(sf::TcpSocket* playerConnection) {
-    char dataReceived[1];
-    std::size_t received;
-
-    if (playerConnection->send(&ServerSignal::FOUND_GAME_MATCH, 1) != sf::Socket::Done) {
+    sf::Packet matchFoundPacket;
+    matchFoundPacket << static_cast<sf::Int8>(ServerSignal::FOUND_GAME_MATCH);
+    if (playerConnection->send(matchFoundPacket) != sf::Socket::Done) {
         return false;
     }
 
-    if (playerConnection->receive(dataReceived, 1, received) != sf::Socket::Done || dataReceived[0] != ClientSignal::READY_FOR_MATCH) {
-        return false;
+    sf::Packet matchAcceptedPacket;
+    if (playerConnection->receive(matchAcceptedPacket) != sf::Socket::Done) {
+        sf::Int8 matchAcceptedSignal;
+        matchAcceptedPacket >> matchAcceptedSignal;
+
+        if (matchAcceptedSignal != ClientSignal::READY_FOR_MATCH) {
+            return false;
+        }
     }
 
     return true;
 }
 
 void GameLobby::signalGameOn(sf::TcpSocket* playerConnection) {
-    playerConnection->send(&ServerSignal::GAME_ON, 1);
+    sf::Packet gameOnPacket;
+    gameOnPacket << static_cast<sf::Int8>(ServerSignal::GAME_ON);
+    playerConnection->send(gameOnPacket);
 }
 
 void GameLobby::signalGameOff(sf::TcpSocket* playerConnection) {
-    playerConnection->send(&ServerSignal::GAME_OFF, 1);
+    sf::Packet gameOffPacket;
+    gameOffPacket << static_cast<sf::Int8>(ServerSignal::GAME_OFF);
+    playerConnection->send(gameOffPacket);
 }
