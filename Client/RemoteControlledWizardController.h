@@ -3,10 +3,10 @@
 #include "WizardController.h"
 #include "GameServerConnection.h"
 
-class LocallyControlledWizardController : public WizardController {
+class RemoteControlledWizardController : public WizardController {
 public:
-    LocallyControlledWizardController(WizardNode* wizard, GameServerConnection* gameServer);
-    ~LocallyControlledWizardController();
+    RemoteControlledWizardController(WizardNode* wizard, GameServerConnection* gameServer);
+    ~RemoteControlledWizardController();
 
     void update(sf::Time deltaTime, bool isGameInFocus) override;
 

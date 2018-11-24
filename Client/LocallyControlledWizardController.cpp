@@ -3,7 +3,7 @@
 
 #include <SFML/Window/Keyboard.hpp>
 
-LocallyControlledWizardController::LocallyControlledWizardController(WizardNode* wizard): wizard(wizard) {
+LocallyControlledWizardController::LocallyControlledWizardController(WizardNode* wizard, GameServerConnection* gameServer): wizard(wizard), gameServer(gameServer) {
 }
 
 LocallyControlledWizardController::~LocallyControlledWizardController() = default;
@@ -43,10 +43,14 @@ void LocallyControlledWizardController::update(sf::Time deltaTime, bool isGameIn
     } else if (velocity.x < 0.0f) {
         wizard->direction = WizardNode::Direction::LEFT;
         wizard->run();
+        gameServer->sendMoveCommand(GameServerConnection::Command::MOVE_LEFT);
     } else {
         wizard->direction = WizardNode::Direction::RIGHT;
         wizard->run();
+        gameServer->sendMoveCommand(GameServerConnection::Command::MOVE_RIGHT);
     }
+
+    // Predict new position
 
     auto updatedPosition = wizard->getPosition() + velocity * deltaTime.asSeconds();
 

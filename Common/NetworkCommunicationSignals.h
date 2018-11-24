@@ -12,4 +12,6 @@ namespace ServerSignal {
 
 namespace ClientSignal {
     const char READY_FOR_MATCH = '!';
+    const char MOVE_LEFT_COMMAND = '<';
+    const char MOVE_RIGHT_COMMAND = '>';
 }

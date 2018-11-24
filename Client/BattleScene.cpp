@@ -10,6 +10,7 @@
 #include "StationaryWizardController.h"
 #include "LocallyControlledWizardController.h"
 #include <iostream>
+#include "RemoteControlledWizardController.h"
 
 BattleScene::BattleScene(GameSceneDirector* sceneDirector,
                          ResourceLoader* resourceLoader,
@@ -19,7 +20,8 @@ BattleScene::BattleScene(GameSceneDirector* sceneDirector,
                                                              gameMetricsTracker(gameMetricsTracker),
                                                              gameServer(gameServer),
                                                              rootSceneNode(new EmptySceneNode()),
-                                                             localWizardController(new StationaryWizardController()) {
+                                                             localWizardController(new StationaryWizardController()),
+                                                             remoteWizardController(new StationaryWizardController()) {
     resourceLoader->loadTexture(ResourceLoader::TextureId::WIZARD_PURPLE, "Resources/Sprite Sheets/wizard-purple.png");
     resourceLoader->loadTexture(ResourceLoader::TextureId::WIZARD_ORANGE, "Resources/Sprite Sheets/wizard-orange.png");
     buildScene();
@@ -47,11 +49,14 @@ void BattleScene::update(sf::Time deltaTime, bool isGameInFocus) {
         case AuthoritativeGameUpdate::Type::INIT:
             if (serverUpdate.init.isPlayer1) {
                 std::cout << "Assigned to locally control player 1." << std::endl;
-                localWizardController.reset(new LocallyControlledWizardController(player1Wizard));
+                localWizardController.reset(new LocallyControlledWizardController(player1Wizard, gameServer));
+                remoteWizardController.reset(new RemoteControlledWizardController(player2Wizard, gameServer));
             } else {
                 std::cout << "Assigned to locally control player 2." << std::endl;
-                localWizardController.reset(new LocallyControlledWizardController(player2Wizard));
+                remoteWizardController.reset(new RemoteControlledWizardController(player1Wizard, gameServer));
+                localWizardController.reset(new LocallyControlledWizardController(player2Wizard, gameServer));
             }
+            // gameServer->disconnectFromGameLobby(); //todo!
             break;
         default:
             std::cout << "Received unrecognized update type." << std::endl;

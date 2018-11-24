@@ -31,6 +31,7 @@ private:
     WizardNode* player1Wizard;
     WizardNode* player2Wizard;
     std::unique_ptr<WizardController> localWizardController;
+    std::unique_ptr<WizardController> remoteWizardController;
 
     void buildScene();
 };

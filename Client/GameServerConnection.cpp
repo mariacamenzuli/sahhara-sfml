@@ -31,6 +31,10 @@ bool GameServerConnection::connectToGameLobby() {
     }
 }
 
+void GameServerConnection::disconnectFromGameLobby() {
+    serverTcpSocket->disconnect();
+}
+
 GameServerConnection::NonBlockingNetOpStatus GameServerConnection::findGame() {
     if (networkOperationAttempts % 120 == 0) {
         std::cout << "Waiting for a game match..." << std::endl;
@@ -178,4 +182,14 @@ GameServerConnection::NonBlockingNetOpStatus GameServerConnection::getAuthoritat
 
     return NonBlockingNetOpStatus::COMPLETE;
 
+}
+
+void GameServerConnection::sendMoveCommand(Command command) {
+    sf::Packet moveCommandPacket;
+    if (command == Command::MOVE_LEFT) {
+        moveCommandPacket << static_cast<sf::Int8>(ClientSignal::MOVE_LEFT_COMMAND);
+    } else {
+        moveCommandPacket << static_cast<sf::Int8>(ClientSignal::MOVE_RIGHT_COMMAND);
+    }
+    serverTcpSocket->send(moveCommandPacket); //todo: add timestamp to command
 }

@@ -99,6 +99,9 @@
     <ClCompile Include="BattleScene.cpp">
       <Filter>Source Files\Scenes</Filter>
     </ClCompile>
+    <ClCompile Include="RemoteControlledWizardController.cpp">
+      <Filter>Source Files\Character Control</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameScene.h">
@@ -166,6 +169,9 @@
     </ClInclude>
     <ClInclude Include="BattleScene.h">
       <Filter>Header Files\Scenes</Filter>
+    </ClInclude>
+    <ClInclude Include="RemoteControlledWizardController.h">
+      <Filter>Header Files\Character Control</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
