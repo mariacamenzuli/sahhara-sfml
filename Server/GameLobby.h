@@ -36,7 +36,7 @@ private:
     std::queue<std::unique_ptr<sf::TcpSocket>> clientsAwaitingGame;
     std::vector<OngoingGame> ongoingGames;
 
-    bool isReadyForGame(sf::TcpSocket* playerConnection);
+    bool isReadyForGame(sf::TcpSocket* playerConnection, unsigned short& udpPort);
     void signalGameOn(sf::TcpSocket* playerConnection);
     void signalGameOff(sf::TcpSocket* playerConnection);
 };

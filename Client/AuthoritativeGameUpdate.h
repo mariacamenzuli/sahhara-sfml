@@ -13,9 +13,9 @@ public:
 
     struct InitUpdate {
         bool isPlayer1;
+        unsigned short serverUdpPort;
 
-        explicit InitUpdate(bool isPlayer1)
-            : isPlayer1(isPlayer1) {
+        InitUpdate(bool isPlayer1, unsigned short udpPort) : isPlayer1(isPlayer1), serverUdpPort(udpPort) {
         }
     };
 

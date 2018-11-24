@@ -120,14 +120,20 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="ClientUpdate.cpp" />
+    <ClCompile Include="GameClientConnection.cpp" />
     <ClCompile Include="GameSimulation.cpp" />
     <ClCompile Include="GameLobby.cpp" />
+    <ClCompile Include="PlayerAddress.cpp" />
     <ClCompile Include="ServerMain.cpp" />
     <ClCompile Include="ThreadLogger.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="ClientUpdate.h" />
+    <ClInclude Include="GameClientConnection.h" />
     <ClInclude Include="GameSimulation.h" />
     <ClInclude Include="GameLobby.h" />
+    <ClInclude Include="PlayerAddress.h" />
     <ClInclude Include="ThreadLogger.h" />
   </ItemGroup>
   <ItemGroup>

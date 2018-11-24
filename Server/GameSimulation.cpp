@@ -7,26 +7,42 @@
 #include <queue>
 
 GameSimulation::GameSimulation(int gameId,
-           std::unique_ptr<sf::TcpSocket> player1TcpConnection,
-           std::unique_ptr<sf::TcpSocket> player2TcpConnection) : gameId(gameId),
-                                                                  player1TcpConnection(std::move(player1TcpConnection)),
-                                                                  player2TcpConnection(std::move(player2TcpConnection)),
-                                                                  logger(ThreadLogger("game-" + std::to_string(gameId))) {
-    this->player1TcpConnection->setBlocking(false);
-    this->player2TcpConnection->setBlocking(false);
-}
+                               std::unique_ptr<sf::TcpSocket> player1TcpConnection,
+                               unsigned short player1RemoteUdpPort,
+                               std::unique_ptr<sf::TcpSocket> player2TcpConnection,
+                               unsigned short player2RemoteUdpPort) : gameId(gameId),
+                                                                logger(ThreadLogger("game-" + std::to_string(gameId))),
+                                                                clientConnection(player1TcpConnection->getRemoteAddress(),
+                                                                                 player1RemoteUdpPort,
+                                                                                 player2TcpConnection->getRemoteAddress(),
+                                                                                 player2RemoteUdpPort) {
+    logger.info("Initializing game-" + std::to_string(gameId) +".");
+    logger.info("Player 1 remote UDP address: [IP: " + player1TcpConnection->getRemoteAddress().toString() + ", Port: " + std::to_string(player1RemoteUdpPort) + "]");
+    logger.info("Player 2 remote UDP address: [IP: " + player2TcpConnection->getRemoteAddress().toString() + ", Port: " + std::to_string(player2RemoteUdpPort) + "]");
 
-GameSimulation::~GameSimulation() {
+    unsigned short player1UdpSocketPort;
+    unsigned short player2UdpSocketPort;
+    clientConnection.initialize(player1UdpSocketPort, player2UdpSocketPort);
+    logger.info("Bound local UDP sockets on port " + std::to_string(player1UdpSocketPort) + " for " + std::to_string(player2UdpSocketPort) + " for players 1 & 2.");
+
+    //todo: send reliably over UDP?
+    logger.info("Signaling game start to player 1.");
+    sf::Packet player1GameOnPacket;
+    player1GameOnPacket << static_cast<sf::Int8>(ServerSignal::GAME_INIT) << ServerSignal::IS_PLAYER_1 << player1UdpSocketPort;
+    player1TcpConnection->send(player1GameOnPacket);
+
+    logger.info("Signaling game start to player 2.");
+    sf::Packet player2GameOnPacket;
+    player2GameOnPacket << static_cast<sf::Int8>(ServerSignal::GAME_INIT) << ServerSignal::IS_NOT_PLAYER_1 << player2UdpSocketPort;
+    player2TcpConnection->send(player2GameOnPacket); //todo handle error
+
     player1TcpConnection->disconnect();
     player2TcpConnection->disconnect();
 }
 
+GameSimulation::~GameSimulation() = default;
+
 void GameSimulation::run() {
-    logger.info("Starting up.");
-
-    initialize();
-
-    // todo: send starting positions to clients on initialization
     gameState.player1Position.x = SimulationProperties::MIN_X_BOUNDARY;
     gameState.player1Position.y = SimulationProperties::MAX_Y_BOUNDARY;
 
@@ -59,35 +75,23 @@ int GameSimulation::getGameId() const {
     return gameId;
 }
 
-void GameSimulation::initialize() {
-    sf::Packet player1GameOnPacket;
-    player1GameOnPacket << static_cast<sf::Int8>(ServerSignal::GAME_INIT) << ServerSignal::IS_PLAYER_1;
-    player1TcpConnection->send(player1GameOnPacket);
-
-    sf::Packet player2GameOnPacket;
-    player2GameOnPacket << static_cast<sf::Int8>(ServerSignal::GAME_INIT) << ServerSignal::IS_NOT_PLAYER_1;
-    player2TcpConnection->send(player2GameOnPacket); //todo handle error
-}
-
 void GameSimulation::checkForNetworkUpdates() {
-    sf::Packet player1CommandPacket;
-    if (player1TcpConnection->receive(player1CommandPacket) == sf::Socket::Done) {
-        sf::Int8 command;
-        player1CommandPacket >> command;
-        if (command == ClientSignal::MOVE_LEFT_COMMAND) {
+    ClientUpdate player1Update;
+    clientConnection.getPlayer1Update(player1Update);
+    if (player1Update.type == ClientUpdate::Type::MOVE) {
+        if (player1Update.move.left) {
             gameState.player1MovementQueue.push(Command::MOVE_LEFT);
-        } else {
+        } else if (player1Update.move.right) {
             gameState.player1MovementQueue.push(Command::MOVE_RIGHT);
         }
     }
 
-    sf::Packet player2CommandPacket;
-    if (player2TcpConnection->receive(player2CommandPacket) == sf::Socket::Done) {
-        sf::Int8 command;
-        player2CommandPacket >> command;
-        if (command == ClientSignal::MOVE_LEFT_COMMAND) {
+    ClientUpdate player2Update;
+    clientConnection.getPlayer2Update(player2Update);
+    if (player2Update.type == ClientUpdate::Type::MOVE) {
+        if (player2Update.move.left) {
             gameState.player2MovementQueue.push(Command::MOVE_LEFT);
-        } else {
+        } else if (player2Update.move.right) {
             gameState.player2MovementQueue.push(Command::MOVE_RIGHT);
         }
     }

@@ -33,7 +33,7 @@ void MainMenuScene::handlePlayerInput(sf::Keyboard::Key key, bool isPressed) {
 }
 
 void MainMenuScene::update(sf::Time deltaTime, bool isGameInFocus) {
-    GameServerConnection::NonBlockingNetOpStatus operationStatus;
+    NonBlockingNetOpStatus operationStatus;
     switch (state) {
     case State::CONNECTING_TO_GAME_LOBBY:
         if (gameServer->connectToGameLobby()) {
@@ -44,9 +44,9 @@ void MainMenuScene::update(sf::Time deltaTime, bool isGameInFocus) {
         break;
     case State::WAITING_FOR_GAME_MATCH:
         operationStatus = gameServer->findGame();
-        if (operationStatus == GameServerConnection::NonBlockingNetOpStatus::COMPLETE) {
+        if (operationStatus == NonBlockingNetOpStatus::COMPLETE) {
             state = State::ACCEPTING_GAME_MATCH;
-        } else if (operationStatus == GameServerConnection::NonBlockingNetOpStatus::ERROR) {
+        } else if (operationStatus == NonBlockingNetOpStatus::ERROR) {
             clearWaitingForChallengerUi();
             state = State::CONNECTING_TO_GAME_LOBBY;
             showConnectingToServerLobbyUi();
@@ -54,9 +54,9 @@ void MainMenuScene::update(sf::Time deltaTime, bool isGameInFocus) {
         break;
     case State::ACCEPTING_GAME_MATCH:
         operationStatus = gameServer->acceptGame();
-        if (operationStatus == GameServerConnection::NonBlockingNetOpStatus::COMPLETE) {
+        if (operationStatus == NonBlockingNetOpStatus::COMPLETE) {
             state = State::WAITING_FOR_GAME_GO_AHEAD;
-        } else if (operationStatus == GameServerConnection::NonBlockingNetOpStatus::ERROR) {
+        } else if (operationStatus == NonBlockingNetOpStatus::ERROR) {
             clearWaitingForChallengerUi();
             state = State::CONNECTING_TO_GAME_LOBBY;
             showConnectingToServerLobbyUi();
@@ -65,13 +65,13 @@ void MainMenuScene::update(sf::Time deltaTime, bool isGameInFocus) {
     case State::WAITING_FOR_GAME_GO_AHEAD:
         bool gameOn;
         operationStatus = gameServer->verifyGameLaunch(&gameOn);
-        if (operationStatus == GameServerConnection::NonBlockingNetOpStatus::COMPLETE) {
+        if (operationStatus == NonBlockingNetOpStatus::COMPLETE) {
             if (gameOn) {
                 sceneDirector->transitionToScene(GameSceneDirector::SceneId::BATTLE);
             } else {
                 state = State::WAITING_FOR_GAME_MATCH;
             }
-        } else if (operationStatus == GameServerConnection::NonBlockingNetOpStatus::ERROR) {
+        } else if (operationStatus == NonBlockingNetOpStatus::ERROR) {
             clearWaitingForChallengerUi();
             state = State::CONNECTING_TO_GAME_LOBBY;
             showConnectingToServerLobbyUi();

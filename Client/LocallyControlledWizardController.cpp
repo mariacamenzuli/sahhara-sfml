@@ -61,8 +61,8 @@ void LocallyControlledWizardController::update(sf::Time deltaTime, bool isGameIn
         updatedPosition.x = SimulationProperties::MAX_X_BOUNDARY;
     }
 
-    if (updatedPosition.y > 865.0f) {
-        updatedPosition.y = 865.0f;
+    if (updatedPosition.y > SimulationProperties::MAX_Y_BOUNDARY) {
+        updatedPosition.y = SimulationProperties::MAX_Y_BOUNDARY;
     }
 
     wizard->setPosition(updatedPosition);

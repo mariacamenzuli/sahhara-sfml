@@ -62,8 +62,10 @@ void GameLobby::run() {
             logger.info("Matched with queueing connection [" + opponentMatched->getRemoteAddress().toString() + ":" + std::to_string(opponentMatched->getRemotePort()) + "].");
             logger.info("Verifying connections.");
 
-            const bool opponentReady = isReadyForGame(opponentMatched);
-            const bool newPlayerReady = isReadyForGame(newPlayerConnection.get());
+            unsigned short player1RemoteUdpPort;
+            unsigned short player2RemoteUdpPort;
+            const bool opponentReady = isReadyForGame(opponentMatched, player1RemoteUdpPort);
+            const bool newPlayerReady = isReadyForGame(newPlayerConnection.get(), player2RemoteUdpPort);
 
             if (opponentReady && newPlayerReady) {
                 logger.info("Starting new game thread.");
@@ -72,7 +74,11 @@ void GameLobby::run() {
                 signalGameOn(newPlayerConnection.get());
 
                 uniqueGamesStarted++;
-                std::unique_ptr<GameSimulation> gameSimulation(new GameSimulation(uniqueGamesStarted, std::move(clientsAwaitingGame.front()), std::move(newPlayerConnection)));
+                std::unique_ptr<GameSimulation> gameSimulation(new GameSimulation(uniqueGamesStarted,
+                                                                                  std::move(clientsAwaitingGame.front()),
+                                                                                  player1RemoteUdpPort,
+                                                                                  std::move(newPlayerConnection),
+                                                                                  player2RemoteUdpPort));
                 clientsAwaitingGame.pop();
                 std::thread gameThread(&GameSimulation::run, gameSimulation.get());
 
@@ -103,7 +109,7 @@ void GameLobby::terminate() {
     shouldRun = false;
 }
 
-bool GameLobby::isReadyForGame(sf::TcpSocket* playerConnection) {
+bool GameLobby::isReadyForGame(sf::TcpSocket* playerConnection, unsigned short& udpPort) {
     sf::Packet matchFoundPacket;
     matchFoundPacket << static_cast<sf::Int8>(ServerSignal::FOUND_GAME_MATCH);
     if (playerConnection->send(matchFoundPacket) != sf::Socket::Done) {
@@ -111,13 +117,15 @@ bool GameLobby::isReadyForGame(sf::TcpSocket* playerConnection) {
     }
 
     sf::Packet matchAcceptedPacket;
-    if (playerConnection->receive(matchAcceptedPacket) != sf::Socket::Done) {
+    if (playerConnection->receive(matchAcceptedPacket) == sf::Socket::Done) {
         sf::Int8 matchAcceptedSignal;
         matchAcceptedPacket >> matchAcceptedSignal;
 
         if (matchAcceptedSignal != ClientSignal::READY_FOR_MATCH) {
             return false;
         }
+
+        matchAcceptedPacket >> udpPort;
     }
 
     return true;

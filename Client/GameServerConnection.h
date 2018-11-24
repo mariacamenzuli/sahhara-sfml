@@ -3,6 +3,8 @@
 #include "AuthoritativeGameUpdate.h"
 
 #include <SFML/Network/TcpSocket.hpp>
+#include <SFML/Network/Packet.hpp>
+#include <SFML/Network/IpAddress.hpp>
 #include <memory>
 
 
@@ -11,15 +13,10 @@ public:
     GameServerConnection();
     ~GameServerConnection();
 
-    enum class NonBlockingNetOpStatus {
-        NOT_READY,
-        ERROR,
-        COMPLETE
-    };
-
     enum class Command {
         MOVE_LEFT,
-        MOVE_RIGHT
+        MOVE_RIGHT,
+        JUMP
     };
 
     bool connectToGameLobby();
@@ -31,9 +28,19 @@ public:
 
     void sendMoveCommand(Command);
 
+    void setServerGameRunningSocketPort(unsigned short serverGameRunningSocketPort);
+    unsigned short getGameRunningSocketPort();
+
 private:
     int failedLobbyConnectAttempts;
     int networkOperationAttempts;
 
     std::unique_ptr<sf::TcpSocket> serverTcpSocket;
+    std::unique_ptr<sf::UdpSocket> gameRunningUdpSocket;
+    unsigned short gameRunningSocketPort = 0;
+
+    const sf::IpAddress serverIp = sf::IpAddress("127.0.0.1");
+    const unsigned short serverLobbyPort = 53000;
+
+    bool bindGameRunningConnection(unsigned short& udpSocketPort);
 };

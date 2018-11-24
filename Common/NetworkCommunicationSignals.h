@@ -1,5 +1,11 @@
 #pragma once
 
+enum class NonBlockingNetOpStatus {
+    NOT_READY,
+    ERROR,
+    COMPLETE
+};
+
 namespace ServerSignal {
     constexpr char FOUND_GAME_MATCH = '~';
     constexpr char GAME_ON = '+';
@@ -12,6 +18,5 @@ namespace ServerSignal {
 
 namespace ClientSignal {
     constexpr char READY_FOR_MATCH = '!';
-    constexpr char MOVE_LEFT_COMMAND = '<';
-    constexpr char MOVE_RIGHT_COMMAND = '>';
+    constexpr char MOVE_COMMAND = '>';
 }
