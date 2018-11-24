@@ -8,6 +8,8 @@
 #include "ResourceLoader.h"
 #include "WizardController.h"
 #include "GameServerConnection.h"
+#include "LocallyControlledWizardController.h"
+#include "RemoteControlledWizardController.h"
 
 class BattleScene : public GameScene {
 public:
@@ -28,8 +30,9 @@ private:
     std::unique_ptr<SceneNode> rootSceneNode;
     WizardNode* player1Wizard;
     WizardNode* player2Wizard;
-    std::unique_ptr<WizardController> localWizardController;
-    std::unique_ptr<WizardController> remoteWizardController;
+    std::unique_ptr<LocallyControlledWizardController> localWizardController;
+    std::unique_ptr<RemoteControlledWizardController> remoteWizardController;
+    bool isLocalWizardPlayer1 = false;
 
     void buildScene();
 };

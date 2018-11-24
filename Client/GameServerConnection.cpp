@@ -156,19 +156,42 @@ NonBlockingNetOpStatus GameServerConnection::verifyGameLaunch(bool* gameOn) {
     return NonBlockingNetOpStatus::COMPLETE;
 }
 
-NonBlockingNetOpStatus GameServerConnection::getAuthoritativeGameUpdate(AuthoritativeGameUpdate& gameUpdate) {
+bool GameServerConnection::getGameInitParameters(bool& isPlayer1Local, unsigned short& serverUdpPort) {
+    serverTcpSocket->setBlocking(true);
     sf::Packet signalPacket;
     const auto serverDataReceiveStatus = serverTcpSocket->receive(signalPacket);
 
     if (serverDataReceiveStatus == sf::Socket::Error) {
         std::cout << "An unexpected error has occurred. Resetting connection to the server." << std::endl;
         serverTcpSocket->disconnect();
-        return NonBlockingNetOpStatus::ERROR;
+        return false;
     } else if (serverDataReceiveStatus == sf::Socket::Disconnected) {
         std::cout << "An unexpected error has occurred. Lost connection to the server." << std::endl;
         serverTcpSocket->disconnect();
-        return NonBlockingNetOpStatus::ERROR;
-    } else if (serverDataReceiveStatus != sf::Socket::Done) {
+        return false;
+    }
+
+    sf::Int8 signalType;
+    signalPacket >> signalType;
+    if (signalType != ServerSignal::GAME_INIT) {
+        std::cout << "Received an unexpected signal from the server." << std::endl;
+        return false;
+    }
+
+    signalPacket >> isPlayer1Local;
+    signalPacket >> serverUdpPort;
+
+    return true;
+}
+
+NonBlockingNetOpStatus GameServerConnection::getAuthoritativeGameUpdate(AuthoritativeGameUpdate& gameUpdate) {
+    sf::Packet signalPacket;
+    sf::IpAddress senderIp;
+    unsigned short senderPort;
+    const auto serverDataReceiveStatus = gameRunningUdpSocket->receive(signalPacket, senderIp, senderPort);
+
+    //todo error handling?
+    if (serverDataReceiveStatus != sf::Socket::Done) {
         return NonBlockingNetOpStatus::NOT_READY;
     }
 
@@ -176,12 +199,12 @@ NonBlockingNetOpStatus GameServerConnection::getAuthoritativeGameUpdate(Authorit
     signalPacket >> signalType;
     gameUpdate.type = AuthoritativeGameUpdate::determineUpdateType(signalType);
     switch (gameUpdate.type) {
-    case AuthoritativeGameUpdate::Type::INIT:
-        bool isPlayer1;
-        signalPacket >> isPlayer1;
-        unsigned short udpPort;
-        signalPacket >> udpPort;
-        gameUpdate.init = AuthoritativeGameUpdate::InitUpdate(isPlayer1, udpPort);
+    case AuthoritativeGameUpdate::Type::PLAYER_POSITION_UPDATE:
+        bool isUpdateForPlayer1;
+        float newPositionX;
+        float newPositionY;
+        signalPacket >> isUpdateForPlayer1 >> newPositionX >> newPositionY;
+        gameUpdate.playerPosition = AuthoritativeGameUpdate::PlayerPositionUpdate(isUpdateForPlayer1, newPositionX, newPositionY);
         break;
     case AuthoritativeGameUpdate::Type::UNKNOWN:
     default:
@@ -191,7 +214,6 @@ NonBlockingNetOpStatus GameServerConnection::getAuthoritativeGameUpdate(Authorit
     }
 
     return NonBlockingNetOpStatus::COMPLETE;
-
 }
 
 bool GameServerConnection::bindGameRunningConnection(unsigned short& udpSocketPort) {
@@ -220,8 +242,4 @@ void GameServerConnection::sendMoveCommand(Command command) {
 
 void GameServerConnection::setServerGameRunningSocketPort(unsigned short serverGameRunningSocketPort) {
     this->gameRunningSocketPort = serverGameRunningSocketPort;
-}
-
-unsigned short GameServerConnection::getGameRunningSocketPort() {
-    return gameRunningSocketPort;
 }

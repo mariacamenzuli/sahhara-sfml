@@ -2,12 +2,9 @@
 
 #include "ThreadLogger.h"
 
-#include <SFML/Network/IpAddress.hpp>
 #include <SFML/Network/TcpSocket.hpp>
-#include <SFML/Network/UdpSocket.hpp>
 #include <SFML/System/Vector2.hpp>
 #include <queue>
-#include "PlayerAddress.h"
 #include "GameClientConnection.h"
 
 class GameSimulation {

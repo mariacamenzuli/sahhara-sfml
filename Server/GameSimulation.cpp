@@ -25,7 +25,6 @@ GameSimulation::GameSimulation(int gameId,
     clientConnection.initialize(player1UdpSocketPort, player2UdpSocketPort);
     logger.info("Bound local UDP sockets on port " + std::to_string(player1UdpSocketPort) + " for " + std::to_string(player2UdpSocketPort) + " for players 1 & 2.");
 
-    //todo: send reliably over UDP?
     logger.info("Signaling game start to player 1.");
     sf::Packet player1GameOnPacket;
     player1GameOnPacket << static_cast<sf::Int8>(ServerSignal::GAME_INIT) << ServerSignal::IS_PLAYER_1 << player1UdpSocketPort;
@@ -60,7 +59,7 @@ void GameSimulation::run() {
         while (timeSinceLastUpdate > timePerSimulationTick) {
             timeSinceLastUpdate -= timePerSimulationTick;
 
-            movePlayers(timeSinceLastUpdate);
+            movePlayers(timePerSimulationTick);
         }
     }
 
@@ -100,14 +99,18 @@ void GameSimulation::checkForNetworkUpdates() {
 void GameSimulation::movePlayers(sf::Time deltaTime) {
     if (!gameState.player1MovementQueue.empty()) {
         Command command = gameState.player1MovementQueue.front();
+
+        sf::Vector2f velocity(0.0f, 0.0f);
         if (command == Command::MOVE_LEFT) {
             logger.info("Player 1 move left");
+            velocity.x -= SimulationProperties::RUN_VELOCITY;
         } else {
             logger.info("Player 1 move right");
+            velocity.x += SimulationProperties::RUN_VELOCITY;
         }
         gameState.player1MovementQueue.pop();
 
-        gameState.player1Position = gameState.player1Position + sf::Vector2f(SimulationProperties::RUN_VELOCITY, 0) * deltaTime.asSeconds();
+        gameState.player1Position = gameState.player1Position + velocity * deltaTime.asSeconds();
 
         if (gameState.player1Position.x < SimulationProperties::MIN_X_BOUNDARY) {
             gameState.player1Position.x = SimulationProperties::MIN_X_BOUNDARY;
@@ -118,18 +121,24 @@ void GameSimulation::movePlayers(sf::Time deltaTime) {
         if (gameState.player1Position.y < SimulationProperties::MAX_Y_BOUNDARY) {
             gameState.player1Position.y = SimulationProperties::MAX_Y_BOUNDARY;
         }
+
+        clientConnection.broadcastPlayer1Position(gameState.player1Position);
     }
 
     if (!gameState.player2MovementQueue.empty()) {
         Command command = gameState.player2MovementQueue.front();
+
+        sf::Vector2f velocity(0.0f, 0.0f);
         if (command == Command::MOVE_LEFT) {
             logger.info("Player 2 move left");
+            velocity.x -= SimulationProperties::RUN_VELOCITY;
         } else {
             logger.info("Player 2 move right");
+            velocity.x += SimulationProperties::RUN_VELOCITY;
         }
         gameState.player2MovementQueue.pop();
 
-        gameState.player2Position = gameState.player2Position + sf::Vector2f(SimulationProperties::RUN_VELOCITY, 0) * deltaTime.asSeconds();
+        gameState.player2Position = gameState.player2Position + velocity * deltaTime.asSeconds();
 
         if (gameState.player2Position.x < SimulationProperties::MIN_X_BOUNDARY) {
             gameState.player2Position.x = SimulationProperties::MIN_X_BOUNDARY;
@@ -140,5 +149,7 @@ void GameSimulation::movePlayers(sf::Time deltaTime) {
         if (gameState.player2Position.y > SimulationProperties::MAX_Y_BOUNDARY) {
             gameState.player2Position.y = SimulationProperties::MAX_Y_BOUNDARY;
         }
+
+        clientConnection.broadcastPlayer2Position(gameState.player2Position);
     }
 }

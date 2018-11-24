@@ -1,5 +1,8 @@
 #pragma once
+
 #include "NetworkCommunicationSignals.h"
+
+#include <SFML/System/Vector2.hpp>
 
 class AuthoritativeGameUpdate {
 public:
@@ -8,6 +11,7 @@ public:
 
     enum class Type {
         INIT,
+        PLAYER_POSITION_UPDATE,
         UNKNOWN
     };
 
@@ -19,14 +23,25 @@ public:
         }
     };
 
+    struct PlayerPositionUpdate {
+        bool isUpdateForPlayer1;
+        sf::Vector2f newPosition;
+
+        PlayerPositionUpdate(bool isUpdateForPlayer1, float x, float y) : isUpdateForPlayer1(isUpdateForPlayer1), newPosition(x, y) {
+        }
+    };
+
     union {
         InitUpdate init;
+        PlayerPositionUpdate playerPosition;
     };
 
     static Type determineUpdateType(char signal) {
         switch (signal) {
         case ServerSignal::GAME_INIT:
             return Type::INIT;
+        case ServerSignal::PLAYER_POSITION_UPDATE:
+            return Type::PLAYER_POSITION_UPDATE;
         default:
             return Type::UNKNOWN;
         }

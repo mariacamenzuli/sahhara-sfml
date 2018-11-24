@@ -19,12 +19,32 @@ BattleScene::BattleScene(GameSceneDirector* sceneDirector,
                                                              resourceLoader(resourceLoader),
                                                              gameMetricsTracker(gameMetricsTracker),
                                                              gameServer(gameServer),
-                                                             rootSceneNode(new EmptySceneNode()),
-                                                             localWizardController(new StationaryWizardController()),
-                                                             remoteWizardController(new StationaryWizardController()) {
+                                                             rootSceneNode(new EmptySceneNode()) {
     resourceLoader->loadTexture(ResourceLoader::TextureId::WIZARD_PURPLE, "Resources/Sprite Sheets/wizard-purple.png");
     resourceLoader->loadTexture(ResourceLoader::TextureId::WIZARD_ORANGE, "Resources/Sprite Sheets/wizard-orange.png");
     buildScene();
+
+    bool isPlayer1Local;
+    unsigned short serverUdpPort;
+    if (!gameServer->getGameInitParameters(isPlayer1Local, serverUdpPort)) {
+        std::cout << "Terminating battle." << std::endl;
+        sceneDirector->transitionToScene(GameSceneDirector::SceneId::MAIN_MENU);
+        return;
+    }
+
+    if (isPlayer1Local) {
+        localWizardController.reset(new LocallyControlledWizardController(player1Wizard, gameServer));
+        remoteWizardController.reset(new RemoteControlledWizardController(player2Wizard, gameServer));
+        isLocalWizardPlayer1 = true;
+    } else {
+        std::cout << "Assigned to locally control player 2." << std::endl;
+        remoteWizardController.reset(new RemoteControlledWizardController(player1Wizard, gameServer));
+        localWizardController.reset(new LocallyControlledWizardController(player2Wizard, gameServer));
+        isLocalWizardPlayer1 = false;
+    }
+
+    gameServer->disconnectFromGameLobby();
+    gameServer->setServerGameRunningSocketPort(serverUdpPort);
 }
 
 BattleScene::~BattleScene() {
@@ -42,36 +62,23 @@ void BattleScene::handlePlayerInput(sf::Keyboard::Key key, bool isPressed) {
 
 void BattleScene::update(sf::Time deltaTime, bool isGameInFocus) {
     AuthoritativeGameUpdate serverUpdate;
-    if (gameServer->getGameRunningSocketPort() == 0) { //todo fix
-        const auto serverUpdateStatus = gameServer->getAuthoritativeGameUpdate(serverUpdate);
+    const auto serverUpdateStatus = gameServer->getAuthoritativeGameUpdate(serverUpdate);
 
-        if (serverUpdateStatus == NonBlockingNetOpStatus::COMPLETE) {
-            switch (serverUpdate.type) {
-            case AuthoritativeGameUpdate::Type::INIT:
-                if (serverUpdate.init.isPlayer1) {
-                    std::cout << "Assigned to locally control player 1." << std::endl;
-                    localWizardController.reset(new LocallyControlledWizardController(player1Wizard, gameServer));
-                    remoteWizardController.reset(new RemoteControlledWizardController(player2Wizard, gameServer));
-                } else {
-                    std::cout << "Assigned to locally control player 2." << std::endl;
-                    remoteWizardController.reset(new RemoteControlledWizardController(player1Wizard, gameServer));
-                    localWizardController.reset(new LocallyControlledWizardController(player2Wizard, gameServer));
-                }
-                gameServer->disconnectFromGameLobby();
-                gameServer->setServerGameRunningSocketPort(serverUpdate.init.serverUdpPort);
-                break;
-            default:
-                std::cout << "Received unrecognized update type." << std::endl;
-                break;
+    if (serverUpdateStatus == NonBlockingNetOpStatus::COMPLETE) {
+        switch (serverUpdate.type) {
+        case AuthoritativeGameUpdate::Type::PLAYER_POSITION_UPDATE:
+            if ((serverUpdate.playerPosition.isUpdateForPlayer1 && !isLocalWizardPlayer1) || (!serverUpdate.playerPosition.isUpdateForPlayer1 && isLocalWizardPlayer1)) {
+                remoteWizardController->setLastKnownPosition(serverUpdate.playerPosition.newPosition);
             }
-        } else if (serverUpdateStatus == NonBlockingNetOpStatus::ERROR) {
-            std::cout << "Terminating battle." << std::endl;
-            sceneDirector->transitionToScene(GameSceneDirector::SceneId::MAIN_MENU);
-            return;
+            break;
+        default:
+            std::cout << "Received unrecognized update type." << std::endl;
+            break;
         }
     }
 
     localWizardController->update(deltaTime, isGameInFocus);
+    remoteWizardController->update(deltaTime, isGameInFocus);
 }
 
 SceneNode* BattleScene::getRootSceneNode() {

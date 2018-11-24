@@ -11,6 +11,7 @@ namespace ServerSignal {
     constexpr char GAME_ON = '+';
     constexpr char GAME_OFF = '-';
     constexpr char GAME_INIT = '0';
+    constexpr char PLAYER_POSITION_UPDATE = '^';
 
     constexpr bool IS_PLAYER_1 = true;
     constexpr bool IS_NOT_PLAYER_1 = false;

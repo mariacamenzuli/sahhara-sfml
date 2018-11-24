@@ -33,6 +33,20 @@ NonBlockingNetOpStatus GameClientConnection::getPlayer2Update(ClientUpdate& clie
     return getPlayerUpdate(player2UdpSocket, clientUpdate);
 }
 
+void GameClientConnection::broadcastPlayer1Position(sf::Vector2<float> position) {
+    sf::Packet player1PositionPacket; //todo add seq number or timestamp
+    player1PositionPacket << static_cast<sf::Int8>(ServerSignal::PLAYER_POSITION_UPDATE) << ServerSignal::IS_PLAYER_1 << position.x << position.y;
+    player1UdpSocket.send(player1PositionPacket, player1Address.ip, player1Address.port);
+    player2UdpSocket.send(player1PositionPacket, player2Address.ip, player2Address.port);
+}
+
+void GameClientConnection::broadcastPlayer2Position(sf::Vector2<float> position) {
+    sf::Packet player2PositionPacket; //todo add seq number or timestamp
+    player2PositionPacket << static_cast<sf::Int8>(ServerSignal::PLAYER_POSITION_UPDATE) << ServerSignal::IS_NOT_PLAYER_1 << position.x << position.y;
+    player1UdpSocket.send(player2PositionPacket, player1Address.ip, player1Address.port);
+    player2UdpSocket.send(player2PositionPacket, player2Address.ip, player2Address.port);
+}
+
 NonBlockingNetOpStatus GameClientConnection::getPlayerUpdate(sf::UdpSocket& playerSocket, ClientUpdate& clientUpdate) {
     sf::Packet signalPacket;
     sf::IpAddress senderIpAddress;

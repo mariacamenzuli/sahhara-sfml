@@ -21,6 +21,7 @@ public:
 
     bool connectToGameLobby();
     void disconnectFromGameLobby();
+    bool getGameInitParameters(bool& isPlayer1Local, unsigned short& serverUdpPort);
     NonBlockingNetOpStatus findGame();
     NonBlockingNetOpStatus acceptGame();
     NonBlockingNetOpStatus verifyGameLaunch(bool* gameOn);
@@ -29,7 +30,6 @@ public:
     void sendMoveCommand(Command);
 
     void setServerGameRunningSocketPort(unsigned short serverGameRunningSocketPort);
-    unsigned short getGameRunningSocketPort();
 
 private:
     int failedLobbyConnectAttempts;

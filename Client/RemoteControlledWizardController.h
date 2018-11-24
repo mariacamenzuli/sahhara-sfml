@@ -9,9 +9,11 @@ public:
     ~RemoteControlledWizardController();
 
     void update(sf::Time deltaTime, bool isGameInFocus) override;
+    void setLastKnownPosition(sf::Vector2f lastKnownPosition);
 
 private:
     WizardNode* wizard;
     GameServerConnection* gameServer;
+    sf::Vector2f lastKnownPosition;
 };
 
