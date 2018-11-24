@@ -33,16 +33,9 @@ public:
     WizardNode(Color color, ResourceLoader* resourceLoader);
     ~WizardNode();
 
-    const float runVelocity = 500;
-    const float jumpKickOffVelocity = -650.0f;
-    const float jumpVelocity = -500.0f;
-    const float maxAirTime = 0.35f;
-    const float jumpKickOffTime = 0.1f;
-
     void run();
     void idle();
-
-
+    
     Direction direction;
     float timeInAir = 0.0f;
 

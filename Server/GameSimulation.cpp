@@ -1,5 +1,6 @@
 #include "GameSimulation.h"
 #include "NetworkCommunicationSignals.h"
+#include "SimulationProperties.h"
 
 #include <SFML/Network/Packet.hpp>
 #include <SFML/System/Clock.hpp>
@@ -26,11 +27,11 @@ void GameSimulation::run() {
     initialize();
 
     // todo: send starting positions to clients on initialization
-    gameState.player1Position.x = 0.0f;
-    gameState.player1Position.y = 865.0f;
+    gameState.player1Position.x = SimulationProperties::MIN_X_BOUNDARY;
+    gameState.player1Position.y = SimulationProperties::MAX_Y_BOUNDARY;
 
-    gameState.player2Position.x = 1780.0f;
-    gameState.player2Position.y = 865.0f;
+    gameState.player2Position.x = SimulationProperties::MAX_X_BOUNDARY;
+    gameState.player2Position.y = SimulationProperties::MAX_Y_BOUNDARY;
 
     sf::Clock clock;
     auto timeSinceLastUpdate = sf::Time::Zero;
@@ -43,25 +44,7 @@ void GameSimulation::run() {
         while (timeSinceLastUpdate > timePerSimulationTick) {
             timeSinceLastUpdate -= timePerSimulationTick;
 
-            if (!gameState.player1MovementQueue.empty()) {
-                Command command = gameState.player1MovementQueue.front();
-                if (command == Command::MOVE_LEFT) {
-                    logger.info("Player 1 move left");
-                } else {
-                    logger.info("Player 1 move right");
-                }
-                gameState.player1MovementQueue.pop();
-            }
-
-            if (!gameState.player2MovementQueue.empty()) {
-                Command command = gameState.player2MovementQueue.front();
-                if (command == Command::MOVE_LEFT) {
-                    logger.info("Player 2 move left");
-                } else {
-                    logger.info("Player 2 move right");
-                }
-                gameState.player2MovementQueue.pop();
-            }
+            movePlayers(timeSinceLastUpdate);
         }
     }
 
@@ -106,6 +89,52 @@ void GameSimulation::checkForNetworkUpdates() {
             gameState.player2MovementQueue.push(Command::MOVE_LEFT);
         } else {
             gameState.player2MovementQueue.push(Command::MOVE_RIGHT);
+        }
+    }
+}
+
+void GameSimulation::movePlayers(sf::Time deltaTime) {
+    if (!gameState.player1MovementQueue.empty()) {
+        Command command = gameState.player1MovementQueue.front();
+        if (command == Command::MOVE_LEFT) {
+            logger.info("Player 1 move left");
+        } else {
+            logger.info("Player 1 move right");
+        }
+        gameState.player1MovementQueue.pop();
+
+        gameState.player1Position = gameState.player1Position + sf::Vector2f(SimulationProperties::RUN_VELOCITY, 0) * deltaTime.asSeconds();
+
+        if (gameState.player1Position.x < SimulationProperties::MIN_X_BOUNDARY) {
+            gameState.player1Position.x = SimulationProperties::MIN_X_BOUNDARY;
+        } else if (gameState.player1Position.x > SimulationProperties::MAX_X_BOUNDARY) {
+            gameState.player1Position.x = SimulationProperties::MAX_X_BOUNDARY;
+        }
+
+        if (gameState.player1Position.y < SimulationProperties::MAX_Y_BOUNDARY) {
+            gameState.player1Position.y = SimulationProperties::MAX_Y_BOUNDARY;
+        }
+    }
+
+    if (!gameState.player2MovementQueue.empty()) {
+        Command command = gameState.player2MovementQueue.front();
+        if (command == Command::MOVE_LEFT) {
+            logger.info("Player 2 move left");
+        } else {
+            logger.info("Player 2 move right");
+        }
+        gameState.player2MovementQueue.pop();
+
+        gameState.player2Position = gameState.player2Position + sf::Vector2f(SimulationProperties::RUN_VELOCITY, 0) * deltaTime.asSeconds();
+
+        if (gameState.player2Position.x < SimulationProperties::MIN_X_BOUNDARY) {
+            gameState.player2Position.x = SimulationProperties::MIN_X_BOUNDARY;
+        } else if (gameState.player2Position.x > SimulationProperties::MAX_X_BOUNDARY) {
+            gameState.player2Position.x = SimulationProperties::MAX_X_BOUNDARY;
+        }
+
+        if (gameState.player2Position.y > SimulationProperties::MAX_Y_BOUNDARY) {
+            gameState.player2Position.y = SimulationProperties::MAX_Y_BOUNDARY;
         }
     }
 }

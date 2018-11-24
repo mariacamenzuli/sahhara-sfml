@@ -1,8 +1,9 @@
 #pragma once
 
+#include "ThreadLogger.h"
+
 #include <SFML/Network/IpAddress.hpp>
 #include <SFML/Network/TcpSocket.hpp>
-#include "ThreadLogger.h"
 #include <SFML/System/Vector2.hpp>
 #include <queue>
 
@@ -39,4 +40,5 @@ private:
 
     void initialize();
     void checkForNetworkUpdates();
+    void movePlayers(sf::Time deltaTime);
 };

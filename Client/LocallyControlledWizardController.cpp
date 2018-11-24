@@ -2,6 +2,7 @@
 #include "BattleScene.h"
 
 #include <SFML/Window/Keyboard.hpp>
+#include "SimulationProperties.h"
 
 LocallyControlledWizardController::LocallyControlledWizardController(WizardNode* wizard, GameServerConnection* gameServer): wizard(wizard), gameServer(gameServer) {
 }
@@ -16,26 +17,26 @@ void LocallyControlledWizardController::update(sf::Time deltaTime, bool isGameIn
         wizard->timeInAir = 0.0f;
 
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space) && isGameInFocus) {
-            velocity.y = wizard->jumpKickOffVelocity;
+            velocity.y = SimulationProperties::JUMP_KICKOFF_VELOCITY;
             wizard->timeInAir += deltaTime.asSeconds();
         }
     } else {
-        if (wizard->timeInAir < wizard->jumpKickOffTime) {
-            velocity.y = wizard->jumpKickOffVelocity;
-        } else if (wizard->timeInAir < wizard->maxAirTime) {
-            velocity.y = wizard->jumpVelocity;
+        if (wizard->timeInAir < SimulationProperties::JUMP_KICK_OFF_TIME) {
+            velocity.y = SimulationProperties::JUMP_KICKOFF_VELOCITY;
+        } else if (wizard->timeInAir < SimulationProperties::MAX_AIR_TIME) {
+            velocity.y = SimulationProperties::JUMP_VELOCITY;
         } else {
-            velocity.y = BattleScene::GRAVITY;
+            velocity.y = SimulationProperties::GRAVITY;
         }
         wizard->timeInAir += deltaTime.asSeconds();
     }
 
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::A) && isGameInFocus) {
-        velocity.x -= wizard->runVelocity;
+        velocity.x -= SimulationProperties::RUN_VELOCITY;
     }
 
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::D) && isGameInFocus) {
-        velocity.x += wizard->runVelocity;
+        velocity.x += SimulationProperties::RUN_VELOCITY;
     }
 
     if (velocity.x == 0.0f) {
@@ -54,10 +55,10 @@ void LocallyControlledWizardController::update(sf::Time deltaTime, bool isGameIn
 
     auto updatedPosition = wizard->getPosition() + velocity * deltaTime.asSeconds();
 
-    if (updatedPosition.x < 0.0f) {
-        updatedPosition.x = 0.0f;
-    } else if (updatedPosition.x > 1780.0f) {
-        updatedPosition.x = 1780.0f;
+    if (updatedPosition.x < SimulationProperties::MIN_X_BOUNDARY) {
+        updatedPosition.x = SimulationProperties::MIN_X_BOUNDARY;
+    } else if (updatedPosition.x > SimulationProperties::MAX_X_BOUNDARY) {
+        updatedPosition.x = SimulationProperties::MAX_X_BOUNDARY;
     }
 
     if (updatedPosition.y > 865.0f) {
