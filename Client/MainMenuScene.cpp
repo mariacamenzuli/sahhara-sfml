@@ -32,7 +32,7 @@ void MainMenuScene::handlePlayerInput(sf::Keyboard::Key key, bool isPressed) {
     }
 }
 
-void MainMenuScene::update(sf::Time deltaTime, bool isGameInFocus) {
+void MainMenuScene::update() {
     NonBlockingNetOpStatus operationStatus;
     switch (state) {
     case State::CONNECTING_TO_GAME_LOBBY:
@@ -77,6 +77,10 @@ void MainMenuScene::update(sf::Time deltaTime, bool isGameInFocus) {
             showConnectingToServerLobbyUi();
         }
     }
+}
+
+void MainMenuScene::simulationUpdate(sf::Time deltaTime, bool isGameInFocus) {
+    // no-op
 }
 
 SceneNode* MainMenuScene::getRootSceneNode() {

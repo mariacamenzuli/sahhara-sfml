@@ -1,11 +1,11 @@
 #pragma once
 
 #include "ThreadLogger.h"
+#include "GameClientConnection.h"
 
 #include <SFML/Network/TcpSocket.hpp>
 #include <SFML/System/Vector2.hpp>
 #include <queue>
-#include "GameClientConnection.h"
 
 class GameSimulation {
 public:
@@ -17,15 +17,9 @@ public:
     int getGameId() const;
 
 private:
-    enum class Command {
-        MOVE_LEFT,
-        MOVE_RIGHT,
-        JUMP
-    };
-
     struct GameState {
-        std::queue<Command> player1MovementQueue;
-        std::queue<Command> player2MovementQueue;
+        std::queue<ClientUpdate::MoveCommand> player1MovementQueue;
+        std::queue<ClientUpdate::MoveCommand> player2MovementQueue;
         sf::Vector2<float> player1Position;
         sf::Vector2<float> player2Position;
     };

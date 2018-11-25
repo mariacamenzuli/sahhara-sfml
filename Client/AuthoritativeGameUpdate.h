@@ -3,6 +3,7 @@
 #include "NetworkCommunicationSignals.h"
 
 #include <SFML/System/Vector2.hpp>
+#include <SFML/System/Utf.hpp>
 
 class AuthoritativeGameUpdate {
 public:
@@ -10,17 +11,9 @@ public:
     ~AuthoritativeGameUpdate();
 
     enum class Type {
-        INIT,
         PLAYER_POSITION_UPDATE,
+        MOVE_COMMAND_ACK,
         UNKNOWN
-    };
-
-    struct InitUpdate {
-        bool isPlayer1;
-        unsigned short serverUdpPort;
-
-        InitUpdate(bool isPlayer1, unsigned short udpPort) : isPlayer1(isPlayer1), serverUdpPort(udpPort) {
-        }
     };
 
     struct PlayerPositionUpdate {
@@ -31,17 +24,25 @@ public:
         }
     };
 
+    struct MoveCommandAckUpdate {
+        sf::Uint16 sequenceNumber;
+
+        explicit MoveCommandAckUpdate(sf::Uint16 sequenceNumber)
+            : sequenceNumber(sequenceNumber) {
+        }
+    };
+
     union {
-        InitUpdate init;
         PlayerPositionUpdate playerPosition;
+        MoveCommandAckUpdate moveCommandAck;
     };
 
     static Type determineUpdateType(char signal) {
         switch (signal) {
-        case ServerSignal::GAME_INIT:
-            return Type::INIT;
         case ServerSignal::PLAYER_POSITION_UPDATE:
             return Type::PLAYER_POSITION_UPDATE;
+        case ServerSignal::MOVE_COMMAND_ACK:
+            return Type::MOVE_COMMAND_ACK;
         default:
             return Type::UNKNOWN;
         }

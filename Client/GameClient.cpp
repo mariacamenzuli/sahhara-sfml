@@ -43,11 +43,12 @@ void GameClient::run() {
 
     while (window.isOpen()) {
         processWindowEvents();
+        update();
         timeSinceLastUpdate += clock.restart();
         while (timeSinceLastUpdate > timePerSimulationTick) { //todo: run prediction in between simulation ticks?
             timeSinceLastUpdate -= timePerSimulationTick;
             processWindowEvents();
-            update(timePerSimulationTick);
+            simulationUpdate(timePerSimulationTick);
         }
         render();
     }
@@ -90,10 +91,14 @@ void GameClient::processWindowEvents() {
     }
 }
 
-void GameClient::update(sf::Time deltaTime) {
-    activeScene->sceneController->update(deltaTime, window.hasFocus());
+void GameClient::update() {
+    activeScene->sceneController->update();
+}
+
+void GameClient::simulationUpdate(sf::Time deltaTime) {
+    activeScene->sceneController->simulationUpdate(deltaTime, window.hasFocus());
     assert(activeScene->sceneController->getRootSceneNode());
-    activeScene->sceneController->getRootSceneNode()->update(deltaTime, window.hasFocus());
+    activeScene->sceneController->getRootSceneNode()->simulationUpdate(deltaTime, window.hasFocus());
     gameMetricsTracker.newLogicUpdate();
 }
 

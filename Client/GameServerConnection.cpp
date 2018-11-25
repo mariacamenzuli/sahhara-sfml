@@ -200,12 +200,12 @@ NonBlockingNetOpStatus GameServerConnection::getAuthoritativeGameUpdate(Authorit
     gameUpdate.type = AuthoritativeGameUpdate::determineUpdateType(signalType);
     switch (gameUpdate.type) {
     case AuthoritativeGameUpdate::Type::PLAYER_POSITION_UPDATE:
-        bool isUpdateForPlayer1;
-        float newPositionX;
-        float newPositionY;
-        signalPacket >> isUpdateForPlayer1 >> newPositionX >> newPositionY;
-        gameUpdate.playerPosition = AuthoritativeGameUpdate::PlayerPositionUpdate(isUpdateForPlayer1, newPositionX, newPositionY);
+        gameUpdate.playerPosition = readPlayerPositionUpdate(signalPacket);
         break;
+    case AuthoritativeGameUpdate::Type::MOVE_COMMAND_ACK: {
+        gameUpdate.moveCommandAck = readMoveCommandAckUpdate(signalPacket);
+        break;
+    }
     case AuthoritativeGameUpdate::Type::UNKNOWN:
     default:
         std::cout << "Received an unexpected signal from the server. Resetting connection to the server." << std::endl;
@@ -226,18 +226,44 @@ bool GameServerConnection::bindGameRunningConnection(unsigned short& udpSocketPo
     return false;
 }
 
-void GameServerConnection::sendMoveCommand(Command command) {
+AuthoritativeGameUpdate::PlayerPositionUpdate GameServerConnection::readPlayerPositionUpdate(sf::Packet signalPacket) {
+    bool isUpdateForPlayer1;
+    float newPositionX;
+    float newPositionY;
+    signalPacket >> isUpdateForPlayer1 >> newPositionX >> newPositionY;
+    return  AuthoritativeGameUpdate::PlayerPositionUpdate(isUpdateForPlayer1, newPositionX, newPositionY);
+}
+
+AuthoritativeGameUpdate::MoveCommandAckUpdate GameServerConnection::readMoveCommandAckUpdate(sf::Packet signalPacket) {
+    sf::Uint16 sequenceNumber;
+    signalPacket >> sequenceNumber;
+    return AuthoritativeGameUpdate::MoveCommandAckUpdate(sequenceNumber);
+}
+
+void GameServerConnection::sendMoveCommand(bool left, bool right, bool jump) {
+    unackedCommands.emplace_back(MoveCommand(left, right, jump));
+
     sf::Packet moveCommandPacket;
     moveCommandPacket << static_cast<sf::Int8>(ClientSignal::MOVE_COMMAND);
 
-    if (command == Command::MOVE_LEFT) {
-        moveCommandPacket << true << false << false;
-    } else if ((command == Command::MOVE_RIGHT)) {
-        moveCommandPacket << false << true << false;
-    } else if ((command == Command::JUMP)) {
-        moveCommandPacket << false << false << true;
+    moveCommandPacket << moveCommandSeqNumber;
+    moveCommandSeqNumber++;
+
+    moveCommandPacket << static_cast<sf::Uint16>(unackedCommands.size()); // todo: is the cast to unsigned int 16 ok? maybe restrict it to uint8 (max 255)
+
+    for (int i = unackedCommands.size() - 1; i >= 0; i--) {
+        moveCommandPacket << unackedCommands[i].left << unackedCommands[i].right << unackedCommands[i].jump;
     }
-    gameRunningUdpSocket->send(moveCommandPacket, serverIp, gameRunningSocketPort); //todo: add timestamp to command
+
+    gameRunningUdpSocket->send(moveCommandPacket, serverIp, gameRunningSocketPort);
+}
+
+void GameServerConnection::markMoveCommandAsAcked(int sequenceNumber) {
+    int commandsBeingAcked = sequenceNumber - lastAckedSeqNumber;
+    for (int i = 0; i < commandsBeingAcked; i++) {
+        unackedCommands.pop_front();
+    }
+    lastAckedSeqNumber = sequenceNumber;
 }
 
 void GameServerConnection::setServerGameRunningSocketPort(unsigned short serverGameRunningSocketPort) {

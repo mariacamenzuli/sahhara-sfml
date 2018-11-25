@@ -5,7 +5,6 @@
 #include "EmptySceneNode.h"
 #include "WizardNode.h"
 #include "FpsDisplay.h"
-#include "StationaryWizardController.h"
 #include "LocallyControlledWizardController.h"
 #include "RemoteControlledWizardController.h"
 
@@ -60,7 +59,7 @@ void BattleScene::handlePlayerInput(sf::Keyboard::Key key, bool isPressed) {
     }
 }
 
-void BattleScene::update(sf::Time deltaTime, bool isGameInFocus) {
+void BattleScene::update() {
     AuthoritativeGameUpdate serverUpdate;
     const auto serverUpdateStatus = gameServer->getAuthoritativeGameUpdate(serverUpdate);
 
@@ -68,15 +67,21 @@ void BattleScene::update(sf::Time deltaTime, bool isGameInFocus) {
         switch (serverUpdate.type) {
         case AuthoritativeGameUpdate::Type::PLAYER_POSITION_UPDATE:
             if ((serverUpdate.playerPosition.isUpdateForPlayer1 && !isLocalWizardPlayer1) || (!serverUpdate.playerPosition.isUpdateForPlayer1 && isLocalWizardPlayer1)) {
-                remoteWizardController->setLastKnownPosition(serverUpdate.playerPosition.newPosition);
+                remoteWizardController->setLastKnownPosition(serverUpdate.playerPosition.newPosition); //todo have array of known positions
             }
+            break;
+        case AuthoritativeGameUpdate::Type::MOVE_COMMAND_ACK:
+            // std::cout << "Received ack for move command " << serverUpdate.moveCommandAck.sequenceNumber  << "." << std::endl;
+            gameServer->markMoveCommandAsAcked(serverUpdate.moveCommandAck.sequenceNumber);
             break;
         default:
             std::cout << "Received unrecognized update type." << std::endl;
             break;
         }
     }
+}
 
+void BattleScene::simulationUpdate(sf::Time deltaTime, bool isGameInFocus) {
     localWizardController->update(deltaTime, isGameInFocus);
     remoteWizardController->update(deltaTime, isGameInFocus);
 }

@@ -11,12 +11,13 @@ GameSimulation::GameSimulation(int gameId,
                                unsigned short player1RemoteUdpPort,
                                std::unique_ptr<sf::TcpSocket> player2TcpConnection,
                                unsigned short player2RemoteUdpPort) : gameId(gameId),
-                                                                logger(ThreadLogger("game-" + std::to_string(gameId))),
-                                                                clientConnection(player1TcpConnection->getRemoteAddress(),
-                                                                                 player1RemoteUdpPort,
-                                                                                 player2TcpConnection->getRemoteAddress(),
-                                                                                 player2RemoteUdpPort) {
-    logger.info("Initializing game-" + std::to_string(gameId) +".");
+                                                                      logger(ThreadLogger("game-" + std::to_string(gameId))),
+                                                                      clientConnection(logger,
+                                                                                       player1TcpConnection->getRemoteAddress(),
+                                                                                       player1RemoteUdpPort,
+                                                                                       player2TcpConnection->getRemoteAddress(),
+                                                                                       player2RemoteUdpPort) {
+    logger.info("Initializing game-" + std::to_string(gameId) + ".");
     logger.info("Player 1 remote UDP address: [IP: " + player1TcpConnection->getRemoteAddress().toString() + ", Port: " + std::to_string(player1RemoteUdpPort) + "]");
     logger.info("Player 2 remote UDP address: [IP: " + player2TcpConnection->getRemoteAddress().toString() + ", Port: " + std::to_string(player2RemoteUdpPort) + "]");
 
@@ -26,14 +27,14 @@ GameSimulation::GameSimulation(int gameId,
     logger.info("Bound local UDP sockets on port " + std::to_string(player1UdpSocketPort) + " for " + std::to_string(player2UdpSocketPort) + " for players 1 & 2.");
 
     logger.info("Signaling game start to player 1.");
-    sf::Packet player1GameOnPacket;
-    player1GameOnPacket << static_cast<sf::Int8>(ServerSignal::GAME_INIT) << ServerSignal::IS_PLAYER_1 << player1UdpSocketPort;
-    player1TcpConnection->send(player1GameOnPacket);
+    sf::Packet player1GameInitPacket;
+    player1GameInitPacket << static_cast<sf::Int8>(ServerSignal::GAME_INIT) << ServerSignal::IS_PLAYER_1 << player1UdpSocketPort;
+    player1TcpConnection->send(player1GameInitPacket);
 
     logger.info("Signaling game start to player 2.");
-    sf::Packet player2GameOnPacket;
-    player2GameOnPacket << static_cast<sf::Int8>(ServerSignal::GAME_INIT) << ServerSignal::IS_NOT_PLAYER_1 << player2UdpSocketPort;
-    player2TcpConnection->send(player2GameOnPacket); //todo handle error
+    sf::Packet player2GameInitPacket;
+    player2GameInitPacket << static_cast<sf::Int8>(ServerSignal::GAME_INIT) << ServerSignal::IS_NOT_PLAYER_1 << player2UdpSocketPort;
+    player2TcpConnection->send(player2GameInitPacket); //todo handle error
 
     player1TcpConnection->disconnect();
     player2TcpConnection->disconnect();
@@ -76,38 +77,46 @@ int GameSimulation::getGameId() const {
 
 void GameSimulation::checkForNetworkUpdates() {
     ClientUpdate player1Update;
-    clientConnection.getPlayer1Update(player1Update);
-    if (player1Update.type == ClientUpdate::Type::MOVE) {
-        if (player1Update.move.left) {
-            gameState.player1MovementQueue.push(Command::MOVE_LEFT);
-        } else if (player1Update.move.right) {
-            gameState.player1MovementQueue.push(Command::MOVE_RIGHT);
+    auto player1UpdateStatus = clientConnection.getPlayer1Update(player1Update);
+    if (player1UpdateStatus == NonBlockingNetOpStatus::COMPLETE) {
+        // logger.info("Received " + std::to_string(player1Update.move.unackedMoveCommands.size()) + " move commands for player 1.");
+        if (player1Update.type == ClientUpdate::Type::MOVE) {
+            for (auto cmd : player1Update.move.unackedMoveCommands) {
+                gameState.player1MovementQueue.push(cmd);
+            }
         }
+    } else if (player1UpdateStatus == NonBlockingNetOpStatus::ERROR) {
+        logger.error("An unexpected error occurred while checking for network updates for player 1");
     }
 
     ClientUpdate player2Update;
-    clientConnection.getPlayer2Update(player2Update);
-    if (player2Update.type == ClientUpdate::Type::MOVE) {
-        if (player2Update.move.left) {
-            gameState.player2MovementQueue.push(Command::MOVE_LEFT);
-        } else if (player2Update.move.right) {
-            gameState.player2MovementQueue.push(Command::MOVE_RIGHT);
+    auto player2UpdateStatus = clientConnection.getPlayer2Update(player2Update);
+    if (player2UpdateStatus == NonBlockingNetOpStatus::COMPLETE) {
+        if (player2Update.type == ClientUpdate::Type::MOVE) {
+            // logger.info("Received " + std::to_string(player2Update.move.unackedMoveCommands.size()) + " move commands for player 2.");
+            for (auto cmd : player2Update.move.unackedMoveCommands) {
+                gameState.player2MovementQueue.push(cmd);
+            }
         }
+    } else if (player1UpdateStatus == NonBlockingNetOpStatus::ERROR) {
+        logger.error("An unexpected error occurred while checking for network updates for player 2");
     }
 }
 
 void GameSimulation::movePlayers(sf::Time deltaTime) {
     if (!gameState.player1MovementQueue.empty()) {
-        Command command = gameState.player1MovementQueue.front();
+        ClientUpdate::MoveCommand command = gameState.player1MovementQueue.front();
 
         sf::Vector2f velocity(0.0f, 0.0f);
-        if (command == Command::MOVE_LEFT) {
-            logger.info("Player 1 move left");
+
+        if (command.left) {
             velocity.x -= SimulationProperties::RUN_VELOCITY;
-        } else {
-            logger.info("Player 1 move right");
+        }
+
+        if (command.right) {
             velocity.x += SimulationProperties::RUN_VELOCITY;
         }
+
         gameState.player1MovementQueue.pop();
 
         gameState.player1Position = gameState.player1Position + velocity * deltaTime.asSeconds();
@@ -126,16 +135,18 @@ void GameSimulation::movePlayers(sf::Time deltaTime) {
     }
 
     if (!gameState.player2MovementQueue.empty()) {
-        Command command = gameState.player2MovementQueue.front();
+        ClientUpdate::MoveCommand command = gameState.player2MovementQueue.front();
 
         sf::Vector2f velocity(0.0f, 0.0f);
-        if (command == Command::MOVE_LEFT) {
-            logger.info("Player 2 move left");
+
+        if (command.left) {
             velocity.x -= SimulationProperties::RUN_VELOCITY;
-        } else {
-            logger.info("Player 2 move right");
+        }
+
+        if (command.right) {
             velocity.x += SimulationProperties::RUN_VELOCITY;
         }
+
         gameState.player2MovementQueue.pop();
 
         gameState.player2Position = gameState.player2Position + velocity * deltaTime.asSeconds();

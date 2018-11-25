@@ -1,4 +1,5 @@
 #pragma once
+#include <utility>
 #include "../Client/GameClient.h"
 
 class ClientUpdate {
@@ -11,18 +12,31 @@ public:
         UNKNOWN
     };
 
-    struct MoveUpdate {
+    struct MoveCommand {
         bool left;
         bool right;
         bool jump;
 
-        MoveUpdate(bool left, bool right, bool jump) : left(left), right(right), jump(jump) {
+        MoveCommand(): left(false), right(false), jump(false) {
+        }
+
+        MoveCommand(bool left, bool right, bool jump) : left(left), right(right), jump(jump) {
         }
     };
 
-    union {
-        MoveUpdate move;
+    struct MoveUpdate {
+        sf::Uint16 sequenceNumber;
+        std::vector<ClientUpdate::MoveCommand> unackedMoveCommands;
+
+        MoveUpdate(sf::Uint16 sequenceNumber, std::vector<ClientUpdate::MoveCommand> unackedMoveCommands)
+            : sequenceNumber(sequenceNumber),
+              unackedMoveCommands(std::move(unackedMoveCommands)) {
+        }
+
+        MoveUpdate() = default;
     };
+
+    MoveUpdate move;
 
     static Type determineUpdateType(char signal) {
         switch (signal) {
@@ -35,4 +49,3 @@ public:
 
     Type type;
 };
-

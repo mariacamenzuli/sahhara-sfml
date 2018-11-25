@@ -6,7 +6,6 @@
 #include "WizardNode.h"
 #include "GameMetricsTracker.h"
 #include "ResourceLoader.h"
-#include "WizardController.h"
 #include "GameServerConnection.h"
 #include "LocallyControlledWizardController.h"
 #include "RemoteControlledWizardController.h"
@@ -20,7 +19,8 @@ public:
     ~BattleScene();
 
     void handlePlayerInput(sf::Keyboard::Key key, bool isPressed) override;
-    void update(sf::Time deltaTime, bool isGameInFocus) override;
+    void update() override;
+    void simulationUpdate(sf::Time deltaTime, bool isGameInFocus) override;
     SceneNode* getRootSceneNode() override;
 private:
     GameSceneDirector* sceneDirector;

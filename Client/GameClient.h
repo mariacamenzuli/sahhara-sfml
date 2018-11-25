@@ -33,6 +33,7 @@ private:
     std::unique_ptr<ActiveScene> activeScene;
 
     void processWindowEvents();
-    void update(sf::Time deltaTime);
+    void update();
+    void simulationUpdate(sf::Time deltaTime);
     void render();
 };
