@@ -6,6 +6,7 @@
 #include <SFML/Network/TcpSocket.hpp>
 #include <SFML/System/Vector2.hpp>
 #include <queue>
+#include "SimulationProperties.h"
 
 class GameSimulation {
 public:
@@ -24,7 +25,7 @@ private:
         sf::Vector2<float> player2Position;
     };
 
-    const sf::Time timePerSimulationTick = sf::seconds(1.f / 60.f);
+    const sf::Time timePerSimulationTick = sf::seconds(1.f / SimulationProperties::TICKS_PER_SECOND);
 
     int gameId;
     ThreadLogger logger;

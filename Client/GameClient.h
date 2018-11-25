@@ -7,6 +7,7 @@
 #include "GameServerConnection.h"
 
 #include <SFML/Graphics/RenderWindow.hpp>
+#include "SimulationProperties.h"
 
 class GameClient : GameSceneDirector {
 public:
@@ -25,7 +26,7 @@ private:
         }
     };
 
-    const sf::Time timePerSimulationTick = sf::seconds(1.f / 60.f);
+    const sf::Time timePerSimulationTick = sf::seconds(1.f / SimulationProperties::TICKS_PER_SECOND);
     sf::RenderWindow window;
     ResourceLoader resourceLoader;
     GameMetricsTracker gameMetricsTracker;

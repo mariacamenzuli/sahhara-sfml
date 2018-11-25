@@ -1,6 +1,7 @@
 #pragma once
 
 namespace SimulationProperties {
+    constexpr float TICKS_PER_SECOND = 30.0f;
     constexpr float RUN_VELOCITY = 500.0f;
     constexpr float JUMP_KICKOFF_VELOCITY = -650.0f;
     constexpr float JUMP_VELOCITY = -500.0f;
