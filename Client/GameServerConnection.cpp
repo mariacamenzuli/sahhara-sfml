@@ -202,14 +202,12 @@ NonBlockingNetOpStatus GameServerConnection::getAuthoritativeGameUpdate(Authorit
     case AuthoritativeGameUpdate::Type::PLAYER_POSITION_UPDATE:
         gameUpdate.playerPosition = readPlayerPositionUpdate(signalPacket);
         break;
-    case AuthoritativeGameUpdate::Type::MOVE_COMMAND_ACK: {
+    case AuthoritativeGameUpdate::Type::MOVE_COMMAND_ACK:
         gameUpdate.moveCommandAck = readMoveCommandAckUpdate(signalPacket);
         break;
-    }
     case AuthoritativeGameUpdate::Type::UNKNOWN:
     default:
-        std::cout << "Received an unexpected signal from the server. Resetting connection to the server." << std::endl;
-        serverTcpSocket->disconnect();
+        std::cout << "Received an unexpected signal from the server." << std::endl;
         return NonBlockingNetOpStatus::ERROR;
     }
 
@@ -227,11 +225,19 @@ bool GameServerConnection::bindGameRunningConnection(unsigned short& udpSocketPo
 }
 
 AuthoritativeGameUpdate::PlayerPositionUpdate GameServerConnection::readPlayerPositionUpdate(sf::Packet signalPacket) {
-    bool isUpdateForPlayer1;
-    float newPositionX;
-    float newPositionY;
-    signalPacket >> isUpdateForPlayer1 >> newPositionX >> newPositionY;
-    return  AuthoritativeGameUpdate::PlayerPositionUpdate(isUpdateForPlayer1, newPositionX, newPositionY);
+    bool player1PositionChanged, player2PositionChanged;
+    sf::Vector2f newPlayer1Position, newPlayer2Position;
+    signalPacket >> player1PositionChanged >> player2PositionChanged;
+
+    if (player1PositionChanged) {
+        signalPacket >> newPlayer1Position.x >> newPlayer1Position.y;
+    }
+
+    if (player2PositionChanged) {
+        signalPacket >> newPlayer2Position.x >> newPlayer2Position.y;
+    }
+
+    return  AuthoritativeGameUpdate::PlayerPositionUpdate(player1PositionChanged, newPlayer1Position, player2PositionChanged, newPlayer2Position);
 }
 
 AuthoritativeGameUpdate::MoveCommandAckUpdate GameServerConnection::readMoveCommandAckUpdate(sf::Packet signalPacket) {

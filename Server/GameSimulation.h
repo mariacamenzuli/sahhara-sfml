@@ -18,11 +18,12 @@ public:
     int getGameId() const;
 
 private:
-    struct GameState {
-        std::queue<ClientUpdate::MoveCommand> player1MovementQueue;
-        std::queue<ClientUpdate::MoveCommand> player2MovementQueue;
-        sf::Vector2<float> player1Position;
-        sf::Vector2<float> player2Position;
+    struct PlayerGameState {
+        std::queue<ClientUpdate::MoveCommand> movementQueue;
+        sf::Vector2<float> position;
+        float timeInAir = 0.0f;
+
+        bool move(sf::Time deltaTime);
     };
 
     const sf::Time timePerSimulationTick = sf::seconds(1.f / SimulationProperties::TICKS_PER_SECOND);
@@ -32,7 +33,8 @@ private:
     GameClientConnection clientConnection;
 
     bool gameShouldEnd = false;
-    GameState gameState;
+    PlayerGameState player1GameState;
+    PlayerGameState player2GameState;
 
     void checkForNetworkUpdates();
     void movePlayers(sf::Time deltaTime);

@@ -66,8 +66,10 @@ void BattleScene::update() {
     if (serverUpdateStatus == NonBlockingNetOpStatus::COMPLETE) {
         switch (serverUpdate.type) {
         case AuthoritativeGameUpdate::Type::PLAYER_POSITION_UPDATE:
-            if ((serverUpdate.playerPosition.isUpdateForPlayer1 && !isLocalWizardPlayer1) || (!serverUpdate.playerPosition.isUpdateForPlayer1 && isLocalWizardPlayer1)) {
-                remoteWizardController->setLastKnownPosition(serverUpdate.playerPosition.newPosition); //todo have array of known positions
+            if (isLocalWizardPlayer1 && serverUpdate.playerPosition.player2PositionChanged) {
+                remoteWizardController->setLastKnownPosition(serverUpdate.playerPosition.newPlayer2Position); //todo have array of known positions
+            } else if (!isLocalWizardPlayer1 && serverUpdate.playerPosition.player1PositionChanged) {
+                remoteWizardController->setLastKnownPosition(serverUpdate.playerPosition.newPlayer1Position);
             }
             break;
         case AuthoritativeGameUpdate::Type::MOVE_COMMAND_ACK:

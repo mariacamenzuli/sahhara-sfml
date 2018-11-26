@@ -43,11 +43,11 @@ GameSimulation::GameSimulation(int gameId,
 GameSimulation::~GameSimulation() = default;
 
 void GameSimulation::run() {
-    gameState.player1Position.x = SimulationProperties::MIN_X_BOUNDARY;
-    gameState.player1Position.y = SimulationProperties::MAX_Y_BOUNDARY;
+    player1GameState.position.x = SimulationProperties::MIN_X_BOUNDARY;
+    player1GameState.position.y = SimulationProperties::MAX_Y_BOUNDARY;
 
-    gameState.player2Position.x = SimulationProperties::MAX_X_BOUNDARY;
-    gameState.player2Position.y = SimulationProperties::MAX_Y_BOUNDARY;
+    player2GameState.position.x = SimulationProperties::MAX_X_BOUNDARY;
+    player2GameState.position.y = SimulationProperties::MAX_Y_BOUNDARY;
 
     sf::Clock clock;
     auto timeSinceLastUpdate = sf::Time::Zero;
@@ -75,6 +75,59 @@ int GameSimulation::getGameId() const {
     return gameId;
 }
 
+bool GameSimulation::PlayerGameState::move(sf::Time deltaTime) {
+    ClientUpdate::MoveCommand command;
+    if (!movementQueue.empty()) {
+        command = movementQueue.front();
+        movementQueue.pop();
+    } else {
+        command = ClientUpdate::MoveCommand();
+    }
+
+    sf::Vector2f velocity(0.0f, 0.0f);
+
+    if (position.y >= 865.0f) {
+        // is touching ground
+        timeInAir = 0.0f;
+
+        if (command.jump) {
+            velocity.y = SimulationProperties::JUMP_KICKOFF_VELOCITY;
+            timeInAir += deltaTime.asSeconds();
+        }
+    } else {
+        if (timeInAir < SimulationProperties::JUMP_KICK_OFF_TIME) {
+            velocity.y = SimulationProperties::JUMP_KICKOFF_VELOCITY;
+        } else if (timeInAir < SimulationProperties::MAX_AIR_TIME) {
+            velocity.y = SimulationProperties::JUMP_VELOCITY;
+        } else {
+            velocity.y = SimulationProperties::GRAVITY;
+        }
+        timeInAir += deltaTime.asSeconds();
+    }
+
+    if (command.left) {
+        velocity.x -= SimulationProperties::RUN_VELOCITY;
+    }
+
+    if (command.right) {
+        velocity.x += SimulationProperties::RUN_VELOCITY;
+    }
+
+    position = position + velocity * deltaTime.asSeconds();
+
+    if (position.x < SimulationProperties::MIN_X_BOUNDARY) {
+        position.x = SimulationProperties::MIN_X_BOUNDARY;
+    } else if (position.x > SimulationProperties::MAX_X_BOUNDARY) {
+        position.x = SimulationProperties::MAX_X_BOUNDARY;
+    }
+
+    if (position.y > SimulationProperties::MAX_Y_BOUNDARY) {
+        position.y = SimulationProperties::MAX_Y_BOUNDARY;
+    }
+
+    return velocity.x != 0.0f || velocity.y != 0.0f;
+}
+
 void GameSimulation::checkForNetworkUpdates() {
     ClientUpdate player1Update;
     auto player1UpdateStatus = clientConnection.getPlayer1Update(player1Update);
@@ -82,7 +135,7 @@ void GameSimulation::checkForNetworkUpdates() {
         // logger.info("Received " + std::to_string(player1Update.move.unackedMoveCommands.size()) + " move commands for player 1.");
         if (player1Update.type == ClientUpdate::Type::MOVE) {
             for (auto cmd : player1Update.move.unackedMoveCommands) {
-                gameState.player1MovementQueue.push(cmd);
+                player1GameState.movementQueue.push(cmd);
             }
         }
     } else if (player1UpdateStatus == NonBlockingNetOpStatus::ERROR) {
@@ -95,7 +148,7 @@ void GameSimulation::checkForNetworkUpdates() {
         if (player2Update.type == ClientUpdate::Type::MOVE) {
             // logger.info("Received " + std::to_string(player2Update.move.unackedMoveCommands.size()) + " move commands for player 2.");
             for (auto cmd : player2Update.move.unackedMoveCommands) {
-                gameState.player2MovementQueue.push(cmd);
+                player2GameState.movementQueue.push(cmd);
             }
         }
     } else if (player1UpdateStatus == NonBlockingNetOpStatus::ERROR) {
@@ -104,63 +157,7 @@ void GameSimulation::checkForNetworkUpdates() {
 }
 
 void GameSimulation::movePlayers(sf::Time deltaTime) {
-    if (!gameState.player1MovementQueue.empty()) {
-        ClientUpdate::MoveCommand command = gameState.player1MovementQueue.front();
-
-        sf::Vector2f velocity(0.0f, 0.0f);
-
-        if (command.left) {
-            velocity.x -= SimulationProperties::RUN_VELOCITY;
-        }
-
-        if (command.right) {
-            velocity.x += SimulationProperties::RUN_VELOCITY;
-        }
-
-        gameState.player1MovementQueue.pop();
-
-        gameState.player1Position = gameState.player1Position + velocity * deltaTime.asSeconds();
-
-        if (gameState.player1Position.x < SimulationProperties::MIN_X_BOUNDARY) {
-            gameState.player1Position.x = SimulationProperties::MIN_X_BOUNDARY;
-        } else if (gameState.player1Position.x > SimulationProperties::MAX_X_BOUNDARY) {
-            gameState.player1Position.x = SimulationProperties::MAX_X_BOUNDARY;
-        }
-
-        if (gameState.player1Position.y < SimulationProperties::MAX_Y_BOUNDARY) {
-            gameState.player1Position.y = SimulationProperties::MAX_Y_BOUNDARY;
-        }
-
-        clientConnection.broadcastPlayer1Position(gameState.player1Position);
-    }
-
-    if (!gameState.player2MovementQueue.empty()) {
-        ClientUpdate::MoveCommand command = gameState.player2MovementQueue.front();
-
-        sf::Vector2f velocity(0.0f, 0.0f);
-
-        if (command.left) {
-            velocity.x -= SimulationProperties::RUN_VELOCITY;
-        }
-
-        if (command.right) {
-            velocity.x += SimulationProperties::RUN_VELOCITY;
-        }
-
-        gameState.player2MovementQueue.pop();
-
-        gameState.player2Position = gameState.player2Position + velocity * deltaTime.asSeconds();
-
-        if (gameState.player2Position.x < SimulationProperties::MIN_X_BOUNDARY) {
-            gameState.player2Position.x = SimulationProperties::MIN_X_BOUNDARY;
-        } else if (gameState.player2Position.x > SimulationProperties::MAX_X_BOUNDARY) {
-            gameState.player2Position.x = SimulationProperties::MAX_X_BOUNDARY;
-        }
-
-        if (gameState.player2Position.y > SimulationProperties::MAX_Y_BOUNDARY) {
-            gameState.player2Position.y = SimulationProperties::MAX_Y_BOUNDARY;
-        }
-
-        clientConnection.broadcastPlayer2Position(gameState.player2Position);
-    }
+    bool player1PositionChanged = player1GameState.move(deltaTime);
+    bool player2PositionChanged = player2GameState.move(deltaTime);
+    clientConnection.broadcastPlayerPositions(player1PositionChanged, player1GameState.position, player2PositionChanged, player2GameState.position);
 }

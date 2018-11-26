@@ -17,8 +17,7 @@ public:
 
     NonBlockingNetOpStatus getPlayer1Update(ClientUpdate& clientUpdate);
     NonBlockingNetOpStatus getPlayer2Update(ClientUpdate& clientUpdate);
-    void broadcastPlayer1Position(sf::Vector2<float> position);
-    void broadcastPlayer2Position(sf::Vector2<float> position);
+    void broadcastPlayerPositions(bool player1PositionChanged, sf::Vector2<float> player1Position, bool player2PositionChanged, sf::Vector2<float> player2Position);
 
 private:
     ThreadLogger logger;

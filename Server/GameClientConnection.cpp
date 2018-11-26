@@ -36,18 +36,24 @@ NonBlockingNetOpStatus GameClientConnection::getPlayer2Update(ClientUpdate& clie
     return player2Connection.getNetworkUpdate(clientUpdate);
 }
 
-void GameClientConnection::broadcastPlayer1Position(sf::Vector2<float> position) {
-    sf::Packet player1PositionPacket; //todo add seq number or timestamp
-    player1PositionPacket << static_cast<sf::Int8>(ServerSignal::PLAYER_POSITION_UPDATE) << ServerSignal::IS_PLAYER_1 << position.x << position.y;
-    player1Connection.udpSocket.send(player1PositionPacket, player1Connection.address.ip, player1Connection.address.port);
-    player2Connection.udpSocket.send(player1PositionPacket, player2Connection.address.ip, player2Connection.address.port);
-}
+void GameClientConnection::broadcastPlayerPositions(bool player1PositionChanged, sf::Vector2<float> player1Position, bool player2PositionChanged, sf::Vector2<float> player2Position) {
+    if (!player1PositionChanged && !player2PositionChanged) {
+        return;
+    }
 
-void GameClientConnection::broadcastPlayer2Position(sf::Vector2<float> position) {
-    sf::Packet player2PositionPacket; //todo add seq number or timestamp
-    player2PositionPacket << static_cast<sf::Int8>(ServerSignal::PLAYER_POSITION_UPDATE) << ServerSignal::IS_NOT_PLAYER_1 << position.x << position.y;
-    player1Connection.udpSocket.send(player2PositionPacket, player1Connection.address.ip, player1Connection.address.port);
-    player2Connection.udpSocket.send(player2PositionPacket, player2Connection.address.ip, player2Connection.address.port);
+    sf::Packet movementUpdate; //todo add seq number
+    movementUpdate << static_cast<sf::Int8>(ServerSignal::PLAYER_POSITION_UPDATE) << player1PositionChanged << player2PositionChanged;
+
+    if (player1PositionChanged) {
+        movementUpdate << player1Position.x << player1Position.y;
+    }
+
+    if (player2PositionChanged) {
+        movementUpdate << player2Position.x << player2Position.y;
+    }
+
+    player1Connection.udpSocket.send(movementUpdate, player1Connection.address.ip, player1Connection.address.port);
+    player2Connection.udpSocket.send(movementUpdate, player2Connection.address.ip, player2Connection.address.port);
 }
 
 NonBlockingNetOpStatus GameClientConnection::PlayerConnection::getNetworkUpdate(ClientUpdate& clientUpdate) {
