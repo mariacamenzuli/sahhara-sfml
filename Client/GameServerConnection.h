@@ -50,7 +50,7 @@ private:
     };
     sf::Uint16 moveCommandSeqNumber = 0;
     std::deque<MoveCommand> unackedCommands;
-    int lastAckedSeqNumber = -1;
+    int latestAckedSeqNumber = -1;
 
     bool bindGameRunningConnection(unsigned short& udpSocketPort);
     AuthoritativeGameUpdate::PlayerPositionUpdate readPlayerPositionUpdate(sf::Packet signalPacket);

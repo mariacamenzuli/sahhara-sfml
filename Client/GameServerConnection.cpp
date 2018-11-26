@@ -265,11 +265,13 @@ void GameServerConnection::sendMoveCommand(bool left, bool right, bool jump) {
 }
 
 void GameServerConnection::markMoveCommandAsAcked(int sequenceNumber) {
-    int commandsBeingAcked = sequenceNumber - lastAckedSeqNumber;
-    for (int i = 0; i < commandsBeingAcked; i++) {
-        unackedCommands.pop_front();
+    if (sequenceNumber > latestAckedSeqNumber) {
+        int commandsBeingAcked = sequenceNumber - latestAckedSeqNumber;
+        for (int i = 0; i < commandsBeingAcked; i++) {
+            unackedCommands.pop_front();
+        }
+        latestAckedSeqNumber = sequenceNumber;
     }
-    lastAckedSeqNumber = sequenceNumber;
 }
 
 void GameServerConnection::setServerGameRunningSocketPort(unsigned short serverGameRunningSocketPort) {
