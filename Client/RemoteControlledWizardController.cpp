@@ -50,12 +50,14 @@ void RemoteControlledWizardController::considerKnownPosition(sf::Uint16 time, sf
 }
 
 void RemoteControlledWizardController::updatePredictedPositions(sf::Uint16 currentSimulationTime) {
+    int simulationTimeAdjustedForLag = currentSimulationTime - (currentSimulationTime - lastKnownPositions[0].time);
+
     sf::Vector2f predictionBasedOnLastKnownPositions;
     float slopeX = (lastKnownPositions[0].position.x - lastKnownPositions[1].position.x) / (lastKnownPositions[0].time - lastKnownPositions[1].time);
-    predictionBasedOnLastKnownPositions.x = (slopeX * currentSimulationTime) - (slopeX * lastKnownPositions[0].time) + lastKnownPositions[0].position.x;
+    predictionBasedOnLastKnownPositions.x = (slopeX * simulationTimeAdjustedForLag) - (slopeX * lastKnownPositions[0].time) + lastKnownPositions[0].position.x;
 
     float slopeY = (lastKnownPositions[0].position.y - lastKnownPositions[1].position.y) / (lastKnownPositions[0].time - lastKnownPositions[1].time);
-    predictionBasedOnLastKnownPositions.y = (slopeY * currentSimulationTime) - (slopeY * lastKnownPositions[0].time) + lastKnownPositions[0].position.y;
+    predictionBasedOnLastKnownPositions.y = (slopeY * simulationTimeAdjustedForLag) - (slopeY * lastKnownPositions[0].time) + lastKnownPositions[0].position.y;
 
     if (predictionBasedOnLastKnownPositions.x < SimulationProperties::MIN_X_BOUNDARY) {
         predictionBasedOnLastKnownPositions.x = SimulationProperties::MIN_X_BOUNDARY;
