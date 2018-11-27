@@ -8,8 +8,10 @@ public:
     RemoteControlledWizardController(WizardNode* wizard, GameServerConnection* gameServer);
     ~RemoteControlledWizardController();
 
-    void update(sf::Uint16 simulationTime, sf::Time deltaTime, bool isGameInFocus) override;
+    void simulationUpdate(sf::Uint16 simulationTime, sf::Time deltaTime, bool isGameInFocus) override;
     void considerKnownPosition(sf::Uint16 time, sf::Vector2f knownPosition);
+    void updatePredictedPositions(sf::Uint16 currentSimulationTime);
+    void interpolatePosition(sf::Time timeSinceLastSimulationUpdate);
 
 private:
     struct RemotePlayerPosition {
@@ -22,6 +24,10 @@ private:
 
     WizardNode* wizard;
     GameServerConnection* gameServer;
+    WizardNode::Direction lastKnownDirection;
     RemotePlayerPosition lastKnownPositions[2];
+    sf::Vector2f lastPredictedPositions[2];
+
+    float changeRange(float value, float oldMin, float oldMax, float newMin, float newMax);
 };
 

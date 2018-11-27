@@ -59,16 +59,18 @@ void BattleScene::handlePlayerInput(sf::Keyboard::Key key, bool isPressed) {
     }
 }
 
-void BattleScene::update() {
+void BattleScene::update(sf::Time timeSinceLastSimulationUpdate) {
     AuthoritativeGameUpdate serverUpdate;
     const auto serverUpdateStatus = gameServer->getAuthoritativeGameUpdate(serverUpdate);
+
+    remoteWizardController->interpolatePosition(timeSinceLastSimulationUpdate);
 
     if (serverUpdateStatus == NonBlockingNetOpStatus::COMPLETE) {
         switch (serverUpdate.type) {
         case AuthoritativeGameUpdate::Type::PLAYER_POSITION_UPDATE:
             if (isLocalWizardPlayer1) {
                 remoteWizardController->considerKnownPosition(serverUpdate.playerPosition.time, serverUpdate.playerPosition.newPlayer2Position);
-            } else if (!isLocalWizardPlayer1) {
+            } else {
                 remoteWizardController->considerKnownPosition(serverUpdate.playerPosition.time, serverUpdate.playerPosition.newPlayer1Position);
             }
             break;
@@ -84,8 +86,11 @@ void BattleScene::update() {
 }
 
 void BattleScene::simulationUpdate(sf::Time deltaTime, bool isGameInFocus) {
-    localWizardController->update(time, deltaTime, isGameInFocus);
-    remoteWizardController->update(time, deltaTime, isGameInFocus);
+    localWizardController->simulationUpdate(time, deltaTime, isGameInFocus);
+
+    remoteWizardController->updatePredictedPositions(time);
+    remoteWizardController->simulationUpdate(time, deltaTime, isGameInFocus);
+
     incrementTime();
 }
 

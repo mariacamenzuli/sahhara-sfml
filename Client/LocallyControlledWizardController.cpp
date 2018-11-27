@@ -9,7 +9,7 @@ LocallyControlledWizardController::LocallyControlledWizardController(WizardNode*
 
 LocallyControlledWizardController::~LocallyControlledWizardController() = default;
 
-void LocallyControlledWizardController::update(sf::Uint16 simulationTime, sf::Time deltaTime, bool isGameInFocus) {
+void LocallyControlledWizardController::simulationUpdate(sf::Uint16 simulationTime, sf::Time deltaTime, bool isGameInFocus) {
     sf::Vector2f velocity(0.0f, 0.0f);
     bool leftCmdPressed = false;
     bool rightCmdPressed = false;

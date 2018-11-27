@@ -39,14 +39,14 @@ GameClient::~GameClient() = default;
 
 void GameClient::run() {
     sf::Clock clock;
-    auto timeSinceLastUpdate = sf::Time::Zero;
+    auto timeSinceLastSimulationUpdate = sf::Time::Zero;
 
     while (window.isOpen()) {
         processWindowEvents();
-        update();
-        timeSinceLastUpdate += clock.restart();
-        while (timeSinceLastUpdate > timePerSimulationTick) { //todo: run prediction in between simulation ticks?
-            timeSinceLastUpdate -= timePerSimulationTick;
+        update(timeSinceLastSimulationUpdate);
+        timeSinceLastSimulationUpdate += clock.restart();
+        while (timeSinceLastSimulationUpdate > timePerSimulationTick) { //todo: run prediction in between simulation ticks?
+            timeSinceLastSimulationUpdate -= timePerSimulationTick;
             processWindowEvents();
             simulationUpdate(timePerSimulationTick);
         }
@@ -91,8 +91,8 @@ void GameClient::processWindowEvents() {
     }
 }
 
-void GameClient::update() {
-    activeScene->sceneController->update();
+void GameClient::update(sf::Time timeSinceLastSimulationUpdate) {
+    activeScene->sceneController->update(timeSinceLastSimulationUpdate);
 }
 
 void GameClient::simulationUpdate(sf::Time deltaTime) {

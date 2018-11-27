@@ -32,7 +32,7 @@ void MainMenuScene::handlePlayerInput(sf::Keyboard::Key key, bool isPressed) {
     }
 }
 
-void MainMenuScene::update() {
+void MainMenuScene::update(sf::Time timeSinceLastSimulationUpdate) {
     NonBlockingNetOpStatus operationStatus;
     switch (state) {
     case State::CONNECTING_TO_GAME_LOBBY:

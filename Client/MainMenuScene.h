@@ -16,7 +16,7 @@ public:
     ~MainMenuScene();
 
     void handlePlayerInput(sf::Keyboard::Key key, bool isPressed) override;
-    void update() override;
+    void update(sf::Time timeSinceLastSimulationUpdate) override;
     void simulationUpdate(sf::Time deltaTime, bool isGameInFocus) override;
     SceneNode* getRootSceneNode() override;
 private:
