@@ -29,6 +29,18 @@ void RemoteControlledWizardController::update(sf::Uint16 simulationTime, sf::Tim
         newY = SimulationProperties::MAX_Y_BOUNDARY;
     }
 
+    float deltaX = newX - wizard->getPosition().x;
+
+    if (deltaX == 0.0f) {
+        wizard->idle();
+    } else if (deltaX < 0.0f) {
+        wizard->direction = WizardNode::Direction::LEFT;
+        wizard->run();
+    } else {
+        wizard->direction = WizardNode::Direction::RIGHT;
+        wizard->run();
+    }
+
     wizard->setPosition(sf::Vector2f(newX, newY));
 }
 
