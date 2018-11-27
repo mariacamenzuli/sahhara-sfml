@@ -40,8 +40,6 @@ void GameClientConnection::broadcastPlayerPositions(sf::Uint16 time, bool player
     sf::Packet movementUpdate;
     movementUpdate << static_cast<sf::Int8>(ServerSignal::PLAYER_POSITION_UPDATE) << time << player1PositionChanged << player2PositionChanged;
 
-    //todo: do we want to always send both player positions, even if they dont change?
-    // if we always send them, we could remove the booleans
     movementUpdate << player1Position.x << player1Position.y;
     movementUpdate << player2Position.x << player2Position.y;
 
@@ -67,7 +65,7 @@ NonBlockingNetOpStatus GameClientConnection::PlayerConnection::getNetworkUpdate(
     switch (clientUpdate.type) {
     case ClientUpdate::Type::MOVE:
         clientUpdate.move = readMoveUpdate(signalPacket);
-        ackMoves(clientUpdate.move.sequenceNumber);
+        ackMoves(clientUpdate.move);
         break;
     case ClientUpdate::Type::UNKNOWN:
     default:
@@ -95,9 +93,13 @@ ClientUpdate::MoveUpdate GameClientConnection::PlayerConnection::readMoveUpdate(
     return ClientUpdate::MoveUpdate(sequenceNumber, unackedCommands);
 }
 
-void GameClientConnection::PlayerConnection::ackMoves(int moveCmdSeqNumber) {
+void GameClientConnection::PlayerConnection::ackMoves(ClientUpdate::MoveUpdate& moveUpdate) {
+    if (moveUpdate.unackedMoveCommands.empty()) {
+        return;
+    }
+
     sf::Packet ackPacket;
-    ackPacket << static_cast<sf::Int8>(ServerSignal::MOVE_COMMAND_ACK) << static_cast<sf::Uint16>(moveCmdSeqNumber);
+    ackPacket << static_cast<sf::Int8>(ServerSignal::MOVE_COMMAND_ACK) << static_cast<sf::Uint16>(moveUpdate.sequenceNumber);
     udpSocket.send(ackPacket, address.ip, address.port);
-    lastAckedMoveCmdSeqNumber = moveCmdSeqNumber;
+    lastAckedMoveCmdSeqNumber = moveUpdate.sequenceNumber;
 }

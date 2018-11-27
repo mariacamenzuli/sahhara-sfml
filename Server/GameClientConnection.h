@@ -32,7 +32,7 @@ private:
 
         NonBlockingNetOpStatus getNetworkUpdate(ClientUpdate& clientUpdate);
         ClientUpdate::MoveUpdate readMoveUpdate(sf::Packet signalPacket);
-        void ackMoves(int moveCmdSeqNumber);
+        void ackMoves(ClientUpdate::MoveUpdate& moveUpdate);
     };
 
     PlayerConnection player1Connection;
