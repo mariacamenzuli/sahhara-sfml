@@ -1,7 +1,5 @@
 #include "RemoteControlledWizardController.h"
 #include "SimulationProperties.h"
-#include <iostream>
-#include "../Server/GameClientConnection.h"
 
 RemoteControlledWizardController::RemoteControlledWizardController(WizardNode* wizard,
                                                                    GameServerConnection* gameServer) : wizard(wizard),
