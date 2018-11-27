@@ -37,7 +37,7 @@ void RemoteControlledWizardController::considerKnownPosition(sf::Uint16 time, sf
     if (time > lastKnownPositions[0].time) {
         lastKnownPositions[1] = RemotePlayerPosition(lastKnownPositions[0].time, lastKnownPositions[0].position);
         lastKnownPositions[0] = RemotePlayerPosition(time, knownPosition);
-    } else if (time > lastKnownPositions[1].time) {
+    } else if (time > lastKnownPositions[1].time && time < lastKnownPositions[0].time) {
         lastKnownPositions[1] = RemotePlayerPosition(time, knownPosition);
     }
 
