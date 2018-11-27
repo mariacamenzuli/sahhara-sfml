@@ -33,9 +33,11 @@ private:
     GameClientConnection clientConnection;
 
     bool gameShouldEnd = false;
+    sf::Uint16 time = 0;
     PlayerGameState player1GameState;
     PlayerGameState player2GameState;
 
     void checkForNetworkUpdates();
     void movePlayers(sf::Time deltaTime);
+    inline void incrementTime();
 };

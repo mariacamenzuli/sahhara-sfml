@@ -61,6 +61,8 @@ void GameSimulation::run() {
             timeSinceLastUpdate -= timePerSimulationTick;
 
             movePlayers(timePerSimulationTick);
+
+            incrementTime();
         }
     }
 
@@ -159,5 +161,9 @@ void GameSimulation::checkForNetworkUpdates() {
 void GameSimulation::movePlayers(sf::Time deltaTime) {
     bool player1PositionChanged = player1GameState.move(deltaTime);
     bool player2PositionChanged = player2GameState.move(deltaTime);
-    clientConnection.broadcastPlayerPositions(player1PositionChanged, player1GameState.position, player2PositionChanged, player2GameState.position);
+    clientConnection.broadcastPlayerPositions(time, player1PositionChanged, player1GameState.position, player2PositionChanged, player2GameState.position);
+}
+
+void GameSimulation::incrementTime() {
+    time++;
 }

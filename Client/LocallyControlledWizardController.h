@@ -8,7 +8,7 @@ public:
     LocallyControlledWizardController(WizardNode* wizard, GameServerConnection* gameServer);
     ~LocallyControlledWizardController();
 
-    void update(sf::Time deltaTime, bool isGameInFocus) override;
+    void update(sf::Uint16 simulationTime, sf::Time deltaTime, bool isGameInFocus) override;
 
 private:
     WizardNode* wizard;

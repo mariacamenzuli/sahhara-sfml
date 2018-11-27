@@ -66,10 +66,10 @@ void BattleScene::update() {
     if (serverUpdateStatus == NonBlockingNetOpStatus::COMPLETE) {
         switch (serverUpdate.type) {
         case AuthoritativeGameUpdate::Type::PLAYER_POSITION_UPDATE:
-            if (isLocalWizardPlayer1 && serverUpdate.playerPosition.player2PositionChanged) {
-                remoteWizardController->setLastKnownPosition(serverUpdate.playerPosition.newPlayer2Position); //todo have array of known positions
-            } else if (!isLocalWizardPlayer1 && serverUpdate.playerPosition.player1PositionChanged) {
-                remoteWizardController->setLastKnownPosition(serverUpdate.playerPosition.newPlayer1Position);
+            if (isLocalWizardPlayer1) {
+                remoteWizardController->considerKnownPosition(serverUpdate.playerPosition.time, serverUpdate.playerPosition.newPlayer2Position);
+            } else if (!isLocalWizardPlayer1) {
+                remoteWizardController->considerKnownPosition(serverUpdate.playerPosition.time, serverUpdate.playerPosition.newPlayer1Position);
             }
             break;
         case AuthoritativeGameUpdate::Type::MOVE_COMMAND_ACK:
@@ -84,8 +84,9 @@ void BattleScene::update() {
 }
 
 void BattleScene::simulationUpdate(sf::Time deltaTime, bool isGameInFocus) {
-    localWizardController->update(deltaTime, isGameInFocus);
-    remoteWizardController->update(deltaTime, isGameInFocus);
+    localWizardController->update(time, deltaTime, isGameInFocus);
+    remoteWizardController->update(time, deltaTime, isGameInFocus);
+    incrementTime();
 }
 
 SceneNode* BattleScene::getRootSceneNode() {
@@ -127,4 +128,8 @@ void BattleScene::buildScene() {
     std::unique_ptr<FpsDisplay> fpsDisplay(new FpsDisplay(gameMetricsTracker));
     fpsDisplay->getText()->setFont(*resourceLoader->getFont(ResourceLoader::FontId::FPS_DISPLAY));
     rootSceneNode->attachChild(std::move((fpsDisplay)));
+}
+
+void BattleScene::incrementTime() {
+    time++;
 }

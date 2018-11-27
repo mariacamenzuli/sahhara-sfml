@@ -33,6 +33,8 @@ private:
     std::unique_ptr<LocallyControlledWizardController> localWizardController;
     std::unique_ptr<RemoteControlledWizardController> remoteWizardController;
     bool isLocalWizardPlayer1 = false;
+    sf::Uint16 time = 0;
 
     void buildScene();
+    inline void incrementTime();
 };

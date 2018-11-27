@@ -17,16 +17,21 @@ public:
     };
 
     struct PlayerPositionUpdate {
+        sf::Uint16 time;
         bool player1PositionChanged;
         sf::Vector2f newPlayer1Position;
         bool player2PositionChanged;
         sf::Vector2f newPlayer2Position;
 
-        PlayerPositionUpdate(bool player1PositionChanged, const sf::Vector2f& newPlayer1Position, bool player2PositionChanged, const sf::Vector2f& newPlayer2Position)
-            : player1PositionChanged(player1PositionChanged),
-              newPlayer1Position(newPlayer1Position),
-              player2PositionChanged(player2PositionChanged),
-              newPlayer2Position(newPlayer2Position) {
+        PlayerPositionUpdate(sf::Uint16 time,
+                             bool player1PositionChanged,
+                             const sf::Vector2f& newPlayer1Position,
+                             bool player2PositionChanged,
+                             const sf::Vector2f& newPlayer2Position) : time(time),
+                                                                       player1PositionChanged(player1PositionChanged),
+                                                                       newPlayer1Position(newPlayer1Position),
+                                                                       player2PositionChanged(player2PositionChanged),
+                                                                       newPlayer2Position(newPlayer2Position) {
         }
     };
 
@@ -56,4 +61,3 @@ public:
 
     Type type;
 };
-
