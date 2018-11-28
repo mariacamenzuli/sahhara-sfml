@@ -35,6 +35,7 @@ public:
 
     void run();
     void idle();
+    void attack();
     
     Direction direction;
     float timeInAir = 0.0f;

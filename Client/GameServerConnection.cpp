@@ -11,6 +11,7 @@ GameServerConnection::GameServerConnection() : failedLobbyConnectAttempts(0),
                                                networkOperationAttempts(0),
                                                serverTcpSocket(new sf::TcpSocket()),
                                                gameRunningUdpSocket(new sf::UdpSocket()) {
+    serverTcpSocket->setBlocking(false);
     gameRunningUdpSocket->setBlocking(false);
 }
 
@@ -18,20 +19,33 @@ GameServerConnection::~GameServerConnection() {
     serverTcpSocket->disconnect();
 };
 
-bool GameServerConnection::connectToGameLobby() {
-    serverTcpSocket->setBlocking(true);
-    const sf::Socket::Status status = serverTcpSocket->connect(serverIp, serverLobbyPort, sf::microseconds(1));
-    if (status == sf::Socket::Done) {
-        std::cout << "Connected to game lobby." << std::endl;
-        serverTcpSocket->setBlocking(false);
-        return true;
-    } else {
-        if (failedLobbyConnectAttempts % 120 == 0) {
-            std::cout << "Attempting to connect to game lobby..." << std::endl;
+NonBlockingNetOpStatus GameServerConnection::connectToGameLobby() {
+    if (!connectingToLobby) {
+        const sf::Socket::Status status = serverTcpSocket->connect(serverIp, serverLobbyPort);
+        if (status == sf::Socket::Error) {
+            return NonBlockingNetOpStatus::ERROR;
+        } else {
+            connectingToLobby = true;
+            latencyTestClock.restart();
         }
-        failedLobbyConnectAttempts++;
-        return false;
+    } else {
+        if (latencyTestClock.getElapsedTime() > maxToleratedLatency) {
+            return NonBlockingNetOpStatus::ERROR;
+        }
+
+        sf::Packet connectionTestPacket;
+        auto connectionTestStatus = serverTcpSocket->receive(connectionTestPacket);
+        if (connectionTestStatus == sf::Socket::NotReady) {
+            std::cout << "Connected to game lobby in " << latencyTestClock.getElapsedTime().asMilliseconds() << "ms." << std::endl;
+            return NonBlockingNetOpStatus::COMPLETE;
+        }
     }
+
+    if (failedLobbyConnectAttempts % 120 == 0) {
+        std::cout << "Attempting to connect to game lobby..." << std::endl;
+    }
+    failedLobbyConnectAttempts++;
+    return NonBlockingNetOpStatus::NOT_READY;
 }
 
 void GameServerConnection::disconnectFromGameLobby() {

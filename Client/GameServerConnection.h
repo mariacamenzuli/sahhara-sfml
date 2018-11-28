@@ -7,6 +7,7 @@
 #include <SFML/Network/IpAddress.hpp>
 #include <memory>
 #include <queue>
+#include <SFML/System/Clock.hpp>
 
 
 class GameServerConnection {
@@ -15,7 +16,7 @@ public:
     ~GameServerConnection();
 
     // Find and start game
-    bool connectToGameLobby();
+    NonBlockingNetOpStatus connectToGameLobby();
     void disconnectFromGameLobby();
     bool getGameInitParameters(bool& isPlayer1Local, unsigned short& serverUdpPort);
     void setServerGameRunningSocketPort(unsigned short serverGameRunningSocketPort);
@@ -51,6 +52,11 @@ private:
     sf::Uint16 moveCommandSeqNumber = 0;
     std::deque<MoveCommand> unackedCommands;
     int latestAckedSeqNumber = -1;
+
+    // Other
+    bool connectingToLobby = false;
+    sf::Clock latencyTestClock;
+    const sf::Time maxToleratedLatency = sf::milliseconds(600);
 
     bool bindGameRunningConnection(unsigned short& udpSocketPort);
     AuthoritativeGameUpdate::PlayerPositionUpdate readPlayerPositionUpdate(sf::Packet signalPacket);

@@ -24,6 +24,10 @@ void AnimatedSpriteNode::setAnimation(const int animationId) {
     setFrame(currentFrame);
 }
 
+void AnimatedSpriteNode::queueAnimation(const int animationId) {
+    queuedAnimationId = animationId;
+}
+
 void AnimatedSpriteNode::setFrame(std::size_t newFrame) {
     sprite.setTextureRect(currentAnimationConfig->animation.getFrame(currentFrame).rect);
     sprite.setPosition(currentAnimationConfig->animation.getFrame(currentFrame).displacement);
@@ -40,7 +44,12 @@ void AnimatedSpriteNode::updateCurrent(sf::Time deltaTime, bool isGameInFocus) {
         timeSinceLastUpdate = sf::microseconds(timeSinceLastUpdate.asMicroseconds() % currentAnimationConfig->frameTime.asMicroseconds());
         if (currentFrame + 1 < currentAnimationConfig->animation.getSize())
             currentFrame++;
-        else {
+        else if (queuedAnimationId != -100) {
+            setAnimation(queuedAnimationId);
+            queuedAnimationId = -100;
+            return;
+        } else {
+            
             currentFrame = 0;
         }
         setFrame(currentFrame);

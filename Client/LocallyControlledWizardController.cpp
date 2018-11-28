@@ -15,6 +15,11 @@ void LocallyControlledWizardController::simulationUpdate(sf::Uint16 simulationTi
     bool rightCmdPressed = false;
     bool jumpCmdPressed = false;
 
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::LControl) && isGameInFocus) {
+        wizard->attack();
+        return;
+    }
+
     if (wizard->getPosition().y >= 865.0f) {
         // is touching ground
         wizard->timeInAir = 0.0f;

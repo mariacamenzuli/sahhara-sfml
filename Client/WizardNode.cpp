@@ -23,13 +23,23 @@ void WizardNode::idle() {
     }
 }
 
+void WizardNode::attack() {
+    if (direction == Direction::RIGHT) {
+        setAnimation(WizardAnimation::ATTACK_RIGHT);
+        queueAnimation(WizardAnimation::IDLE_RIGHT);
+    } else {
+        setAnimation(WizardAnimation::ATTACK_LEFT);
+        queueAnimation(WizardAnimation::IDLE_LEFT);
+    }
+}
+
 void WizardNode::buildSprite(ResourceLoader* resourceLoader) {
     addAnimation(WizardAnimation::RUN_RIGHT, buildRunRightAnimation(resourceLoader), (sf::seconds(0.133f)));
     addAnimation(WizardAnimation::RUN_LEFT, buildRunLeftAnimation(resourceLoader), (sf::seconds(0.133f)));
     addAnimation(WizardAnimation::JUMP_RIGHT, buildJumpRightAnimation(resourceLoader), (sf::seconds(0.75f)));
     addAnimation(WizardAnimation::JUMP_LEFT, buildJumpLeftAnimation(resourceLoader), (sf::seconds(0.75f)));
-    addAnimation(WizardAnimation::ATTACK_RIGHT, buildAttackRightAnimation(resourceLoader), (sf::seconds(0.033f)));
-    addAnimation(WizardAnimation::ATTACK_LEFT, buildAttackLeftAnimation(resourceLoader), (sf::seconds(0.033f)));
+    addAnimation(WizardAnimation::ATTACK_RIGHT, buildAttackRightAnimation(resourceLoader), (sf::seconds(0.15f)));
+    addAnimation(WizardAnimation::ATTACK_LEFT, buildAttackLeftAnimation(resourceLoader), (sf::seconds(0.15f)));
     addAnimation(WizardAnimation::IDLE_RIGHT, buildIdleRightAnimation(resourceLoader), (sf::seconds(0.75f)));
     addAnimation(WizardAnimation::IDLE_LEFT, buildIdleLeftAnimation(resourceLoader), (sf::seconds(0.75f)));
     addAnimation(WizardAnimation::HURT_RIGHT, buildHurtRightAnimation(resourceLoader), (sf::seconds(0.75f)));

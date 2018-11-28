@@ -36,10 +36,15 @@ void MainMenuScene::update(sf::Time timeSinceLastSimulationUpdate) {
     NonBlockingNetOpStatus operationStatus;
     switch (state) {
     case State::CONNECTING_TO_GAME_LOBBY:
-        if (gameServer->connectToGameLobby()) {
+        operationStatus = gameServer->connectToGameLobby();
+        if (operationStatus == NonBlockingNetOpStatus::COMPLETE) {
             clearConnectingToServerLobbyUi();
             state = State::WAITING_FOR_GAME_MATCH;
             waitForChallenger();
+        } else if (operationStatus == NonBlockingNetOpStatus::ERROR) {
+            clearConnectingToServerLobbyUi();
+            state = State::FAILED_TO_CONNECT_GAME_LOBBY;
+            displayFailedToConnectError();
         }
         break;
     case State::WAITING_FOR_GAME_MATCH:
@@ -146,6 +151,47 @@ void MainMenuScene::waitForChallenger() {
     std::unique_ptr<TextNode> connectingTextNode(new TextNode(connectingText));
     connectingTextNode->setPosition(635.0f, 525.0f);
     rootSceneNode->attachChild(std::move(connectingTextNode), "WAITING_MSG");
+}
+
+void MainMenuScene::displayFailedToConnectError() {
+    sf::Text failedToConnectMsg;
+    failedToConnectMsg.setFont(*resourceLoader->getFont(ResourceLoader::FontId::GAME_TEXT));
+    failedToConnectMsg.setString("Failed to establish server connection.");
+    failedToConnectMsg.setStyle(sf::Text::Bold);
+    failedToConnectMsg.setCharacterSize(75);
+    failedToConnectMsg.setFillColor(sf::Color::Red);
+    failedToConnectMsg.setOutlineColor(sf::Color::Black);
+    failedToConnectMsg.setOutlineThickness(2);
+
+    sf::Text reasonMsg;
+    reasonMsg.setFont(*resourceLoader->getFont(ResourceLoader::FontId::GAME_TEXT));
+    reasonMsg.setString("The server may be down or your connection has too much latency.");
+    reasonMsg.setStyle(sf::Text::Bold);
+    reasonMsg.setCharacterSize(75);
+    reasonMsg.setFillColor(sf::Color::Red);
+    reasonMsg.setOutlineColor(sf::Color::Black);
+    reasonMsg.setOutlineThickness(2);
+
+    sf::Text actionMsg;
+    actionMsg.setFont(*resourceLoader->getFont(ResourceLoader::FontId::GAME_TEXT));
+    actionMsg.setString("Please try again later.");
+    actionMsg.setStyle(sf::Text::Bold);
+    actionMsg.setCharacterSize(75);
+    actionMsg.setFillColor(sf::Color::Red);
+    actionMsg.setOutlineColor(sf::Color::Black);
+    actionMsg.setOutlineThickness(2);
+
+    std::unique_ptr<TextNode> failedToConnectMsgNode(new TextNode(failedToConnectMsg));
+    failedToConnectMsgNode->setPosition(535.0f, 525.0f);
+    rootSceneNode->attachChild(std::move(failedToConnectMsgNode));
+
+    std::unique_ptr<TextNode> reasonMsgNode(new TextNode(reasonMsg));
+    reasonMsgNode->setPosition(235.0f, 625.0f);
+    rootSceneNode->attachChild(std::move(reasonMsgNode));
+
+    std::unique_ptr<TextNode> actionMsgNode(new TextNode(actionMsg));
+    actionMsgNode->setPosition(735.0f, 725.0f);
+    rootSceneNode->attachChild(std::move(actionMsgNode));
 }
 
 void MainMenuScene::clearWaitingForChallengerUi() {

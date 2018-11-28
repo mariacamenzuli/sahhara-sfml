@@ -13,6 +13,7 @@ public:
 
     void addAnimation(int animationId, const Animation& animation, sf::Time frameTime);
     void setAnimation(const int animationId);
+    void queueAnimation(const int animationId);
     void setFrame(std::size_t newFrame);
 
 private:
@@ -25,6 +26,7 @@ private:
     };
 
     std::map<int, AnimationConfig> animations;
+    int queuedAnimationId = -100;
     int currentAnimationId = -100;
     AnimationConfig* currentAnimationConfig;
     sf::Sprite sprite;
