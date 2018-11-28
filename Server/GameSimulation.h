@@ -22,6 +22,7 @@ private:
         std::queue<ClientUpdate::MoveCommand> movementQueue;
         sf::Vector2<float> position;
         float timeInAir = 0.0f;
+        SimulationProperties::Direction direction;
 
         bool move(sf::Time deltaTime);
     };

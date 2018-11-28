@@ -118,7 +118,7 @@ void BattleScene::buildScene() {
     this->player1Wizard = wizard1.get();
     wizard1->setPosition(0.0f, 865.0f);
     wizard1->setScale(0.85f, 0.85f);
-    wizard1->direction = WizardNode::Direction::RIGHT;
+    wizard1->direction = SimulationProperties::Direction::RIGHT;
     wizard1->idle();
     rootSceneNode->attachChild(std::move(wizard1));
 
@@ -126,7 +126,7 @@ void BattleScene::buildScene() {
     this->player2Wizard = wizard2.get();
     wizard2->setPosition(1780.0f, 865.0f);
     wizard2->setScale(0.85f, 0.85f);
-    wizard2->direction = WizardNode::Direction::LEFT;
+    wizard2->direction = SimulationProperties::Direction::LEFT;
     wizard2->idle();
     rootSceneNode->attachChild(std::move(wizard2));
 

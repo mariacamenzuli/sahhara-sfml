@@ -16,11 +16,12 @@ public:
         bool left;
         bool right;
         bool jump;
+        bool attack;
 
-        MoveCommand(): left(false), right(false), jump(false) {
+        MoveCommand(): left(false), right(false), jump(false), attack(false) {
         }
 
-        MoveCommand(bool left, bool right, bool jump) : left(left), right(right), jump(jump) {
+        MoveCommand(bool left, bool right, bool jump, bool attack) : left(left), right(right), jump(jump), attack(attack) {
         }
     };
 

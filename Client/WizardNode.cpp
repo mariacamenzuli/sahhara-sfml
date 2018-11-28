@@ -2,13 +2,13 @@
 
 WizardNode::WizardNode(Color color, ResourceLoader* resourceLoader) : color(color) {
     buildSprite(resourceLoader);
-    direction = Direction::RIGHT;
+    direction = SimulationProperties::Direction::RIGHT;
 }
 
 WizardNode::~WizardNode() = default;
 
 void WizardNode::run() {
-    if (direction == Direction::RIGHT) {
+    if (direction == SimulationProperties::Direction::RIGHT) {
         setAnimation(WizardAnimation::RUN_RIGHT);
     } else {
         setAnimation(WizardAnimation::RUN_LEFT);
@@ -16,7 +16,7 @@ void WizardNode::run() {
 }
 
 void WizardNode::idle() {
-    if (direction == Direction::RIGHT) {
+    if (direction == SimulationProperties::Direction::RIGHT) {
         setAnimation(WizardAnimation::IDLE_RIGHT);
     } else {
         setAnimation(WizardAnimation::IDLE_LEFT);
@@ -24,7 +24,7 @@ void WizardNode::idle() {
 }
 
 void WizardNode::attack() {
-    if (direction == Direction::RIGHT) {
+    if (direction == SimulationProperties::Direction::RIGHT) {
         setAnimation(WizardAnimation::ATTACK_RIGHT);
         queueAnimation(WizardAnimation::IDLE_RIGHT);
     } else {

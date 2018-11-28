@@ -22,7 +22,8 @@ public:
 private:
     enum class State {
         CONNECTING_TO_GAME_LOBBY,
-        FAILED_TO_CONNECT_GAME_LOBBY,
+        TESTING_PING,
+        FAILED_TO_CONNECT_TO_GAME_LOBBY,
         WAITING_FOR_GAME_MATCH,
         ACCEPTING_GAME_MATCH,
         WAITING_FOR_GAME_GO_AHEAD
@@ -41,5 +42,6 @@ private:
     void inline clearConnectingToServerLobbyUi();
     void waitForChallenger();
     void displayFailedToConnectError();
+    void displayPingTooHighError();
     void inline clearWaitingForChallengerUi();
 };

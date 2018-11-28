@@ -49,6 +49,32 @@ void GameLobby::run() {
         logger.info("----------------------------------");
         logger.info("Accepted connection from [" + newPlayerConnection->getRemoteAddress().toString() + ":" + std::to_string(newPlayerConnection->getRemotePort()) + "].");
 
+        logger.info("Sending ping packet.");
+        sf::Clock pingTimer;
+        sf::Packet pingPacket;
+        pingPacket << "ping";
+        newPlayerConnection->send(pingPacket);
+
+        logger.info("Waiting for pong packet.");
+        sf::Packet pongPacket;
+        newPlayerConnection->receive(pongPacket);
+
+        auto ping = pingTimer.getElapsedTime().asMilliseconds();
+        logger.info("Ping measured at " + std::to_string(ping) + "ms.");
+
+        if (ping > 600) {
+            logger.info("Ping is too high. Dropping connection.");
+            sf::Packet pingTooHighPacket;
+            pingTooHighPacket << static_cast<sf::Int8>(ServerSignal::PING_TOO_HIGH);
+            newPlayerConnection->send(pingTooHighPacket);
+            newPlayerConnection->disconnect();
+            continue;
+        } else {
+            sf::Packet pingOkPacket;
+            pingOkPacket << static_cast<sf::Int8>(ServerSignal::PING_OK);
+            newPlayerConnection->send(pingOkPacket);
+        }
+
         if (clientsAwaitingGame.empty()) {
             logger.info("Not enough players to start a game yet.");
             logger.info("Queueing new connection for match up.");
@@ -110,6 +136,8 @@ void GameLobby::terminate() {
 }
 
 bool GameLobby::isReadyForGame(sf::TcpSocket* playerConnection, unsigned short& udpPort) {
+    logger.info("Sending game found signal to [" + playerConnection->getRemoteAddress().toString() + ":" + std::to_string(playerConnection->getRemotePort()) + "]");
+
     sf::Packet matchFoundPacket;
     matchFoundPacket << static_cast<sf::Int8>(ServerSignal::FOUND_GAME_MATCH);
     if (playerConnection->send(matchFoundPacket) != sf::Socket::Done) {
@@ -128,6 +156,7 @@ bool GameLobby::isReadyForGame(sf::TcpSocket* playerConnection, unsigned short& 
         matchAcceptedPacket >> udpPort;
     }
 
+    logger.info("Player ready for game.");
     return true;
 }
 

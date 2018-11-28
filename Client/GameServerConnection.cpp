@@ -22,21 +22,19 @@ GameServerConnection::~GameServerConnection() {
 NonBlockingNetOpStatus GameServerConnection::connectToGameLobby() {
     if (!connectingToLobby) {
         const sf::Socket::Status status = serverTcpSocket->connect(serverIp, serverLobbyPort);
+        std::cout << "Failed to connect to game lobby." << std::endl;
         if (status == sf::Socket::Error) {
             return NonBlockingNetOpStatus::ERROR;
         } else {
             connectingToLobby = true;
-            latencyTestClock.restart();
         }
     } else {
-        if (latencyTestClock.getElapsedTime() > maxToleratedLatency) {
-            return NonBlockingNetOpStatus::ERROR;
-        }
-
-        sf::Packet connectionTestPacket;
-        auto connectionTestStatus = serverTcpSocket->receive(connectionTestPacket);
-        if (connectionTestStatus == sf::Socket::NotReady) {
-            std::cout << "Connected to game lobby in " << latencyTestClock.getElapsedTime().asMilliseconds() << "ms." << std::endl;
+        sf::Packet pingPacket;
+        auto status = serverTcpSocket->receive(pingPacket);
+        if (status == sf::Socket::Done) {
+            sf::Packet pongPacket;
+            pongPacket << "pong";
+            serverTcpSocket->send(pongPacket);
             return NonBlockingNetOpStatus::COMPLETE;
         }
     }
@@ -46,6 +44,28 @@ NonBlockingNetOpStatus GameServerConnection::connectToGameLobby() {
     }
     failedLobbyConnectAttempts++;
     return NonBlockingNetOpStatus::NOT_READY;
+}
+
+NonBlockingNetOpStatus GameServerConnection::pingCheck() {
+    sf::Packet pingCheckPacket;
+    auto status = serverTcpSocket->receive(pingCheckPacket);
+
+    if (status == sf::Socket::Error) {
+        std::cout << "Failed to received a ping check result packet. Assuming connection is poor." << std::endl;
+        return NonBlockingNetOpStatus::ERROR;
+    } else if (status == sf::Socket::NotReady) {
+        return NonBlockingNetOpStatus::NOT_READY;
+    }
+
+    sf::Int8 signal;
+    pingCheckPacket >> signal;
+
+    if (signal != ServerSignal::PING_OK) {
+        std::cout << "Failed to received a ping OK message from the server. Assuming connection is poor." << std::endl;
+        return NonBlockingNetOpStatus::ERROR;
+    }
+
+    return NonBlockingNetOpStatus::COMPLETE;
 }
 
 void GameServerConnection::disconnectFromGameLobby() {
@@ -257,8 +277,8 @@ AuthoritativeGameUpdate::MoveCommandAckUpdate GameServerConnection::readMoveComm
     return AuthoritativeGameUpdate::MoveCommandAckUpdate(sequenceNumber);
 }
 
-void GameServerConnection::sendMoveCommand(bool left, bool right, bool jump) {
-    unackedCommands.emplace_back(MoveCommand(left, right, jump));
+void GameServerConnection::sendMoveCommand(bool left, bool right, bool jump, bool attack) {
+    unackedCommands.emplace_back(MoveCommand(left, right, jump, attack));
 
     sf::Packet moveCommandPacket;
     moveCommandPacket << static_cast<sf::Int8>(ClientSignal::MOVE_COMMAND);
@@ -266,10 +286,10 @@ void GameServerConnection::sendMoveCommand(bool left, bool right, bool jump) {
     moveCommandPacket << moveCommandSeqNumber;
     moveCommandSeqNumber++;
 
-    moveCommandPacket << static_cast<sf::Uint16>(unackedCommands.size()); // todo: is the cast to unsigned int 16 ok? maybe restrict it to uint8 (max 255)
+    moveCommandPacket << static_cast<sf::Uint16>(unackedCommands.size());
 
     for (int i = unackedCommands.size() - 1; i >= 0; i--) {
-        moveCommandPacket << unackedCommands[i].left << unackedCommands[i].right << unackedCommands[i].jump;
+        moveCommandPacket << unackedCommands[i].left << unackedCommands[i].right << unackedCommands[i].jump << unackedCommands[i].attack;
     }
 
     gameRunningUdpSocket->send(moveCommandPacket, serverIp, gameRunningSocketPort);

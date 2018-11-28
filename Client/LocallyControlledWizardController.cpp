@@ -14,17 +14,18 @@ void LocallyControlledWizardController::simulationUpdate(sf::Uint16 simulationTi
     bool leftCmdPressed = false;
     bool rightCmdPressed = false;
     bool jumpCmdPressed = false;
+    bool attackCmdPressed = false;
 
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::LControl) && isGameInFocus) {
-        wizard->attack();
-        return;
-    }
+    
 
     if (wizard->getPosition().y >= 865.0f) {
         // is touching ground
         wizard->timeInAir = 0.0f;
 
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space) && isGameInFocus) {
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::LControl) && isGameInFocus) {
+            // wizard->attack();
+            attackCmdPressed = true;
+        } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space) && isGameInFocus) {
             velocity.y = SimulationProperties::JUMP_KICKOFF_VELOCITY;
             wizard->timeInAir += deltaTime.asSeconds();
             jumpCmdPressed = true;
@@ -53,15 +54,15 @@ void LocallyControlledWizardController::simulationUpdate(sf::Uint16 simulationTi
     if (velocity.x == 0.0f) {
         wizard->idle();
     } else if (velocity.x < 0.0f) {
-        wizard->direction = WizardNode::Direction::LEFT;
+        wizard->direction = SimulationProperties::Direction::LEFT;
         wizard->run();
     } else {
-        wizard->direction = WizardNode::Direction::RIGHT;
+        wizard->direction = SimulationProperties::Direction::RIGHT;
         wizard->run();
     }
 
-    if (leftCmdPressed || rightCmdPressed || jumpCmdPressed) {
-        gameServer->sendMoveCommand(leftCmdPressed, rightCmdPressed, jumpCmdPressed);
+    if (leftCmdPressed || rightCmdPressed || jumpCmdPressed || attackCmdPressed) {
+        gameServer->sendMoveCommand(leftCmdPressed, rightCmdPressed, jumpCmdPressed, attackCmdPressed);
     }
 
     // Predict new position

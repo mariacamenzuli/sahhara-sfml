@@ -2,6 +2,7 @@
 
 #include "AnimatedSpriteNode.h"
 #include "ResourceLoader.h"
+#include "SimulationProperties.h"
 
 namespace  WizardAnimation {
     const int RUN_RIGHT = 1;
@@ -20,11 +21,6 @@ namespace  WizardAnimation {
 
 class WizardNode : public AnimatedSpriteNode {
 public:
-    enum class Direction {
-        RIGHT,
-        LEFT
-    };
-
     enum class Color {
         PURPLE,
         ORANGE
@@ -36,8 +32,8 @@ public:
     void run();
     void idle();
     void attack();
-    
-    Direction direction;
+
+    SimulationProperties::Direction direction;
     float timeInAir = 0.0f;
 
 private:

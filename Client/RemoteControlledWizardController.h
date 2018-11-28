@@ -24,7 +24,7 @@ private:
 
     WizardNode* wizard;
     GameServerConnection* gameServer;
-    WizardNode::Direction lastKnownDirection;
+    SimulationProperties::Direction lastKnownDirection;
     RemotePlayerPosition lastKnownPositions[2];
     sf::Vector2f lastPredictedPositions[2];
 

@@ -5,6 +5,7 @@
 #include <SFML/Network/TcpSocket.hpp>
 #include <SFML/Network/Packet.hpp>
 #include <SFML/Network/IpAddress.hpp>
+#include <SFML/Network/SocketSelector.hpp>
 #include <memory>
 #include <queue>
 #include <SFML/System/Clock.hpp>
@@ -17,6 +18,7 @@ public:
 
     // Find and start game
     NonBlockingNetOpStatus connectToGameLobby();
+    NonBlockingNetOpStatus pingCheck();
     void disconnectFromGameLobby();
     bool getGameInitParameters(bool& isPlayer1Local, unsigned short& serverUdpPort);
     void setServerGameRunningSocketPort(unsigned short serverGameRunningSocketPort);
@@ -26,7 +28,7 @@ public:
     NonBlockingNetOpStatus getAuthoritativeGameUpdate(AuthoritativeGameUpdate& gameUpdate);
 
     // Run game
-    void sendMoveCommand(bool left, bool right, bool jump);
+    void sendMoveCommand(bool left, bool right, bool jump, bool attack);
     void markMoveCommandAsAcked(int sequenceNumber);
 
 private:
@@ -46,8 +48,9 @@ private:
         bool left;
         bool right;
         bool jump;
+        bool attack;
 
-        MoveCommand(bool left, bool right, bool jump) : left(left), right(right), jump(jump) {}
+        MoveCommand(bool left, bool right, bool jump, bool attack) : left(left), right(right), jump(jump), attack(attack) {}
     };
     sf::Uint16 moveCommandSeqNumber = 0;
     std::deque<MoveCommand> unackedCommands;
@@ -55,8 +58,6 @@ private:
 
     // Other
     bool connectingToLobby = false;
-    sf::Clock latencyTestClock;
-    const sf::Time maxToleratedLatency = sf::milliseconds(600);
 
     bool bindGameRunningConnection(unsigned short& udpSocketPort);
     AuthoritativeGameUpdate::PlayerPositionUpdate readPlayerPositionUpdate(sf::Packet signalPacket);

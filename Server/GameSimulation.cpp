@@ -5,6 +5,7 @@
 #include <SFML/Network/Packet.hpp>
 #include <SFML/System/Clock.hpp>
 #include <queue>
+#include <iostream>
 
 GameSimulation::GameSimulation(int gameId,
                                std::unique_ptr<sf::TcpSocket> player1TcpConnection,
@@ -45,9 +46,11 @@ GameSimulation::~GameSimulation() = default;
 void GameSimulation::run() {
     player1GameState.position.x = SimulationProperties::MIN_X_BOUNDARY;
     player1GameState.position.y = SimulationProperties::MAX_Y_BOUNDARY;
+    player1GameState.direction = SimulationProperties::Direction::RIGHT;
 
     player2GameState.position.x = SimulationProperties::MAX_X_BOUNDARY;
     player2GameState.position.y = SimulationProperties::MAX_Y_BOUNDARY;
+    player2GameState.direction = SimulationProperties::Direction::LEFT;
 
     sf::Clock clock;
     auto timeSinceLastUpdate = sf::Time::Zero;
@@ -92,7 +95,13 @@ bool GameSimulation::PlayerGameState::move(sf::Time deltaTime) {
         // is touching ground
         timeInAir = 0.0f;
 
-        if (command.jump) {
+        if (command.attack) {
+            if (direction == SimulationProperties::Direction::LEFT) {
+                std::cout << "Fire projectile LEFT from (" << position.x << ", " << position.y << ")." << std::endl;
+            } else {
+                std::cout << "Fire projectile RIGHT from (" << position.x << ", " << position.y << ")." << std::endl;
+            }
+        } else if (command.jump) {
             velocity.y = SimulationProperties::JUMP_KICKOFF_VELOCITY;
             timeInAir += deltaTime.asSeconds();
         }
@@ -107,12 +116,19 @@ bool GameSimulation::PlayerGameState::move(sf::Time deltaTime) {
         timeInAir += deltaTime.asSeconds();
     }
 
+    SimulationProperties::Direction newDirection = direction;
     if (command.left) {
         velocity.x -= SimulationProperties::RUN_VELOCITY;
+        newDirection = SimulationProperties::Direction::LEFT;
     }
 
     if (command.right) {
         velocity.x += SimulationProperties::RUN_VELOCITY;
+        newDirection = SimulationProperties::Direction::RIGHT;
+    }
+
+    if (velocity.x != 0.0f) {
+        direction = newDirection;
     }
 
     position = position + velocity * deltaTime.asSeconds();

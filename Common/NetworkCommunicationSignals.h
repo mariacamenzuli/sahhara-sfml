@@ -7,6 +7,8 @@ enum class NonBlockingNetOpStatus {
 };
 
 namespace ServerSignal {
+    constexpr char PING_TOO_HIGH = 'x';
+    constexpr char PING_OK = 'o';
     constexpr char FOUND_GAME_MATCH = '~';
     constexpr char GAME_ON = '+';
     constexpr char GAME_OFF = '-';

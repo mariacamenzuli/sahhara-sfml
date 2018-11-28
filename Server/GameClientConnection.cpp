@@ -86,8 +86,9 @@ ClientUpdate::MoveUpdate GameClientConnection::PlayerConnection::readMoveUpdate(
         bool left;
         bool right;
         bool jump;
-        signalPacket >> left >> right >> jump;
-        unackedCommands.emplace_back(ClientUpdate::MoveCommand(left, right, jump));
+        bool attack;
+        signalPacket >> left >> right >> jump >> attack;
+        unackedCommands.emplace_back(ClientUpdate::MoveCommand(left, right, jump, attack));
     }
 
     return ClientUpdate::MoveUpdate(sequenceNumber, unackedCommands);

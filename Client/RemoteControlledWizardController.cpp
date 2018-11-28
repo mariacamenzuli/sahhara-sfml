@@ -4,7 +4,7 @@
 RemoteControlledWizardController::RemoteControlledWizardController(WizardNode* wizard,
                                                                    GameServerConnection* gameServer) : wizard(wizard),
                                                                                                        gameServer(gameServer),
-                                                                                                       lastKnownDirection(wizard->getPosition().x == 1780 ? WizardNode::Direction::LEFT : WizardNode::Direction::RIGHT),
+                                                                                                       lastKnownDirection(wizard->getPosition().x == 1780 ? SimulationProperties::Direction::LEFT : SimulationProperties::Direction::RIGHT),
                                                                                                        lastKnownPositions{
                                                                                                            RemotePlayerPosition(-1, wizard->getPosition()),
                                                                                                            RemotePlayerPosition(-2, wizard->getPosition())
@@ -41,9 +41,9 @@ void RemoteControlledWizardController::considerKnownPosition(sf::Uint16 time, sf
 
     auto deltaX = lastKnownPositions[0].position.x - lastKnownPositions[1].position.x;
     if (deltaX > 0.001) {
-        lastKnownDirection = WizardNode::Direction::RIGHT;
+        lastKnownDirection = SimulationProperties::Direction::RIGHT;
     } else if (deltaX < -0.001) {
-        lastKnownDirection = WizardNode::Direction::LEFT;
+        lastKnownDirection = SimulationProperties::Direction::LEFT;
     }
 }
 
