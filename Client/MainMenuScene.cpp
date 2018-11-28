@@ -7,8 +7,6 @@
 
 #include <SFML/Graphics/Sprite.hpp>
 #include <SFML/Graphics/Text.hpp>
-#include <SFML/Network/IpAddress.hpp>
-#include <thread>
 
 MainMenuScene::MainMenuScene(GameSceneDirector* sceneDirector,
                              ResourceLoader* resourceLoader,

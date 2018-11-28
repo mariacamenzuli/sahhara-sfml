@@ -54,6 +54,7 @@ void GameLobby::run() {
         sf::Packet pingPacket;
         pingPacket << "ping";
         newPlayerConnection->send(pingPacket);
+        pingTimer.restart();
 
         logger.info("Waiting for pong packet.");
         sf::Packet pongPacket;

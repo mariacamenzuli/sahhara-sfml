@@ -4,6 +4,8 @@
 #include "ResourceLoader.h"
 #include "SimulationProperties.h"
 
+#include <SFML/System/Clock.hpp>
+
 namespace  WizardAnimation {
     const int RUN_RIGHT = 1;
     const int RUN_LEFT = 2;
@@ -35,6 +37,8 @@ public:
 
     SimulationProperties::Direction direction;
     float timeInAir = 0.0f;
+    bool attacking = false;
+    sf::Clock attackStartTime;
 
 private:
     Color color;

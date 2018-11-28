@@ -23,6 +23,8 @@ private:
         sf::Vector2<float> position;
         float timeInAir = 0.0f;
         SimulationProperties::Direction direction;
+        bool attacking = false;
+        sf::Clock attackStartTime;
 
         bool move(sf::Time deltaTime);
     };

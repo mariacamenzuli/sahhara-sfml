@@ -11,6 +11,7 @@ namespace SimulationProperties {
     constexpr float MAX_X_BOUNDARY = 1780.0f;
     constexpr float MIN_X_BOUNDARY = 0.0f;
     constexpr float MAX_Y_BOUNDARY = 865.0f;
+    constexpr float ATTACK_ANIMATION_DURATION = 450.0f;
 
     enum class Direction {
         RIGHT,

@@ -91,16 +91,29 @@ bool GameSimulation::PlayerGameState::move(sf::Time deltaTime) {
 
     sf::Vector2f velocity(0.0f, 0.0f);
 
-    if (position.y >= 865.0f) {
-        // is touching ground
+    if (attacking) {
+        auto attackDurationSoFar = attackStartTime.getElapsedTime().asMilliseconds();
+        if (attackDurationSoFar < SimulationProperties::ATTACK_ANIMATION_DURATION) {
+            return false;
+        } else {
+            attacking = false;
+        }
+    }
+
+    if (position.y >= SimulationProperties::MAX_Y_BOUNDARY) { // is touching ground
         timeInAir = 0.0f;
 
         if (command.attack) {
+            attacking = true;
+            attackStartTime.restart();
+
             if (direction == SimulationProperties::Direction::LEFT) {
                 std::cout << "Fire projectile LEFT from (" << position.x << ", " << position.y << ")." << std::endl;
             } else {
                 std::cout << "Fire projectile RIGHT from (" << position.x << ", " << position.y << ")." << std::endl;
             }
+
+            return false;
         } else if (command.jump) {
             velocity.y = SimulationProperties::JUMP_KICKOFF_VELOCITY;
             timeInAir += deltaTime.asSeconds();
