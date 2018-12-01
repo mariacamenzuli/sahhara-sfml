@@ -10,6 +10,7 @@
 
 #include <SFML/Graphics/Sprite.hpp>
 #include <iostream>
+#include "ProjectileNode.h"
 
 BattleScene::BattleScene(GameSceneDirector* sceneDirector,
                          ResourceLoader* resourceLoader,
@@ -83,6 +84,12 @@ void BattleScene::update(sf::Time timeSinceLastSimulationUpdate) {
             if (!serverUpdate.projectile.unackedProjectileCreatedUpdates.empty()) {
                 for (auto projectileCreatedUpdate : serverUpdate.projectile.unackedProjectileCreatedUpdates) {
                     std::cout << "Projectile fired by " << (projectileCreatedUpdate.firedByPlayer1 ? "Player 1" : "Player 2") << " at " << projectileCreatedUpdate.position.x << ", " << projectileCreatedUpdate.position.y << " heading " << (projectileCreatedUpdate.direction == SimulationProperties::Direction::RIGHT ? "right." : "left.") << std::endl;
+
+                    std::unique_ptr<ProjectileNode> projectile(new ProjectileNode(sf::Color::Blue));
+                    float yAdjustment = 50.0f;
+                    float xAdjustment = projectileCreatedUpdate.direction == SimulationProperties::Direction::LEFT ? -10.0f : 120.0f;
+                    projectile->setPosition(projectileCreatedUpdate.position.x + xAdjustment, projectileCreatedUpdate.position.y + yAdjustment);
+                    rootSceneNode->attachChild(std::move(projectile));
                 }
             }
             break;
