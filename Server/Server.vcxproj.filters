@@ -48,6 +48,12 @@
     <ClCompile Include="ClientUpdate.cpp">
       <Filter>Source Files\Network</Filter>
     </ClCompile>
+    <ClCompile Include="ProjectileCreatedUpdate.cpp">
+      <Filter>Source Files\Network</Filter>
+    </ClCompile>
+    <ClCompile Include="ProjectileHitUpdate.cpp">
+      <Filter>Source Files\Network</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameLobby.h">
@@ -66,6 +72,15 @@
       <Filter>Header Files\Network</Filter>
     </ClInclude>
     <ClInclude Include="ClientUpdate.h">
+      <Filter>Header Files\Network</Filter>
+    </ClInclude>
+    <ClInclude Include="ProjectileUpdate.h">
+      <Filter>Header Files\Network</Filter>
+    </ClInclude>
+    <ClInclude Include="ProjectileCreatedUpdate.h">
+      <Filter>Header Files\Network</Filter>
+    </ClInclude>
+    <ClInclude Include="ProjectileHitUpdate.h">
       <Filter>Header Files\Network</Filter>
     </ClInclude>
   </ItemGroup>

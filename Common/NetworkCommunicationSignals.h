@@ -15,9 +15,15 @@ namespace ServerSignal {
     constexpr char GAME_INIT = '0';
     constexpr char MOVE_COMMAND_ACK = '1';
     constexpr char PLAYER_POSITION_UPDATE = '^';
+    constexpr char PROJECTILE_UPDATE = 'X';
+    constexpr char PROJECTILE_CREATED = 'c';
+    constexpr char PROJECTILE_HIT = 'h';
 
     constexpr bool IS_PLAYER_1 = true;
     constexpr bool IS_NOT_PLAYER_1 = false;
+
+    constexpr bool IS_DIRECTION_RIGHT = true;
+    constexpr bool IS_NOT_DIRECTION_RIGHT = false;
 }
 
 namespace ClientSignal {

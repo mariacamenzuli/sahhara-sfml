@@ -4,5 +4,4 @@ AuthoritativeGameUpdate::AuthoritativeGameUpdate() {
 }
 
 
-AuthoritativeGameUpdate::~AuthoritativeGameUpdate() {
-}
+AuthoritativeGameUpdate::~AuthoritativeGameUpdate() = default;

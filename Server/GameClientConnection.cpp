@@ -1,4 +1,5 @@
 #include "GameClientConnection.h"
+#include "ProjectileCreatedUpdate.h"
 
 GameClientConnection::GameClientConnection(ThreadLogger logger,
                                            sf::IpAddress player1RemoteIp,
@@ -45,6 +46,35 @@ void GameClientConnection::broadcastPlayerPositions(sf::Uint16 time, bool player
 
     player1Connection.udpSocket.send(movementUpdate, player1Connection.address.ip, player1Connection.address.port);
     player2Connection.udpSocket.send(movementUpdate, player2Connection.address.ip, player2Connection.address.port);
+}
+
+void GameClientConnection::queueProjectileCreationBroadcast(sf::Vector2f position, SimulationProperties::Direction direction, bool firedByPlayer1) {
+    player1Connection.queueProjectileCreationBroadcast(position, direction, firedByPlayer1);
+    player2Connection.queueProjectileCreationBroadcast(position, direction, firedByPlayer1);
+}
+
+void GameClientConnection::sendUnackedProjectileUpdates() {
+    player1Connection.sendUnackedProjectileUpdates();
+    player2Connection.sendUnackedProjectileUpdates();
+}
+
+void GameClientConnection::PlayerConnection::sendUnackedProjectileUpdates() {
+    if (unackedUpdates.empty()) {
+        return;
+    }
+    
+    sf::Packet unackedCommandsPacket;
+    unackedCommandsPacket << static_cast<sf::Int8>(ServerSignal::PROJECTILE_UPDATE);
+    
+    unackedCommandsPacket << projectileUpdateSeqNumber;
+    
+    unackedCommandsPacket << static_cast<sf::Uint16>(unackedUpdates.size());
+    
+    for (int i = 0; i < unackedUpdates.size(); i++) {
+        unackedUpdates[i]->appendToPacket(unackedCommandsPacket);
+    }
+    
+    udpSocket.send(unackedCommandsPacket, address.ip, address.port);
 }
 
 NonBlockingNetOpStatus GameClientConnection::PlayerConnection::getNetworkUpdate(ClientUpdate& clientUpdate) {
@@ -103,4 +133,9 @@ void GameClientConnection::PlayerConnection::ackMoves(ClientUpdate::MoveUpdate& 
     ackPacket << static_cast<sf::Int8>(ServerSignal::MOVE_COMMAND_ACK) << static_cast<sf::Uint16>(moveUpdate.sequenceNumber);
     udpSocket.send(ackPacket, address.ip, address.port);
     lastAckedMoveCmdSeqNumber = moveUpdate.sequenceNumber;
+}
+
+void GameClientConnection::PlayerConnection::queueProjectileCreationBroadcast(sf::Vector2f position, SimulationProperties::Direction direction, bool firedByPlayer1) {
+    unackedUpdates.emplace_back(std::make_unique<ProjectileCreatedUpdate>(position, direction, firedByPlayer1));
+    projectileUpdateSeqNumber++;
 }

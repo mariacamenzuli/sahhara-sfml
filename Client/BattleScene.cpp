@@ -78,6 +78,9 @@ void BattleScene::update(sf::Time timeSinceLastSimulationUpdate) {
             // std::cout << "Received ack for move command " << serverUpdate.moveCommandAck.sequenceNumber  << "." << std::endl;
             gameServer->markMoveCommandAsAcked(serverUpdate.moveCommandAck.sequenceNumber);
             break;
+        case AuthoritativeGameUpdate::Type::PROJECTILE_UPDATE:
+            //todo: create projectile / end game
+            break;
         default:
             std::cout << "Received unrecognized update type." << std::endl;
             break;

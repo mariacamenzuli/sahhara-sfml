@@ -239,6 +239,10 @@ NonBlockingNetOpStatus GameServerConnection::getAuthoritativeGameUpdate(Authorit
     case AuthoritativeGameUpdate::Type::MOVE_COMMAND_ACK:
         gameUpdate.moveCommandAck = readMoveCommandAckUpdate(signalPacket);
         break;
+    case AuthoritativeGameUpdate::Type::PROJECTILE_UPDATE:
+        gameUpdate.projectile = readProjectileUpdate(signalPacket);
+        ackProjectileUpdate(gameUpdate.projectile);
+        break;
     case AuthoritativeGameUpdate::Type::UNKNOWN:
     default:
         std::cout << "Received an unexpected signal from the server." << std::endl;
@@ -258,7 +262,7 @@ bool GameServerConnection::bindGameRunningConnection(unsigned short& udpSocketPo
     return false;
 }
 
-AuthoritativeGameUpdate::PlayerPositionUpdate GameServerConnection::readPlayerPositionUpdate(sf::Packet signalPacket) {
+AuthoritativeGameUpdate::PlayerPositionUpdate GameServerConnection::readPlayerPositionUpdate(sf::Packet& signalPacket) {
     bool player1PositionChanged, player2PositionChanged;
     sf::Vector2f newPlayer1Position, newPlayer2Position;
     sf::Uint16 time;
@@ -271,10 +275,54 @@ AuthoritativeGameUpdate::PlayerPositionUpdate GameServerConnection::readPlayerPo
     return  AuthoritativeGameUpdate::PlayerPositionUpdate(time, player1PositionChanged, newPlayer1Position, player2PositionChanged, newPlayer2Position);
 }
 
-AuthoritativeGameUpdate::MoveCommandAckUpdate GameServerConnection::readMoveCommandAckUpdate(sf::Packet signalPacket) {
+AuthoritativeGameUpdate::MoveCommandAckUpdate GameServerConnection::readMoveCommandAckUpdate(sf::Packet& signalPacket) {
     sf::Uint16 sequenceNumber;
     signalPacket >> sequenceNumber;
     return AuthoritativeGameUpdate::MoveCommandAckUpdate(sequenceNumber);
+}
+
+AuthoritativeGameUpdate::ProjectileUpdate GameServerConnection::readProjectileUpdate(sf::Packet& signalPacket) {
+    sf::Uint16 sequenceNumber;
+    sf::Uint16 unackedUpdatesInPacket;
+    signalPacket >> sequenceNumber >> unackedUpdatesInPacket;
+
+    int actualUnackedUpdates = sequenceNumber - lastAckedProjectileUpdateSeqNumber;
+    std::vector<AuthoritativeGameUpdate::ProjectileCreatedUpdate> unackedProjectileCreatedCommands;
+    std::vector<AuthoritativeGameUpdate::ProjectileHitUpdate> unackedProjectileHitCommands;
+    for (int i = 0; i < actualUnackedUpdates; i++) {
+        sf::Int8 updateType;
+        signalPacket >> updateType;
+
+        if (updateType == ServerSignal::PROJECTILE_CREATED) {
+            sf::Vector2f position;
+            bool isDirectionRight;
+            bool isFiredByPlayer1;
+            signalPacket >> position.x >> position.y >> isDirectionRight >> isFiredByPlayer1;
+            unackedProjectileCreatedCommands.emplace_back(AuthoritativeGameUpdate::ProjectileCreatedUpdate(position,
+                                                                                                           isDirectionRight ? SimulationProperties::Direction::RIGHT : SimulationProperties::Direction::LEFT,
+                                                                                                           isFiredByPlayer1));
+        } else if (updateType == ServerSignal::PROJECTILE_HIT) {
+            bool hitPlayer1;
+            signalPacket >> hitPlayer1;
+            unackedProjectileHitCommands.emplace_back(AuthoritativeGameUpdate::ProjectileHitUpdate(hitPlayer1));
+        } else {
+            std::cout << "Received unrecognized projectile update type";
+            continue;
+        }
+    }
+
+    return AuthoritativeGameUpdate::ProjectileUpdate(sequenceNumber, unackedProjectileCreatedCommands, unackedProjectileHitCommands);
+}
+
+void GameServerConnection::ackProjectileUpdate(AuthoritativeGameUpdate::ProjectileUpdate& projectileUpdate) {
+    if (projectileUpdate.unackedProjectileCreatedUpdates.empty() && projectileUpdate.unackedProjectileHitUpdates.empty()) {
+        return;
+    }
+
+    //todo: send ack!!
+    for (auto thing : projectileUpdate.unackedProjectileCreatedUpdates) {
+        std::cout << "Received projectile creation at " << thing.position.x << ", " << thing.position.y << std::endl;
+    }
 }
 
 void GameServerConnection::sendMoveCommand(bool left, bool right, bool jump, bool attack) {

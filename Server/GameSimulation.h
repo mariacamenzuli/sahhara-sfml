@@ -19,14 +19,13 @@ public:
 
 private:
     struct PlayerGameState {
+        bool isPlayer1 = false;
         std::queue<ClientUpdate::MoveCommand> movementQueue;
         sf::Vector2<float> position;
         float timeInAir = 0.0f;
         SimulationProperties::Direction direction;
         bool attacking = false;
         sf::Clock attackStartTime;
-
-        bool move(sf::Time deltaTime);
     };
 
     const sf::Time timePerSimulationTick = sf::seconds(1.f / SimulationProperties::TICKS_PER_SECOND);
@@ -42,5 +41,6 @@ private:
 
     void checkForNetworkUpdates();
     void movePlayers(sf::Time deltaTime);
+    bool movePlayer(PlayerGameState& playerGameState, sf::Time deltaTime);
     inline void incrementTime();
 };

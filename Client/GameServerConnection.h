@@ -56,10 +56,15 @@ private:
     std::deque<MoveCommand> unackedCommands;
     int latestAckedSeqNumber = -1;
 
+    // Projectile update tracking
+    int lastAckedProjectileUpdateSeqNumber = -1;
+
     // Other
     bool connectingToLobby = false;
 
     bool bindGameRunningConnection(unsigned short& udpSocketPort);
-    AuthoritativeGameUpdate::PlayerPositionUpdate readPlayerPositionUpdate(sf::Packet signalPacket);
-    AuthoritativeGameUpdate::MoveCommandAckUpdate readMoveCommandAckUpdate(sf::Packet signalPacket);
+    AuthoritativeGameUpdate::PlayerPositionUpdate readPlayerPositionUpdate(sf::Packet& signalPacket);
+    AuthoritativeGameUpdate::MoveCommandAckUpdate readMoveCommandAckUpdate(sf::Packet& signalPacket);
+    AuthoritativeGameUpdate::ProjectileUpdate readProjectileUpdate(sf::Packet& signalPacket);
+    void ackProjectileUpdate(AuthoritativeGameUpdate::ProjectileUpdate& projectileUpdate);
 };

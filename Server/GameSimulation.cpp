@@ -47,10 +47,12 @@ void GameSimulation::run() {
     player1GameState.position.x = SimulationProperties::MIN_X_BOUNDARY;
     player1GameState.position.y = SimulationProperties::MAX_Y_BOUNDARY;
     player1GameState.direction = SimulationProperties::Direction::RIGHT;
+    player1GameState.isPlayer1 = true;
 
     player2GameState.position.x = SimulationProperties::MAX_X_BOUNDARY;
     player2GameState.position.y = SimulationProperties::MAX_Y_BOUNDARY;
     player2GameState.direction = SimulationProperties::Direction::LEFT;
+    player2GameState.isPlayer1 = false;
 
     sf::Clock clock;
     auto timeSinceLastUpdate = sf::Time::Zero;
@@ -64,6 +66,8 @@ void GameSimulation::run() {
             timeSinceLastUpdate -= timePerSimulationTick;
 
             movePlayers(timePerSimulationTick);
+
+            clientConnection.sendUnackedProjectileUpdates();
 
             incrementTime();
         }
@@ -80,56 +84,58 @@ int GameSimulation::getGameId() const {
     return gameId;
 }
 
-bool GameSimulation::PlayerGameState::move(sf::Time deltaTime) {
+bool GameSimulation::movePlayer(PlayerGameState& playerGameState, class sf::Time deltaTime) {
     ClientUpdate::MoveCommand command;
-    if (!movementQueue.empty()) {
-        command = movementQueue.front();
-        movementQueue.pop();
+    if (!playerGameState.movementQueue.empty()) {
+        command = playerGameState.movementQueue.front();
+        playerGameState.movementQueue.pop();
     } else {
         command = ClientUpdate::MoveCommand();
     }
 
     sf::Vector2f velocity(0.0f, 0.0f);
 
-    if (attacking) {
-        auto attackDurationSoFar = attackStartTime.getElapsedTime().asMilliseconds();
+    if (playerGameState.attacking) {
+        auto attackDurationSoFar = playerGameState.attackStartTime.getElapsedTime().asMilliseconds();
         if (attackDurationSoFar < SimulationProperties::ATTACK_ANIMATION_DURATION) {
             return false;
         } else {
-            attacking = false;
+            playerGameState.attacking = false;
         }
     }
 
-    if (position.y >= SimulationProperties::MAX_Y_BOUNDARY) { // is touching ground
-        timeInAir = 0.0f;
+    if (playerGameState.position.y >= SimulationProperties::MAX_Y_BOUNDARY) { // is touching ground
+        playerGameState.timeInAir = 0.0f;
 
         if (command.attack) {
-            attacking = true;
-            attackStartTime.restart();
+            playerGameState.attacking = true;
+            playerGameState.attackStartTime.restart();
 
-            if (direction == SimulationProperties::Direction::LEFT) {
-                std::cout << "Fire projectile LEFT from (" << position.x << ", " << position.y << ")." << std::endl;
+            if (playerGameState.direction == SimulationProperties::Direction::LEFT) {
+                logger.info("Fire projectile LEFT from (" + std::to_string(playerGameState.position.x) + ", " + std::to_string(playerGameState.position.y) + ").");
             } else {
-                std::cout << "Fire projectile RIGHT from (" << position.x << ", " << position.y << ")." << std::endl;
+                logger.info("Fire projectile RIGHT from (" + std::to_string(playerGameState.position.x) + ", " + std::to_string(playerGameState.position.y) + ").");
             }
+
+            clientConnection.queueProjectileCreationBroadcast(playerGameState.position, playerGameState.direction, playerGameState.isPlayer1);
 
             return false;
         } else if (command.jump) {
             velocity.y = SimulationProperties::JUMP_KICKOFF_VELOCITY;
-            timeInAir += deltaTime.asSeconds();
+            playerGameState.timeInAir += deltaTime.asSeconds();
         }
     } else {
-        if (timeInAir < SimulationProperties::JUMP_KICK_OFF_TIME) {
+        if (playerGameState.timeInAir < SimulationProperties::JUMP_KICK_OFF_TIME) {
             velocity.y = SimulationProperties::JUMP_KICKOFF_VELOCITY;
-        } else if (timeInAir < SimulationProperties::MAX_AIR_TIME) {
+        } else if (playerGameState.timeInAir < SimulationProperties::MAX_AIR_TIME) {
             velocity.y = SimulationProperties::JUMP_VELOCITY;
         } else {
             velocity.y = SimulationProperties::GRAVITY;
         }
-        timeInAir += deltaTime.asSeconds();
+        playerGameState.timeInAir += deltaTime.asSeconds();
     }
 
-    SimulationProperties::Direction newDirection = direction;
+    SimulationProperties::Direction newDirection = playerGameState.direction;
     if (command.left) {
         velocity.x -= SimulationProperties::RUN_VELOCITY;
         newDirection = SimulationProperties::Direction::LEFT;
@@ -141,19 +147,19 @@ bool GameSimulation::PlayerGameState::move(sf::Time deltaTime) {
     }
 
     if (velocity.x != 0.0f) {
-        direction = newDirection;
+        playerGameState.direction = newDirection;
     }
 
-    position = position + velocity * deltaTime.asSeconds();
+    playerGameState.position = playerGameState.position + velocity * deltaTime.asSeconds();
 
-    if (position.x < SimulationProperties::MIN_X_BOUNDARY) {
-        position.x = SimulationProperties::MIN_X_BOUNDARY;
-    } else if (position.x > SimulationProperties::MAX_X_BOUNDARY) {
-        position.x = SimulationProperties::MAX_X_BOUNDARY;
+    if (playerGameState.position.x < SimulationProperties::MIN_X_BOUNDARY) {
+        playerGameState.position.x = SimulationProperties::MIN_X_BOUNDARY;
+    } else if (playerGameState.position.x > SimulationProperties::MAX_X_BOUNDARY) {
+        playerGameState.position.x = SimulationProperties::MAX_X_BOUNDARY;
     }
 
-    if (position.y > SimulationProperties::MAX_Y_BOUNDARY) {
-        position.y = SimulationProperties::MAX_Y_BOUNDARY;
+    if (playerGameState.position.y > SimulationProperties::MAX_Y_BOUNDARY) {
+        playerGameState.position.y = SimulationProperties::MAX_Y_BOUNDARY;
     }
 
     return velocity.x != 0.0f || velocity.y != 0.0f;
@@ -188,8 +194,8 @@ void GameSimulation::checkForNetworkUpdates() {
 }
 
 void GameSimulation::movePlayers(sf::Time deltaTime) {
-    bool player1PositionChanged = player1GameState.move(deltaTime);
-    bool player2PositionChanged = player2GameState.move(deltaTime);
+    bool player1PositionChanged = movePlayer(player1GameState, deltaTime);
+    bool player2PositionChanged = movePlayer(player2GameState, deltaTime);
     clientConnection.broadcastPlayerPositions(time, player1PositionChanged, player1GameState.position, player2PositionChanged, player2GameState.position);
 }
 
