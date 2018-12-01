@@ -9,6 +9,7 @@ public:
 
     enum class Type {
         MOVE,
+        PROJECTILE_UPDATE_ACK,
         UNKNOWN
     };
 
@@ -37,12 +38,25 @@ public:
         MoveUpdate() = default;
     };
 
+    struct ProjectileUpdateAck {
+        sf::Uint16 sequenceNumber;
+
+        ProjectileUpdateAck() = default;
+
+        explicit ProjectileUpdateAck(sf::Uint16 sequenceNumber)
+            : sequenceNumber(sequenceNumber) {
+        }
+    };
+
     MoveUpdate move;
+    ProjectileUpdateAck projectileAck;
 
     static Type determineUpdateType(char signal) {
         switch (signal) {
         case ClientSignal::MOVE_COMMAND:
             return Type::MOVE;
+        case ClientSignal::PROJECTILE_UPDATE_ACK:
+            return Type::PROJECTILE_UPDATE_ACK;
         default:
             return Type::UNKNOWN;
         }

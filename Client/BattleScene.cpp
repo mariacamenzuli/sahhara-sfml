@@ -80,6 +80,11 @@ void BattleScene::update(sf::Time timeSinceLastSimulationUpdate) {
             break;
         case AuthoritativeGameUpdate::Type::PROJECTILE_UPDATE:
             //todo: create projectile / end game
+            if (!serverUpdate.projectile.unackedProjectileCreatedUpdates.empty()) {
+                for (auto projectileCreatedUpdate : serverUpdate.projectile.unackedProjectileCreatedUpdates) {
+                    std::cout << "Projectile fired by " << (projectileCreatedUpdate.firedByPlayer1 ? "Player 1" : "Player 2") << " at " << projectileCreatedUpdate.position.x << ", " << projectileCreatedUpdate.position.y << " heading " << (projectileCreatedUpdate.direction == SimulationProperties::Direction::RIGHT ? "right." : "left.") << std::endl;
+                }
+            }
             break;
         default:
             std::cout << "Received unrecognized update type." << std::endl;

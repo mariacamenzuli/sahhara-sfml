@@ -286,6 +286,8 @@ AuthoritativeGameUpdate::ProjectileUpdate GameServerConnection::readProjectileUp
     sf::Uint16 unackedUpdatesInPacket;
     signalPacket >> sequenceNumber >> unackedUpdatesInPacket;
 
+    // std::cout << "RECEIVED PROJECTILE UPDATE SEQ " << sequenceNumber << std::endl;
+
     int actualUnackedUpdates = sequenceNumber - lastAckedProjectileUpdateSeqNumber;
     std::vector<AuthoritativeGameUpdate::ProjectileCreatedUpdate> unackedProjectileCreatedCommands;
     std::vector<AuthoritativeGameUpdate::ProjectileHitUpdate> unackedProjectileHitCommands;
@@ -315,13 +317,14 @@ AuthoritativeGameUpdate::ProjectileUpdate GameServerConnection::readProjectileUp
 }
 
 void GameServerConnection::ackProjectileUpdate(AuthoritativeGameUpdate::ProjectileUpdate& projectileUpdate) {
-    if (projectileUpdate.unackedProjectileCreatedUpdates.empty() && projectileUpdate.unackedProjectileHitUpdates.empty()) {
-        return;
-    }
+    // std::cout << "SENDING ACK FOR PROJECTILE UPDATE SEQ " << projectileUpdate.sequenceNumber << std::endl;
 
-    //todo: send ack!!
-    for (auto thing : projectileUpdate.unackedProjectileCreatedUpdates) {
-        std::cout << "Received projectile creation at " << thing.position.x << ", " << thing.position.y << std::endl;
+    sf::Packet ackPacket;
+    ackPacket << static_cast<sf::Int8>(ClientSignal::PROJECTILE_UPDATE_ACK) << projectileUpdate.sequenceNumber;
+    gameRunningUdpSocket->send(ackPacket, serverIp, gameRunningSocketPort);
+
+    if (projectileUpdate.sequenceNumber > lastAckedProjectileUpdateSeqNumber) {
+        lastAckedProjectileUpdateSeqNumber = projectileUpdate.sequenceNumber;
     }
 }
 

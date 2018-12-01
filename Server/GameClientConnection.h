@@ -39,7 +39,9 @@ private:
         }
 
         NonBlockingNetOpStatus getNetworkUpdate(ClientUpdate& clientUpdate);
-        ClientUpdate::MoveUpdate readMoveUpdate(sf::Packet signalPacket);
+        ClientUpdate::MoveUpdate readMoveUpdate(sf::Packet& signalPacket);
+        ClientUpdate::ProjectileUpdateAck readProjectileUpdateAck(sf::Packet& signalPacket);
+        void markProjectileUpdateAsAcked(int sequenceNumber);
         void ackMoves(ClientUpdate::MoveUpdate& moveUpdate);
 
         void sendUnackedProjectileUpdates();

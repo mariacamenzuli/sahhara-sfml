@@ -5,10 +5,8 @@
 #include <SFML/Network/TcpSocket.hpp>
 #include <SFML/Network/Packet.hpp>
 #include <SFML/Network/IpAddress.hpp>
-#include <SFML/Network/SocketSelector.hpp>
 #include <memory>
 #include <queue>
-#include <SFML/System/Clock.hpp>
 
 
 class GameServerConnection {

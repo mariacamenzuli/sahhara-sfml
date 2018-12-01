@@ -29,4 +29,5 @@ namespace ServerSignal {
 namespace ClientSignal {
     constexpr char READY_FOR_MATCH = '!';
     constexpr char MOVE_COMMAND = '>';
+    constexpr char PROJECTILE_UPDATE_ACK = 'X';
 }

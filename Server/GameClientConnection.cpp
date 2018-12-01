@@ -1,5 +1,6 @@
 #include "GameClientConnection.h"
 #include "ProjectileCreatedUpdate.h"
+#include <iostream>
 
 GameClientConnection::GameClientConnection(ThreadLogger logger,
                                            sf::IpAddress player1RemoteIp,
@@ -73,7 +74,9 @@ void GameClientConnection::PlayerConnection::sendUnackedProjectileUpdates() {
     for (int i = 0; i < unackedUpdates.size(); i++) {
         unackedUpdates[i]->appendToPacket(unackedCommandsPacket);
     }
-    
+
+    // std::cout << "SENDING UNACKED PROJECTILE UPDATE SEQ " << projectileUpdateSeqNumber << " to connection with port " << address.port << std::endl;
+
     udpSocket.send(unackedCommandsPacket, address.ip, address.port);
 }
 
@@ -97,6 +100,10 @@ NonBlockingNetOpStatus GameClientConnection::PlayerConnection::getNetworkUpdate(
         clientUpdate.move = readMoveUpdate(signalPacket);
         ackMoves(clientUpdate.move);
         break;
+    case ClientUpdate::Type::PROJECTILE_UPDATE_ACK:
+        clientUpdate.projectileAck = readProjectileUpdateAck(signalPacket);
+        markProjectileUpdateAsAcked(clientUpdate.projectileAck.sequenceNumber);
+        break;
     case ClientUpdate::Type::UNKNOWN:
     default:
         return NonBlockingNetOpStatus::ERROR;
@@ -105,7 +112,7 @@ NonBlockingNetOpStatus GameClientConnection::PlayerConnection::getNetworkUpdate(
     return NonBlockingNetOpStatus::COMPLETE;
 }
 
-ClientUpdate::MoveUpdate GameClientConnection::PlayerConnection::readMoveUpdate(sf::Packet signalPacket) {
+ClientUpdate::MoveUpdate GameClientConnection::PlayerConnection::readMoveUpdate(sf::Packet& signalPacket) {
     sf::Uint16 sequenceNumber;
     sf::Uint16 unackedMovesInPacket;
     signalPacket >> sequenceNumber >> unackedMovesInPacket;
@@ -124,15 +131,34 @@ ClientUpdate::MoveUpdate GameClientConnection::PlayerConnection::readMoveUpdate(
     return ClientUpdate::MoveUpdate(sequenceNumber, unackedCommands);
 }
 
-void GameClientConnection::PlayerConnection::ackMoves(ClientUpdate::MoveUpdate& moveUpdate) {
-    if (moveUpdate.unackedMoveCommands.empty()) {
-        return;
-    }
+ClientUpdate::ProjectileUpdateAck GameClientConnection::PlayerConnection::readProjectileUpdateAck(sf::Packet& signalPacket) {
+    sf::Uint16 sequenceNumber;
+    signalPacket >> sequenceNumber;
 
+    // std::cout << "RECEIVED ACK FOR PROJECTILE UPDATE SEQ " << sequenceNumber << " from connection with port " << address.port << std::endl;
+
+    return ClientUpdate::ProjectileUpdateAck(sequenceNumber);
+}
+
+void GameClientConnection::PlayerConnection::markProjectileUpdateAsAcked(int sequenceNumber) {
+    if (sequenceNumber > lastAckedProjectileUpdateSeqNumber) {
+        int commandsBeingAcked = sequenceNumber - lastAckedProjectileUpdateSeqNumber;
+        for (int i = 0; i < commandsBeingAcked; i++) {
+            unackedUpdates.pop_front();
+        }
+        lastAckedProjectileUpdateSeqNumber = sequenceNumber;
+    }
+}
+
+void GameClientConnection::PlayerConnection::ackMoves(ClientUpdate::MoveUpdate& moveUpdate) {
     sf::Packet ackPacket;
     ackPacket << static_cast<sf::Int8>(ServerSignal::MOVE_COMMAND_ACK) << static_cast<sf::Uint16>(moveUpdate.sequenceNumber);
     udpSocket.send(ackPacket, address.ip, address.port);
-    lastAckedMoveCmdSeqNumber = moveUpdate.sequenceNumber;
+
+    if (moveUpdate.sequenceNumber > lastAckedMoveCmdSeqNumber) {
+        lastAckedMoveCmdSeqNumber = moveUpdate.sequenceNumber;
+        
+    }
 }
 
 void GameClientConnection::PlayerConnection::queueProjectileCreationBroadcast(sf::Vector2f position, SimulationProperties::Direction direction, bool firedByPlayer1) {
