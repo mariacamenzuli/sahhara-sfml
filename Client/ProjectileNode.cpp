@@ -8,10 +8,6 @@ ProjectileNode::ProjectileNode(sf::Color color) : projectileShape(circleRadius) 
 
 ProjectileNode::~ProjectileNode() = default;
 
-void ProjectileNode::setPosition(float x, float y) {
-    projectileShape.setPosition(x, y);
-}
-
 void ProjectileNode::drawCurrent(sf::RenderTarget& target, sf::RenderStates states) const {
     target.draw(projectileShape, states);
 }

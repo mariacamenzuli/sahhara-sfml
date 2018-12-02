@@ -25,17 +25,17 @@
     <Filter Include="Source Files\Scene Nodes">
       <UniqueIdentifier>{1156eb10-d870-4824-b772-8069fba21e0c}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\Character Control">
-      <UniqueIdentifier>{1ae89b6f-7565-4c44-bf07-01d38dee241c}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\Character Control">
-      <UniqueIdentifier>{fbd7df2a-3434-48f9-abe3-e5050e9def97}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source Files\Network">
       <UniqueIdentifier>{cc8763ab-cf70-42fc-9db6-ad018e05d3c6}</UniqueIdentifier>
     </Filter>
     <Filter Include="Header Files\Network">
       <UniqueIdentifier>{a0c0ca77-6299-4121-94fd-3b66689a3ad6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Scene Object Control">
+      <UniqueIdentifier>{1ae89b6f-7565-4c44-bf07-01d38dee241c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Scene Object Control">
+      <UniqueIdentifier>{fbd7df2a-3434-48f9-abe3-e5050e9def97}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -85,10 +85,10 @@
       <Filter>Source Files\Scene Nodes</Filter>
     </ClCompile>
     <ClCompile Include="StationaryWizardController.cpp">
-      <Filter>Source Files\Character Control</Filter>
+      <Filter>Source Files\Scene Object Control</Filter>
     </ClCompile>
     <ClCompile Include="LocallyControlledWizardController.cpp">
-      <Filter>Source Files\Character Control</Filter>
+      <Filter>Source Files\Scene Object Control</Filter>
     </ClCompile>
     <ClCompile Include="GameServerConnection.cpp">
       <Filter>Source Files\Network</Filter>
@@ -100,10 +100,13 @@
       <Filter>Source Files\Scenes</Filter>
     </ClCompile>
     <ClCompile Include="RemoteControlledWizardController.cpp">
-      <Filter>Source Files\Character Control</Filter>
+      <Filter>Source Files\Scene Object Control</Filter>
     </ClCompile>
     <ClCompile Include="ProjectileNode.cpp">
       <Filter>Source Files\Scene Nodes</Filter>
+    </ClCompile>
+    <ClCompile Include="ProjectileController.cpp">
+      <Filter>Source Files\Scene Object Control</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -156,13 +159,13 @@
       <Filter>Header Files\Scene Nodes</Filter>
     </ClInclude>
     <ClInclude Include="WizardController.h">
-      <Filter>Header Files\Character Control</Filter>
+      <Filter>Header Files\Scene Object Control</Filter>
     </ClInclude>
     <ClInclude Include="StationaryWizardController.h">
-      <Filter>Header Files\Character Control</Filter>
+      <Filter>Header Files\Scene Object Control</Filter>
     </ClInclude>
     <ClInclude Include="LocallyControlledWizardController.h">
-      <Filter>Header Files\Character Control</Filter>
+      <Filter>Header Files\Scene Object Control</Filter>
     </ClInclude>
     <ClInclude Include="AuthoritativeGameUpdate.h">
       <Filter>Header Files\Network</Filter>
@@ -174,10 +177,13 @@
       <Filter>Header Files\Scenes</Filter>
     </ClInclude>
     <ClInclude Include="RemoteControlledWizardController.h">
-      <Filter>Header Files\Character Control</Filter>
+      <Filter>Header Files\Scene Object Control</Filter>
     </ClInclude>
     <ClInclude Include="ProjectileNode.h">
       <Filter>Header Files\Scene Nodes</Filter>
+    </ClInclude>
+    <ClInclude Include="ProjectileController.h">
+      <Filter>Header Files\Scene Object Control</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

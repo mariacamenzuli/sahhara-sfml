@@ -17,6 +17,7 @@ public:
 
     SceneNode* attachChild(SceneNodePointer child);
     SceneNode* attachChild(SceneNodePointer child, std::string label);
+    SceneNodePointer detachChild(const SceneNode* node);
     SceneNodePointer detachChild(const SceneNode& node);
     SceneNode* getChild(std::string label);
     void draw(sf::RenderTarget& target, sf::RenderStates states) const override;

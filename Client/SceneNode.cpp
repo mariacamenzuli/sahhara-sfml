@@ -22,7 +22,17 @@ SceneNode* SceneNode::attachChild(SceneNodePointer child, std::string label) {
 
 SceneNode::SceneNodePointer SceneNode::detachChild(const SceneNode& node) {
     auto found = std::find_if(children.begin(), children.end(),
-                              [&](SceneNodePointer& child) -> bool { return child.get() == &node; });
+                              [&] (SceneNodePointer& child) -> bool { return child.get() == &node; });
+    assert(found != children.end());
+    SceneNodePointer result = std::move(*found);
+    result->parent = nullptr;
+    children.erase(found);
+    return result;
+}
+
+SceneNode::SceneNodePointer SceneNode::detachChild(const SceneNode* node) {
+    auto found = std::find_if(children.begin(), children.end(),
+                              [&] (SceneNodePointer& child) -> bool { return child.get() == node; });
     assert(found != children.end());
     SceneNodePointer result = std::move(*found);
     result->parent = nullptr;

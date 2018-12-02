@@ -2,6 +2,7 @@
 
 namespace SimulationProperties {
     constexpr float TICKS_PER_SECOND = 30.0f;
+    constexpr float PROJECTILE_MOVE_VELOCITY = 450.0f;
     constexpr float RUN_VELOCITY = 500.0f;
     constexpr float JUMP_KICKOFF_VELOCITY = -650.0f;
     constexpr float JUMP_VELOCITY = -500.0f;
@@ -11,6 +12,8 @@ namespace SimulationProperties {
     constexpr float MAX_X_BOUNDARY = 1780.0f;
     constexpr float MIN_X_BOUNDARY = 0.0f;
     constexpr float MAX_Y_BOUNDARY = 865.0f;
+    constexpr float MAX_PROJECTILE_X_BOUNDARY = 1880.0f;
+    constexpr float MIN_PROJECTILE_X_BOUNDARY = -100.0f;
     constexpr float ATTACK_ANIMATION_DURATION = 450.0f;
 
     enum class Direction {

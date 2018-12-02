@@ -9,6 +9,7 @@
 #include "GameServerConnection.h"
 #include "LocallyControlledWizardController.h"
 #include "RemoteControlledWizardController.h"
+#include "ProjectileController.h"
 
 class BattleScene : public GameScene {
 public:
@@ -28,12 +29,13 @@ private:
     GameMetricsTracker* gameMetricsTracker;
     GameServerConnection* gameServer;
     std::unique_ptr<SceneNode> rootSceneNode;
-    WizardNode* player1Wizard;
-    WizardNode* player2Wizard;
+    WizardNode* player1Wizard{};
+    WizardNode* player2Wizard{};
     std::unique_ptr<LocallyControlledWizardController> localWizardController;
     std::unique_ptr<RemoteControlledWizardController> remoteWizardController;
     bool isLocalWizardPlayer1 = false;
     sf::Uint16 time = 0;
+    ProjectileController projectileController;
 
     void buildScene();
     inline void incrementTime();

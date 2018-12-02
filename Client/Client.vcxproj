@@ -135,6 +135,7 @@
     <ClCompile Include="GameServerConnection.cpp" />
     <ClCompile Include="LocallyControlledWizardController.cpp" />
     <ClCompile Include="AuthoritativeGameUpdate.cpp" />
+    <ClCompile Include="ProjectileController.cpp" />
     <ClCompile Include="RemoteControlledWizardController.cpp" />
     <ClCompile Include="ProjectileNode.cpp" />
     <ClCompile Include="SpriteNode.cpp" />
@@ -160,6 +161,7 @@
     <ClInclude Include="GameServerConnection.h" />
     <ClInclude Include="LocallyControlledWizardController.h" />
     <ClInclude Include="AuthoritativeGameUpdate.h" />
+    <ClInclude Include="ProjectileController.h" />
     <ClInclude Include="RemoteControlledWizardController.h" />
     <ClInclude Include="ProjectileNode.h" />
     <ClInclude Include="SpriteNode.h" />

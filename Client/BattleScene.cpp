@@ -10,7 +10,6 @@
 
 #include <SFML/Graphics/Sprite.hpp>
 #include <iostream>
-#include "ProjectileNode.h"
 
 BattleScene::BattleScene(GameSceneDirector* sceneDirector,
                          ResourceLoader* resourceLoader,
@@ -19,7 +18,8 @@ BattleScene::BattleScene(GameSceneDirector* sceneDirector,
                                                              resourceLoader(resourceLoader),
                                                              gameMetricsTracker(gameMetricsTracker),
                                                              gameServer(gameServer),
-                                                             rootSceneNode(new EmptySceneNode()) {
+                                                             rootSceneNode(new EmptySceneNode()),
+                                                             projectileController(rootSceneNode.get()) {
     resourceLoader->loadTexture(ResourceLoader::TextureId::WIZARD_PURPLE, "Resources/Sprite Sheets/wizard-purple.png");
     resourceLoader->loadTexture(ResourceLoader::TextureId::WIZARD_ORANGE, "Resources/Sprite Sheets/wizard-orange.png");
     buildScene();
@@ -83,13 +83,15 @@ void BattleScene::update(sf::Time timeSinceLastSimulationUpdate) {
             //todo: create projectile / end game
             if (!serverUpdate.projectile.unackedProjectileCreatedUpdates.empty()) {
                 for (auto projectileCreatedUpdate : serverUpdate.projectile.unackedProjectileCreatedUpdates) {
-                    std::cout << "Projectile fired by " << (projectileCreatedUpdate.firedByPlayer1 ? "Player 1" : "Player 2") << " at " << projectileCreatedUpdate.position.x << ", " << projectileCreatedUpdate.position.y << " heading " << (projectileCreatedUpdate.direction == SimulationProperties::Direction::RIGHT ? "right." : "left.") << std::endl;
+                    std::cout << "Projectile fired by " << (projectileCreatedUpdate.firedByPlayer1 ? "Player 1" : "Player 2") << " at " << projectileCreatedUpdate.position.x << ", " << projectileCreatedUpdate.position.y << " heading " << (
+                        projectileCreatedUpdate.direction == SimulationProperties::Direction::RIGHT ? "right." : "left.") << std::endl;
 
-                    std::unique_ptr<ProjectileNode> projectile(new ProjectileNode(sf::Color::Blue));
-                    float yAdjustment = 50.0f;
-                    float xAdjustment = projectileCreatedUpdate.direction == SimulationProperties::Direction::LEFT ? -10.0f : 120.0f;
-                    projectile->setPosition(projectileCreatedUpdate.position.x + xAdjustment, projectileCreatedUpdate.position.y + yAdjustment);
-                    rootSceneNode->attachChild(std::move(projectile));
+                    projectileController.addProjectile(projectileCreatedUpdate.position, projectileCreatedUpdate.direction);
+                }
+
+                if (!serverUpdate.projectile.unackedProjectileHitUpdates.empty()) {
+                    std::cout << "Player hit. Game over." << std::endl;
+                    sceneDirector->transitionToScene(GameSceneDirector::SceneId::MAIN_MENU);
                 }
             }
             break;
@@ -105,6 +107,8 @@ void BattleScene::simulationUpdate(sf::Time deltaTime, bool isGameInFocus) {
 
     remoteWizardController->updatePredictedPositions(time);
     remoteWizardController->simulationUpdate(time, deltaTime, isGameInFocus);
+
+    projectileController.moveProjectilePositions(deltaTime);
 
     incrementTime();
 }
