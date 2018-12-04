@@ -118,7 +118,7 @@ bool GameSimulation::movePlayer(PlayerGameState& playerGameState, class sf::Time
                 logger.info("Fire projectile RIGHT from (" + std::to_string(playerGameState.position.x) + ", " + std::to_string(playerGameState.position.y) + ").");
             }
 
-            createProjectile(playerGameState.position, playerGameState.direction);
+            createProjectile(playerGameState.position, playerGameState.direction, playerGameState.isPlayer1);
             clientConnection.queueProjectileCreationBroadcast(time, playerGameState.position, playerGameState.direction, playerGameState.isPlayer1);
 
             return false;
@@ -185,14 +185,14 @@ void GameSimulation::moveProjectiles(sf::Time deltaTime) {
             projectiles.erase(projectiles.begin() + i);
             i--;
         } else {
-            if (player1GameState.hit(*projectile)) { //player 1 hit
+            if (!projectile->createdByPlayer1 && player1GameState.hit(*projectile)) { //player 1 hit
                 clientConnection.queueProjectileHitBroadcast(true);
                 logger.info("Player 1 has been hit.");
                 //todo: end game
                 terminate();
             }
 
-            if (player2GameState.hit(*projectile)) { //player 2 hit
+            if (projectile->createdByPlayer1 && player2GameState.hit(*projectile)) { //player 2 hit
                 clientConnection.queueProjectileHitBroadcast(false);
                 logger.info("Player 2 has been hit.");
                 //todo: end game
@@ -245,10 +245,10 @@ void GameSimulation::movePlayers(sf::Time deltaTime) {
     clientConnection.broadcastPlayerPositions(time, player1PositionChanged, player1GameState.position, player2PositionChanged, player2GameState.position);
 }
 
-void GameSimulation::createProjectile(const sf::Vector2f& position, SimulationProperties::Direction direction) {
+void GameSimulation::createProjectile(const sf::Vector2f& position, SimulationProperties::Direction direction, bool createdByPlayer1) {
     float yAdjustment = 50.0f;
     float xAdjustment = direction == SimulationProperties::Direction::LEFT ? -10.0f : 120.0f;
-    projectiles.emplace_back(Projectile(position.x + xAdjustment, position.y + yAdjustment, direction));
+    projectiles.emplace_back(Projectile(position.x + xAdjustment, position.y + yAdjustment, direction, createdByPlayer1));
 }
 
 void GameSimulation::incrementTime() {

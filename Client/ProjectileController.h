@@ -9,7 +9,7 @@ public:
     explicit ProjectileController(SceneNode* projectileParentNode);
     ~ProjectileController();
 
-    void addProjectile(sf::Vector2f position, SimulationProperties::Direction direction, sf::Uint16 projectileCreationTime, sf::Uint16 currentSimulationTime);
+    void addProjectile(bool createdByPlayer1, sf::Vector2f position, SimulationProperties::Direction direction, sf::Uint16 projectileCreationTime, sf::Uint16 currentSimulationTime);
     void moveProjectilePositions(sf::Time deltaTime);
 
 private:

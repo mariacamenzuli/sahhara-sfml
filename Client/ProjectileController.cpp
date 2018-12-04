@@ -6,14 +6,15 @@ ProjectileController::ProjectileController(SceneNode* projectileParentNode): pro
 
 ProjectileController::~ProjectileController() = default;
 
-void ProjectileController::addProjectile(sf::Vector2f position, SimulationProperties::Direction direction, sf::Uint16 projectileCreationTime, sf::Uint16 currentSimulationTime) {
-    std::unique_ptr<ProjectileNode> projectile(new ProjectileNode(sf::Color::Blue));
+void ProjectileController::addProjectile(bool createdByPlayer1, sf::Vector2f position, SimulationProperties::Direction direction, sf::Uint16 projectileCreationTime, sf::Uint16 currentSimulationTime) {
+    std::unique_ptr<ProjectileNode> projectile(new ProjectileNode(createdByPlayer1 ? sf::Color::Magenta : sf::Color::Red));
     ProjectileNode* projectilePointer = projectile.get();
     float yAdjustment = 50.0f;
     float xAdjustment = direction == SimulationProperties::Direction::LEFT ? -10.0f : 120.0f;
     projectilePointer->setPosition(position.x + xAdjustment, position.y + yAdjustment);
     projectileParentNode->attachChild(std::move(projectile));
 
+    //todo fast forward projectile more for defending player
     activeProjectiles.emplace_back(projectilePointer, direction, currentSimulationTime - projectileCreationTime);
 }
 

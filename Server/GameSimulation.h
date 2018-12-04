@@ -21,10 +21,14 @@ private:
     struct Projectile {
         sf::Vector2f position;
         SimulationProperties::Direction direction;
+        bool createdByPlayer1;
 
-        Projectile(float positionX, float positionY, SimulationProperties::Direction direction)
-            : position(positionX, positionY),
-            direction(direction) {
+        Projectile(float positionX,
+                   float positionY,
+                   SimulationProperties::Direction direction,
+                   bool createdByPlayer1): position(positionX, positionY),
+                                           direction(direction),
+                                           createdByPlayer1(createdByPlayer1) {
         }
     };
 
@@ -56,6 +60,6 @@ private:
     void movePlayers(sf::Time deltaTime);
     bool movePlayer(PlayerGameState& playerGameState, sf::Time deltaTime);
     void moveProjectiles(sf::Time deltaTime);
-    void createProjectile(const sf::Vector2f& position, SimulationProperties::Direction direction);
+    void createProjectile(const sf::Vector2f& position, SimulationProperties::Direction direction, bool createdByPlayer1);
     inline void incrementTime();
 };
