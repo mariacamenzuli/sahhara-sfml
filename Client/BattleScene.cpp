@@ -87,6 +87,11 @@ void BattleScene::update(sf::Time timeSinceLastSimulationUpdate) {
                         projectileCreatedUpdate.direction == SimulationProperties::Direction::RIGHT ? "right." : "left.") << std::endl;
 
                     projectileController.addProjectile(projectileCreatedUpdate.firedByPlayer1, projectileCreatedUpdate.position, projectileCreatedUpdate.direction, projectileCreatedUpdate.time, time);
+
+                    if ((isLocalWizardPlayer1 && !projectileCreatedUpdate.firedByPlayer1)
+                        || (!isLocalWizardPlayer1 && projectileCreatedUpdate.firedByPlayer1)) {
+                        remoteWizardController->attack();
+                    }
                 }
             }
 

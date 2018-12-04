@@ -12,6 +12,7 @@ public:
     void considerKnownPosition(sf::Uint16 time, sf::Vector2f knownPosition);
     void updatePredictedPositions(sf::Uint16 currentSimulationTime);
     void interpolatePosition(sf::Time timeSinceLastSimulationUpdate);
+    void attack();
 
 private:
     struct RemotePlayerPosition {

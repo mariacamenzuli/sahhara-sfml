@@ -22,6 +22,15 @@ void RemoteControlledWizardController::simulationUpdate(sf::Uint16 simulationTim
 
     wizard->direction = lastKnownDirection;
 
+    if (wizard->attacking) {
+        const auto attackDurationSoFar = wizard->attackStartTime.getElapsedTime().asMilliseconds();
+        if (attackDurationSoFar < SimulationProperties::ATTACK_ANIMATION_DURATION) {
+            return;
+        } else {
+            wizard->attacking = false;
+        }
+    }
+
     if (deltaX == 0.0f) {
         wizard->idle();
     } else if (deltaX < 0.0f) {
@@ -82,6 +91,12 @@ void RemoteControlledWizardController::interpolatePosition(sf::Time timeSinceLas
     }
     
     wizard->setPosition(lastPredictedPositions[1] + (t * (lastPredictedPositions[0] - lastPredictedPositions[1])));
+}
+
+void RemoteControlledWizardController::attack() {
+    wizard->attack();
+    wizard->attacking = true;
+    wizard->attackStartTime.restart();
 }
 
 float RemoteControlledWizardController::changeRange(float value, float oldMin, float oldMax, float newMin, float newMax) {
