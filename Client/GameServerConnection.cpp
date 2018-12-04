@@ -296,11 +296,13 @@ AuthoritativeGameUpdate::ProjectileUpdate GameServerConnection::readProjectileUp
         signalPacket >> updateType;
 
         if (updateType == ServerSignal::PROJECTILE_CREATED) {
+            sf::Uint16 time;
             sf::Vector2f position;
             bool isDirectionRight;
             bool isFiredByPlayer1;
-            signalPacket >> position.x >> position.y >> isDirectionRight >> isFiredByPlayer1;
-            unackedProjectileCreatedCommands.emplace_back(AuthoritativeGameUpdate::ProjectileCreatedUpdate(position,
+            signalPacket >> time >> position.x >> position.y >> isDirectionRight >> isFiredByPlayer1;
+            unackedProjectileCreatedCommands.emplace_back(AuthoritativeGameUpdate::ProjectileCreatedUpdate(time,
+                                                                                                           position,
                                                                                                            isDirectionRight ? SimulationProperties::Direction::RIGHT : SimulationProperties::Direction::LEFT,
                                                                                                            isFiredByPlayer1));
         } else if (updateType == ServerSignal::PROJECTILE_HIT) {

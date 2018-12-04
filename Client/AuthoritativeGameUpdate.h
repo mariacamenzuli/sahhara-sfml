@@ -55,10 +55,13 @@ public:
         sf::Vector2f position;
         SimulationProperties::Direction direction;
         bool firedByPlayer1;
+        sf::Uint16 time;
 
-        ProjectileCreatedUpdate(const sf::Vector2f& position,
+        ProjectileCreatedUpdate(sf::Uint16 time,
+                                const sf::Vector2f& position,
                                 SimulationProperties::Direction direction,
-                                bool firedByPlayer1) : position(position),
+                                bool firedByPlayer1) : time(time),
+                                                       position(position),
                                                        direction(direction),
                                                        firedByPlayer1(firedByPlayer1) {
         }

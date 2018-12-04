@@ -8,7 +8,7 @@
 
 class ProjectileCreatedUpdate : public ProjectileUpdate {
 public:
-    ProjectileCreatedUpdate(sf::Vector2f position, SimulationProperties::Direction direction, bool firedByPlayer1);
+    ProjectileCreatedUpdate(sf::Uint16 time, sf::Vector2f position, SimulationProperties::Direction direction, bool firedByPlayer1);
     ~ProjectileCreatedUpdate();
 
     void appendToPacket(sf::Packet& packet) override;
@@ -18,5 +18,6 @@ private:
     sf::Vector2f position;
     SimulationProperties::Direction direction;
     bool firedByPlayer1;
+    sf::Uint16 time;
 };
 

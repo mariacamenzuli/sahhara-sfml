@@ -86,7 +86,7 @@ void BattleScene::update(sf::Time timeSinceLastSimulationUpdate) {
                     std::cout << "Projectile fired by " << (projectileCreatedUpdate.firedByPlayer1 ? "Player 1" : "Player 2") << " at " << projectileCreatedUpdate.position.x << ", " << projectileCreatedUpdate.position.y << " heading " << (
                         projectileCreatedUpdate.direction == SimulationProperties::Direction::RIGHT ? "right." : "left.") << std::endl;
 
-                    projectileController.addProjectile(projectileCreatedUpdate.position, projectileCreatedUpdate.direction);
+                    projectileController.addProjectile(projectileCreatedUpdate.position, projectileCreatedUpdate.direction, projectileCreatedUpdate.time, time);
                 }
             }
 

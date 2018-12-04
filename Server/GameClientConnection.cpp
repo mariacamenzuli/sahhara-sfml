@@ -50,9 +50,9 @@ void GameClientConnection::broadcastPlayerPositions(sf::Uint16 time, bool player
     player2Connection.udpSocket.send(movementUpdate, player2Connection.address.ip, player2Connection.address.port);
 }
 
-void GameClientConnection::queueProjectileCreationBroadcast(sf::Vector2f position, SimulationProperties::Direction direction, bool firedByPlayer1) {
-    player1Connection.queueProjectileCreationBroadcast(position, direction, firedByPlayer1);
-    player2Connection.queueProjectileCreationBroadcast(position, direction, firedByPlayer1);
+void GameClientConnection::queueProjectileCreationBroadcast(sf::Uint16 time, sf::Vector2f position, SimulationProperties::Direction direction, bool firedByPlayer1) {
+    player1Connection.queueProjectileCreationBroadcast(time, position, direction, firedByPlayer1);
+    player2Connection.queueProjectileCreationBroadcast(time, position, direction, firedByPlayer1);
 }
 
 void GameClientConnection::queueProjectileHitBroadcast(bool hitPlayer1) {
@@ -167,8 +167,8 @@ void GameClientConnection::PlayerConnection::ackMoves(ClientUpdate::MoveUpdate& 
     }
 }
 
-void GameClientConnection::PlayerConnection::queueProjectileCreationBroadcast(sf::Vector2f position, SimulationProperties::Direction direction, bool firedByPlayer1) {
-    unackedUpdates.emplace_back(std::make_unique<ProjectileCreatedUpdate>(position, direction, firedByPlayer1));
+void GameClientConnection::PlayerConnection::queueProjectileCreationBroadcast(sf::Uint16 time, sf::Vector2f position, SimulationProperties::Direction direction, bool firedByPlayer1) {
+    unackedUpdates.emplace_back(std::make_unique<ProjectileCreatedUpdate>(time, position, direction, firedByPlayer1));
     projectileUpdateSeqNumber++;
 }
 

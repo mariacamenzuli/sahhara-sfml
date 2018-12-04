@@ -119,7 +119,7 @@ bool GameSimulation::movePlayer(PlayerGameState& playerGameState, class sf::Time
             }
 
             createProjectile(playerGameState.position, playerGameState.direction);
-            clientConnection.queueProjectileCreationBroadcast(playerGameState.position, playerGameState.direction, playerGameState.isPlayer1);
+            clientConnection.queueProjectileCreationBroadcast(time, playerGameState.position, playerGameState.direction, playerGameState.isPlayer1);
 
             return false;
         } else if (command.jump) {
