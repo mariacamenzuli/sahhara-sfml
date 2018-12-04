@@ -88,11 +88,18 @@ void BattleScene::update(sf::Time timeSinceLastSimulationUpdate) {
 
                     projectileController.addProjectile(projectileCreatedUpdate.position, projectileCreatedUpdate.direction);
                 }
+            }
 
-                if (!serverUpdate.projectile.unackedProjectileHitUpdates.empty()) {
-                    std::cout << "Player hit. Game over." << std::endl;
-                    sceneDirector->transitionToScene(GameSceneDirector::SceneId::MAIN_MENU);
+            if (!serverUpdate.projectile.unackedProjectileHitUpdates.empty()) {
+                for (auto projectileHitUpdate : serverUpdate.projectile.unackedProjectileHitUpdates) {
+                    if (projectileHitUpdate.hitPlayer1) {
+                        std::cout << "Player 1 hit." << std::endl;
+                    } else {
+                        std::cout << "Player 2 hit." << std::endl;
+                    }
                 }
+                std::cout << "Game over." << std::endl;
+                sceneDirector->transitionToScene(GameSceneDirector::SceneId::MAIN_MENU);
             }
             break;
         default:

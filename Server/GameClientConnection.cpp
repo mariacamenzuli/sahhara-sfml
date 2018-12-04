@@ -1,6 +1,7 @@
 #include "GameClientConnection.h"
 #include "ProjectileCreatedUpdate.h"
 #include <iostream>
+#include "ProjectileHitUpdate.h"
 
 GameClientConnection::GameClientConnection(ThreadLogger logger,
                                            sf::IpAddress player1RemoteIp,
@@ -52,6 +53,11 @@ void GameClientConnection::broadcastPlayerPositions(sf::Uint16 time, bool player
 void GameClientConnection::queueProjectileCreationBroadcast(sf::Vector2f position, SimulationProperties::Direction direction, bool firedByPlayer1) {
     player1Connection.queueProjectileCreationBroadcast(position, direction, firedByPlayer1);
     player2Connection.queueProjectileCreationBroadcast(position, direction, firedByPlayer1);
+}
+
+void GameClientConnection::queueProjectileHitBroadcast(bool hitPlayer1) {
+    player1Connection.queueProjectileHitBroadcast(hitPlayer1);
+    player2Connection.queueProjectileHitBroadcast(hitPlayer1);
 }
 
 void GameClientConnection::sendUnackedProjectileUpdates() {
@@ -163,5 +169,10 @@ void GameClientConnection::PlayerConnection::ackMoves(ClientUpdate::MoveUpdate& 
 
 void GameClientConnection::PlayerConnection::queueProjectileCreationBroadcast(sf::Vector2f position, SimulationProperties::Direction direction, bool firedByPlayer1) {
     unackedUpdates.emplace_back(std::make_unique<ProjectileCreatedUpdate>(position, direction, firedByPlayer1));
+    projectileUpdateSeqNumber++;
+}
+
+void GameClientConnection::PlayerConnection::queueProjectileHitBroadcast(bool hitPlayer1) {
+    unackedUpdates.emplace_back(std::make_unique<ProjectileHitUpdate>(hitPlayer1));
     projectileUpdateSeqNumber++;
 }

@@ -18,6 +18,16 @@ public:
     int getGameId() const;
 
 private:
+    struct Projectile {
+        sf::Vector2f position;
+        SimulationProperties::Direction direction;
+
+        Projectile(float positionX, float positionY, SimulationProperties::Direction direction)
+            : position(positionX, positionY),
+            direction(direction) {
+        }
+    };
+
     struct PlayerGameState {
         bool isPlayer1 = false;
         std::queue<ClientUpdate::MoveCommand> movementQueue;
@@ -26,6 +36,8 @@ private:
         SimulationProperties::Direction direction;
         bool attacking = false;
         sf::Clock attackStartTime;
+
+        bool hit(Projectile& projectile);
     };
 
     const sf::Time timePerSimulationTick = sf::seconds(1.f / SimulationProperties::TICKS_PER_SECOND);
@@ -38,9 +50,12 @@ private:
     sf::Uint16 time = 0;
     PlayerGameState player1GameState;
     PlayerGameState player2GameState;
+    std::vector<Projectile> projectiles;
 
     void checkForNetworkUpdates();
     void movePlayers(sf::Time deltaTime);
     bool movePlayer(PlayerGameState& playerGameState, sf::Time deltaTime);
+    void moveProjectiles(sf::Time deltaTime);
+    void createProjectile(const sf::Vector2f& position, SimulationProperties::Direction direction);
     inline void incrementTime();
 };

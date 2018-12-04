@@ -5,7 +5,6 @@
 #include <SFML/Network/Packet.hpp>
 #include <SFML/System/Clock.hpp>
 #include <queue>
-#include <iostream>
 
 GameSimulation::GameSimulation(int gameId,
                                std::unique_ptr<sf::TcpSocket> player1TcpConnection,
@@ -67,6 +66,8 @@ void GameSimulation::run() {
 
             movePlayers(timePerSimulationTick);
 
+            moveProjectiles(timePerSimulationTick);
+
             clientConnection.sendUnackedProjectileUpdates();
 
             incrementTime();
@@ -117,6 +118,7 @@ bool GameSimulation::movePlayer(PlayerGameState& playerGameState, class sf::Time
                 logger.info("Fire projectile RIGHT from (" + std::to_string(playerGameState.position.x) + ", " + std::to_string(playerGameState.position.y) + ").");
             }
 
+            createProjectile(playerGameState.position, playerGameState.direction);
             clientConnection.queueProjectileCreationBroadcast(playerGameState.position, playerGameState.direction, playerGameState.isPlayer1);
 
             return false;
@@ -165,6 +167,50 @@ bool GameSimulation::movePlayer(PlayerGameState& playerGameState, class sf::Time
     return velocity.x != 0.0f || velocity.y != 0.0f;
 }
 
+void GameSimulation::moveProjectiles(sf::Time deltaTime) {
+    for (int i = 0; i < projectiles.size(); i++) {
+        auto projectile = &projectiles[i];
+
+        sf::Vector2f velocity(0.0f, 0.0f);
+
+        if (projectile->direction == SimulationProperties::Direction::RIGHT) {
+            velocity.x += SimulationProperties::PROJECTILE_MOVE_VELOCITY;
+        } else {
+            velocity.x -= SimulationProperties::PROJECTILE_MOVE_VELOCITY;
+        }
+
+        projectile->position = projectile->position + velocity * deltaTime.asSeconds();
+
+        if (projectile->position.x < SimulationProperties::MIN_PROJECTILE_X_BOUNDARY || projectile->position.x > SimulationProperties::MAX_PROJECTILE_X_BOUNDARY) {
+            projectiles.erase(projectiles.begin() + i);
+            i--;
+        } else {
+            if (player1GameState.hit(*projectile)) { //player 1 hit
+                clientConnection.queueProjectileHitBroadcast(true);
+                logger.info("Player 1 has been hit.");
+                //todo: end game
+                terminate();
+            }
+
+            if (player2GameState.hit(*projectile)) { //player 2 hit
+                clientConnection.queueProjectileHitBroadcast(false);
+                logger.info("Player 2 has been hit.");
+                //todo: end game
+                terminate();
+            }
+        }
+    }
+}
+
+bool GameSimulation::PlayerGameState::hit(Projectile& projectile) {
+    float playerHitBoxMinX = position.x + 27.5f;
+    float playerHitBoxMaxX = position.x + 82.5f;
+    float playerHitBoxMinY = position.y + 30.0f;
+    float playerHitBoxMaxY = position.y + 90.0f;
+
+    return projectile.position.x > playerHitBoxMinX && projectile.position.x < playerHitBoxMaxX && projectile.position.y > playerHitBoxMinY && projectile.position.y < playerHitBoxMaxY;
+}
+
 void GameSimulation::checkForNetworkUpdates() {
     ClientUpdate player1Update;
     auto player1UpdateStatus = clientConnection.getPlayer1Update(player1Update);
@@ -197,6 +243,12 @@ void GameSimulation::movePlayers(sf::Time deltaTime) {
     bool player1PositionChanged = movePlayer(player1GameState, deltaTime);
     bool player2PositionChanged = movePlayer(player2GameState, deltaTime);
     clientConnection.broadcastPlayerPositions(time, player1PositionChanged, player1GameState.position, player2PositionChanged, player2GameState.position);
+}
+
+void GameSimulation::createProjectile(const sf::Vector2f& position, SimulationProperties::Direction direction) {
+    float yAdjustment = 50.0f;
+    float xAdjustment = direction == SimulationProperties::Direction::LEFT ? -10.0f : 120.0f;
+    projectiles.emplace_back(Projectile(position.x + xAdjustment, position.y + yAdjustment, direction));
 }
 
 void GameSimulation::incrementTime() {
