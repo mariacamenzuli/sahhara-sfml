@@ -40,6 +40,18 @@ void GameLobby::run() {
         std::unique_ptr<sf::TcpSocket> newPlayerConnection(new sf::TcpSocket());
         auto status = lobbyListenerSocket.accept(*newPlayerConnection);
         if (status == sf::Socket::NotReady) {
+            for (int i = 0; i < ongoingGames.size(); i++) {
+                if (ongoingGames.at(i).simulation->isGameOver()) {
+                    logger.info("Game " + std::to_string(ongoingGames.at(i).simulation->getGameId()) + " has concluded");
+                    ongoingGames.erase(ongoingGames.begin() + i);
+                    i--;
+
+                    if (clientsAwaitingGame.size() >=2) {
+                        // todo start game
+                    }
+                }
+            }
+
             continue;
         } else if (status != sf::Socket::Done) {
             logger.info("Failed to accept a new TCP connection.");
@@ -108,6 +120,7 @@ void GameLobby::run() {
                                                                                   player2RemoteUdpPort));
                 clientsAwaitingGame.pop();
                 std::thread gameThread(&GameSimulation::run, gameSimulation.get());
+                gameThread.detach();
 
                 ongoingGames.emplace_back(std::move(gameSimulation), gameThread);
             } else {

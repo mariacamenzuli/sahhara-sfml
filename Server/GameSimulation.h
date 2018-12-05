@@ -16,6 +16,7 @@ public:
     void run();
     void terminate();
     int getGameId() const;
+    bool isGameOver();
 
 private:
     struct Projectile {
@@ -51,6 +52,7 @@ private:
     GameClientConnection clientConnection;
 
     bool gameShouldEnd = false;
+    bool gameOver = false;
     sf::Uint16 time = 0;
     PlayerGameState player1GameState;
     PlayerGameState player2GameState;

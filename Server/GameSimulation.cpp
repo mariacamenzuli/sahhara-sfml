@@ -74,7 +74,9 @@ void GameSimulation::run() {
         }
     }
 
-    logger.info("Shutting down.");
+    logger.info("Game over.");
+
+    gameOver = true;
 }
 
 void GameSimulation::terminate() {
@@ -83,6 +85,10 @@ void GameSimulation::terminate() {
 
 int GameSimulation::getGameId() const {
     return gameId;
+}
+
+bool GameSimulation::isGameOver() {
+    return gameOver;
 }
 
 bool GameSimulation::movePlayer(PlayerGameState& playerGameState, class sf::Time deltaTime) {
@@ -111,12 +117,6 @@ bool GameSimulation::movePlayer(PlayerGameState& playerGameState, class sf::Time
         if (command.attack) {
             playerGameState.attacking = true;
             playerGameState.attackStartTime.restart();
-
-            if (playerGameState.direction == SimulationProperties::Direction::LEFT) {
-                logger.info("Fire projectile LEFT from (" + std::to_string(playerGameState.position.x) + ", " + std::to_string(playerGameState.position.y) + ").");
-            } else {
-                logger.info("Fire projectile RIGHT from (" + std::to_string(playerGameState.position.x) + ", " + std::to_string(playerGameState.position.y) + ").");
-            }
 
             createProjectile(playerGameState.position, playerGameState.direction, playerGameState.isPlayer1);
             clientConnection.queueProjectileCreationBroadcast(time, playerGameState.position, playerGameState.direction, playerGameState.isPlayer1);
