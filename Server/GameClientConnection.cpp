@@ -39,9 +39,9 @@ NonBlockingNetOpStatus GameClientConnection::getPlayer2Update(ClientUpdate& clie
     return player2Connection.getNetworkUpdate(clientUpdate);
 }
 
-void GameClientConnection::broadcastPlayerPositions(sf::Uint16 time, bool player1PositionChanged, sf::Vector2<float> player1Position, bool player2PositionChanged, sf::Vector2<float> player2Position) {
+void GameClientConnection::broadcastPlayerPositions(sf::Uint16 time, sf::Vector2<float> player1Position, sf::Vector2<float> player2Position) {
     sf::Packet movementUpdate;
-    movementUpdate << static_cast<sf::Int8>(ServerSignal::PLAYER_POSITION_UPDATE) << time << player1PositionChanged << player2PositionChanged;
+    movementUpdate << static_cast<sf::Int8>(ServerSignal::PLAYER_POSITION_UPDATE) << time;
 
     movementUpdate << player1Position.x << player1Position.y;
     movementUpdate << player2Position.x << player2Position.y;

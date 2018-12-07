@@ -60,7 +60,7 @@ private:
 
     void checkForNetworkUpdates();
     void movePlayers(sf::Time deltaTime);
-    bool movePlayer(PlayerGameState& playerGameState, sf::Time deltaTime);
+    void movePlayer(PlayerGameState& playerGameState, sf::Time deltaTime);
     void moveProjectiles(sf::Time deltaTime);
     void createProjectile(const sf::Vector2f& position, SimulationProperties::Direction direction, bool createdByPlayer1);
     inline void incrementTime();

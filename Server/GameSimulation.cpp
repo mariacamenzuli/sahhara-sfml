@@ -101,7 +101,7 @@ bool GameSimulation::isGameOver() {
     return gameOver;
 }
 
-bool GameSimulation::movePlayer(PlayerGameState& playerGameState, class sf::Time deltaTime) {
+void GameSimulation::movePlayer(PlayerGameState& playerGameState, class sf::Time deltaTime) {
     ClientUpdate::MoveCommand command;
     if (!playerGameState.movementQueue.empty()) {
         command = playerGameState.movementQueue.front();
@@ -115,7 +115,7 @@ bool GameSimulation::movePlayer(PlayerGameState& playerGameState, class sf::Time
     if (playerGameState.attacking) {
         auto attackDurationSoFar = playerGameState.attackStartTime.getElapsedTime().asMilliseconds();
         if (attackDurationSoFar < SimulationProperties::ATTACK_ANIMATION_DURATION) {
-            return false;
+            return;
         } else {
             playerGameState.attacking = false;
         }
@@ -131,7 +131,7 @@ bool GameSimulation::movePlayer(PlayerGameState& playerGameState, class sf::Time
             createProjectile(playerGameState.position, playerGameState.direction, playerGameState.isPlayer1);
             clientConnection.queueProjectileCreationBroadcast(time, playerGameState.position, playerGameState.direction, playerGameState.isPlayer1);
 
-            return false;
+            return;
         } else if (command.jump) {
             velocity.y = SimulationProperties::JUMP_KICKOFF_VELOCITY;
             playerGameState.timeInAir += deltaTime.asSeconds();
@@ -174,7 +174,7 @@ bool GameSimulation::movePlayer(PlayerGameState& playerGameState, class sf::Time
         playerGameState.position.y = SimulationProperties::MAX_Y_BOUNDARY;
     }
 
-    return velocity.x != 0.0f || velocity.y != 0.0f;
+    return;
 }
 
 void GameSimulation::moveProjectiles(sf::Time deltaTime) {
@@ -250,9 +250,9 @@ void GameSimulation::checkForNetworkUpdates() {
 }
 
 void GameSimulation::movePlayers(sf::Time deltaTime) {
-    bool player1PositionChanged = movePlayer(player1GameState, deltaTime);
-    bool player2PositionChanged = movePlayer(player2GameState, deltaTime);
-    clientConnection.broadcastPlayerPositions(time, player1PositionChanged, player1GameState.position, player2PositionChanged, player2GameState.position);
+    movePlayer(player1GameState, deltaTime);
+    movePlayer(player2GameState, deltaTime);
+    clientConnection.broadcastPlayerPositions(time, player1GameState.position, player2GameState.position);
 }
 
 void GameSimulation::createProjectile(const sf::Vector2f& position, SimulationProperties::Direction direction, bool createdByPlayer1) {

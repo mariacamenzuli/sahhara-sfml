@@ -18,7 +18,7 @@ public:
 
     NonBlockingNetOpStatus getPlayer1Update(ClientUpdate& clientUpdate);
     NonBlockingNetOpStatus getPlayer2Update(ClientUpdate& clientUpdate);
-    void broadcastPlayerPositions(sf::Uint16 time, bool player1PositionChanged, sf::Vector2<float> player1Position, bool player2PositionChanged, sf::Vector2<float> player2Position);
+    void broadcastPlayerPositions(sf::Uint16 time, sf::Vector2<float> player1Position, sf::Vector2<float> player2Position);
     void queueProjectileCreationBroadcast(sf::Uint16 time, sf::Vector2f position, SimulationProperties::Direction direction, bool firedByPlayer1);
     void queueProjectileHitBroadcast(bool hitPlayer1);
     void sendUnackedProjectileUpdates();

@@ -263,16 +263,15 @@ bool GameServerConnection::bindGameRunningConnection(unsigned short& udpSocketPo
 }
 
 AuthoritativeGameUpdate::PlayerPositionUpdate GameServerConnection::readPlayerPositionUpdate(sf::Packet& signalPacket) {
-    bool player1PositionChanged, player2PositionChanged;
     sf::Vector2f newPlayer1Position, newPlayer2Position;
     sf::Uint16 time;
-    signalPacket >> time >> player1PositionChanged >> player2PositionChanged;
+    signalPacket >> time;
 
     signalPacket >> newPlayer1Position.x >> newPlayer1Position.y;
 
     signalPacket >> newPlayer2Position.x >> newPlayer2Position.y;
 
-    return  AuthoritativeGameUpdate::PlayerPositionUpdate(time, player1PositionChanged, newPlayer1Position, player2PositionChanged, newPlayer2Position);
+    return  AuthoritativeGameUpdate::PlayerPositionUpdate(time, newPlayer1Position, newPlayer2Position);
 }
 
 AuthoritativeGameUpdate::MoveCommandAckUpdate GameServerConnection::readMoveCommandAckUpdate(sf::Packet& signalPacket) {
