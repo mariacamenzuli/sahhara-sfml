@@ -13,7 +13,7 @@ namespace ServerSignal {
     constexpr char GAME_ON = '+';
     constexpr char GAME_OFF = '-';
     constexpr char GAME_INIT = '0';
-    constexpr char MOVE_COMMAND_ACK = '1';
+    constexpr char MOVE_COMMAND_ACK = '>';
     constexpr char PLAYER_POSITION_UPDATE = '^';
     constexpr char PROJECTILE_UPDATE = 'X';
     constexpr char PROJECTILE_CREATED = 'c';
