@@ -65,6 +65,10 @@ void GameClientConnection::sendUnackedProjectileUpdates() {
     player2Connection.sendUnackedProjectileUpdates();
 }
 
+bool GameClientConnection::allProjectileUpdatesAcked() {
+    return player1Connection.allProjectileUpdatesAcked() && player2Connection.allProjectileUpdatesAcked();
+}
+
 void GameClientConnection::PlayerConnection::sendUnackedProjectileUpdates() {
     if (unackedUpdates.empty()) {
         return;
@@ -175,4 +179,8 @@ void GameClientConnection::PlayerConnection::queueProjectileCreationBroadcast(sf
 void GameClientConnection::PlayerConnection::queueProjectileHitBroadcast(bool hitPlayer1) {
     unackedUpdates.emplace_back(std::make_unique<ProjectileHitUpdate>(hitPlayer1));
     projectileUpdateSeqNumber++;
+}
+
+bool GameClientConnection::PlayerConnection::allProjectileUpdatesAcked() {
+    return unackedUpdates.empty();
 }

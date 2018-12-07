@@ -22,6 +22,7 @@ public:
     void queueProjectileCreationBroadcast(sf::Uint16 time, sf::Vector2f position, SimulationProperties::Direction direction, bool firedByPlayer1);
     void queueProjectileHitBroadcast(bool hitPlayer1);
     void sendUnackedProjectileUpdates();
+    bool allProjectileUpdatesAcked();
 
 private:
     ThreadLogger logger;
@@ -48,6 +49,7 @@ private:
         void sendUnackedProjectileUpdates();
         void queueProjectileCreationBroadcast(sf::Uint16 time, sf::Vector2f position, SimulationProperties::Direction direction, bool firedByPlayer1);
         void queueProjectileHitBroadcast(bool hitPlayer1);
+        bool allProjectileUpdatesAcked();
     };
 
     PlayerConnection player1Connection;

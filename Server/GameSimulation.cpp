@@ -76,6 +76,16 @@ void GameSimulation::run() {
 
     logger.info("Game over.");
 
+    logger.info("Waiting for an acknowledgement for all unacknowledged updates.");
+    int resendAttempts = 5;
+    while (!clientConnection.allProjectileUpdatesAcked() && resendAttempts > 0) {
+        checkForNetworkUpdates();
+        clientConnection.sendUnackedProjectileUpdates();
+        resendAttempts--;
+    }
+
+    logger.info("All updates have been acknowledged or timed out waiting for an acknowledgement. Terminating game.");
+
     gameOver = true;
 }
 
