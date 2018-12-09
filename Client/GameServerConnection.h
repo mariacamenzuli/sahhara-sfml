@@ -7,6 +7,7 @@
 #include <SFML/Network/IpAddress.hpp>
 #include <memory>
 #include <queue>
+#include <SFML/System/Clock.hpp>
 
 
 class GameServerConnection {
@@ -23,11 +24,15 @@ public:
     NonBlockingNetOpStatus findGame();
     NonBlockingNetOpStatus acceptGame();
     NonBlockingNetOpStatus verifyGameLaunch(bool* gameOn);
-    NonBlockingNetOpStatus getAuthoritativeGameUpdate(AuthoritativeGameUpdate& gameUpdate);
 
     // Run game
     void sendMoveCommand(bool left, bool right, bool jump, bool attack);
     void markMoveCommandAsAcked(int sequenceNumber);
+    NonBlockingNetOpStatus getAuthoritativeGameUpdate(AuthoritativeGameUpdate& gameUpdate);
+
+    // Other
+    bool connectionTimedOut();
+    void resettimeSinceLastConnectionTimer();
 
 private:
     // Log related counters
@@ -59,6 +64,7 @@ private:
 
     // Other
     bool connectingToLobby = false;
+    sf::Clock timeSinceLastServerCommunication;
 
     bool bindGameRunningConnection(unsigned short& udpSocketPort);
     AuthoritativeGameUpdate::PlayerPositionUpdate readPlayerPositionUpdate(sf::Packet& signalPacket);

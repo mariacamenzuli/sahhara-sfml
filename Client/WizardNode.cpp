@@ -38,8 +38,8 @@ void WizardNode::buildSprite(ResourceLoader* resourceLoader) {
     addAnimation(WizardAnimation::RUN_LEFT, buildRunLeftAnimation(resourceLoader), (sf::seconds(0.133f)));
     addAnimation(WizardAnimation::JUMP_RIGHT, buildJumpRightAnimation(resourceLoader), (sf::seconds(0.75f)));
     addAnimation(WizardAnimation::JUMP_LEFT, buildJumpLeftAnimation(resourceLoader), (sf::seconds(0.75f)));
-    addAnimation(WizardAnimation::ATTACK_RIGHT, buildAttackRightAnimation(resourceLoader), (sf::seconds(0.15f)));
-    addAnimation(WizardAnimation::ATTACK_LEFT, buildAttackLeftAnimation(resourceLoader), (sf::seconds(0.15f)));
+    addAnimation(WizardAnimation::ATTACK_RIGHT, buildAttackRightAnimation(resourceLoader), (sf::seconds(0.166f)));
+    addAnimation(WizardAnimation::ATTACK_LEFT, buildAttackLeftAnimation(resourceLoader), (sf::seconds(0.166f)));
     addAnimation(WizardAnimation::IDLE_RIGHT, buildIdleRightAnimation(resourceLoader), (sf::seconds(0.75f)));
     addAnimation(WizardAnimation::IDLE_LEFT, buildIdleLeftAnimation(resourceLoader), (sf::seconds(0.75f)));
     addAnimation(WizardAnimation::HURT_RIGHT, buildHurtRightAnimation(resourceLoader), (sf::seconds(0.75f)));

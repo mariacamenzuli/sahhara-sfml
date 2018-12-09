@@ -229,6 +229,8 @@ NonBlockingNetOpStatus GameServerConnection::getAuthoritativeGameUpdate(Authorit
         return NonBlockingNetOpStatus::NOT_READY;
     }
 
+    resettimeSinceLastConnectionTimer();
+
     sf::Int8 signalType;
     signalPacket >> signalType;
     gameUpdate.type = AuthoritativeGameUpdate::determineUpdateType(signalType);
@@ -355,6 +357,14 @@ void GameServerConnection::markMoveCommandAsAcked(int sequenceNumber) {
         }
         latestAckedSeqNumber = sequenceNumber;
     }
+}
+
+bool GameServerConnection::connectionTimedOut() {
+    return timeSinceLastServerCommunication.getElapsedTime() > sf::seconds(5.0f);
+}
+
+void GameServerConnection::resettimeSinceLastConnectionTimer() {
+    timeSinceLastServerCommunication.restart();
 }
 
 void GameServerConnection::setServerGameRunningSocketPort(unsigned short serverGameRunningSocketPort) {

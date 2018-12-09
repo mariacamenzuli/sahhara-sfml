@@ -168,6 +168,8 @@ bool GameLobby::isReadyForGame(sf::TcpSocket* playerConnection, unsigned short& 
         }
 
         matchAcceptedPacket >> udpPort;
+    } else {
+        return false;
     }
 
     logger.info("Player ready for game.");

@@ -45,6 +45,8 @@ BattleScene::BattleScene(GameSceneDirector* sceneDirector,
 
     gameServer->disconnectFromGameLobby();
     gameServer->setServerGameRunningSocketPort(serverUdpPort);
+
+    gameServer->resettimeSinceLastConnectionTimer();
 }
 
 BattleScene::~BattleScene() {
@@ -83,8 +85,8 @@ void BattleScene::update(sf::Time timeSinceLastSimulationUpdate) {
             //todo: create projectile / end game
             if (!serverUpdate.projectile.unackedProjectileCreatedUpdates.empty()) {
                 for (auto projectileCreatedUpdate : serverUpdate.projectile.unackedProjectileCreatedUpdates) {
-                    std::cout << "Projectile fired by " << (projectileCreatedUpdate.firedByPlayer1 ? "Player 1" : "Player 2") << " at " << projectileCreatedUpdate.position.x << ", " << projectileCreatedUpdate.position.y << " heading " << (
-                        projectileCreatedUpdate.direction == SimulationProperties::Direction::RIGHT ? "right." : "left.") << std::endl;
+                    // std::cout << "Projectile fired by " << (projectileCreatedUpdate.firedByPlayer1 ? "Player 1" : "Player 2") << " at " << projectileCreatedUpdate.position.x << ", " << projectileCreatedUpdate.position.y << " heading " << (
+                        // projectileCreatedUpdate.direction == SimulationProperties::Direction::RIGHT ? "right." : "left.") << std::endl;
 
                     projectileController.addProjectile(projectileCreatedUpdate.firedByPlayer1, projectileCreatedUpdate.position, projectileCreatedUpdate.direction, projectileCreatedUpdate.time, time);
 
@@ -115,6 +117,12 @@ void BattleScene::update(sf::Time timeSinceLastSimulationUpdate) {
 }
 
 void BattleScene::simulationUpdate(sf::Time deltaTime, bool isGameInFocus) {
+    if (gameServer->connectionTimedOut()) {
+        std::cout << "Server timed out. Closing game." << std::endl;
+        sceneDirector->transitionToScene(GameSceneDirector::SceneId::MAIN_MENU);
+        return;
+    }
+
     localWizardController->simulationUpdate(time, deltaTime, isGameInFocus);
 
     remoteWizardController->updatePredictedPositions(time);

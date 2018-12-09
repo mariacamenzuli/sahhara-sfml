@@ -1,5 +1,6 @@
 #include "ProjectileController.h"
 #include "ProjectileNode.h"
+#include <iostream>
 
 ProjectileController::ProjectileController(SceneNode* projectileParentNode): projectileParentNode(projectileParentNode) {
 }
@@ -15,7 +16,9 @@ void ProjectileController::addProjectile(bool createdByPlayer1, sf::Vector2f pos
     projectileParentNode->attachChild(std::move(projectile));
 
     //todo fast forward projectile more for defending player
-    activeProjectiles.emplace_back(projectilePointer, direction, currentSimulationTime - projectileCreationTime);
+    auto lag = currentSimulationTime - projectileCreationTime;
+    // std::cout << lag << std::endl;
+    activeProjectiles.emplace_back(projectilePointer, direction, lag > 0 ? lag : 1.0f);
 }
 
 void ProjectileController::moveProjectilePositions(sf::Time deltaTime) {

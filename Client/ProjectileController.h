@@ -20,11 +20,11 @@ private:
 
         Projectile(ProjectileNode* sceneNode, SimulationProperties::Direction direction, short fastForward)
             : sceneNode(sceneNode),
-              direction(direction), fastForward(fastForward) {
+              direction(direction),
+              fastForward(fastForward) {
         }
     };
 
     SceneNode* projectileParentNode;
     std::vector<Projectile> activeProjectiles;
 };
-
